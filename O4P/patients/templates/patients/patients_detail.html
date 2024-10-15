@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+    <p>Date of Birth: {{ patient.date_of_birth }}</p>
+    <p>Contact Number: {{ patient.contact_number }}</p>
+    <p>City: {{ patient.city }}</p>
+    <p>Province: {{ patient.province }}</p>
+    <p>Condition: {{ patient.condition }}</p>
+
+    <a href="
+    {% if is_patient %} 
+        {% url 'welcome' %}
+    {% else %} 
+        {% url 'patients.list' %}
+    {% endif %}" 
+    class="btn btn-secondary my-5">
+    Back
+    </a>
+
+
+
+    {% if is_therapist %}
+        <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary my-5">Edit</a>
+        <a href="{% url 'patients.delete' pk=patient.id %}" class="btn btn-danger my-5">Delete</a>
+    {% endif %}
+{% endblock %}
