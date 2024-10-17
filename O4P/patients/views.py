@@ -15,7 +15,13 @@ class PatientsListView(LoginRequiredMixin, ListView, UserRoleMixin):
     login_url="/login"
     
     def get_queryset(self):
-        return self.get_role_based_queryset(PatientInformation.objects.all(), PatientInformation)
+        user = self.request.user
+        
+        if user.groups.filter(name='Patient').exists():
+            raise PermissionDenied
+        else:
+            # Pass only the model class, not the queryset
+            return self.get_role_based_queryset(PatientInformation)
 
 class PatientDetailView(LoginRequiredMixin, DetailView,):
     model = PatientInformation
