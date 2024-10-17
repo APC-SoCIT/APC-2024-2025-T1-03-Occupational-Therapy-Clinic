@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ note.title }}</h1>
+<h3>{{ note.session_date }}</h3>
+
+<p>{{ note.content }}</p>
+
+<a href="{% url 'patients.details' note.patient.id %}" class="btn btn-secondary my-5">Back</a>
+{% endblock %}

@@ -9,6 +9,28 @@
         <p>City: <span>{{ patient.city }}</span></p>
         <p>Province: <span>{{ patient.province }}</span></p>
         <p>Condition: <span>{{ patient.condition }}</span></p>
+
+        <h2>Notes</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Note Title</th>
+                <th>Session Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in patient_notes %}
+            <tr>
+                <td>
+                    <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
+                        {{ note.title }}
+                    </a>
+                </td>
+                <td>{{ note.session_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     
 
     <a href="
