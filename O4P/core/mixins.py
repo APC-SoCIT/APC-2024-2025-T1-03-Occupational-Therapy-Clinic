@@ -13,18 +13,26 @@ class UserRoleMixin(View):
 
         return context
 
-    def get_role_based_queryset(self, queryset, model_class):
+    def get_role_based_queryset(self, model_class):
         """
         Returns a queryset based on the user's role.
-        - Therapists get all records.
+        - Therapists and Assistants get all records.
         - Patients get only their own records.
-        - Others (like Assistants or Guardians) get nothing or customized sets.
+        - Guardians get all records whose guardian id matches them.
         """
         user = self.request.user
         
-        if user.groups.filter(name='Therapist').exists():
+        if user.groups.filter(name__in=['Therapist', 'Assistant']).exists():
+            # Therapists and Assistants get all patient records
             return model_class.objects.all()
+        
         elif user.groups.filter(name='Patient').exists():
+            # Patients get only their own records
             return model_class.objects.filter(account_id=user)
+        
+        #elif user.groups.filter(name='Guardian').exists():
+            # Guardians get all records whose guardian_id matches their user id
+        #    return model_class.objects.filter(guardian_id=user.id)
+        
         else:
             raise Http404("You do not have permission to view these records.")
