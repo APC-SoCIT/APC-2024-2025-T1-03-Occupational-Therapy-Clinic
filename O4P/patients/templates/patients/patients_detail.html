@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block content %}
+{% load static %}
 
-    <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
-    <p>Date of Birth: {{ patient.date_of_birth }}</p>
-    <p>Contact Number: {{ patient.contact_number }}</p>
-    <p>City: {{ patient.city }}</p>
-    <p>Province: {{ patient.province }}</p>
-    <p>Condition: {{ patient.condition }}</p>
+{% block content %}
+<div class="container">
+        <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+        <p>Date of Birth: <span>{{ patient.date_of_birth }}</span></p>
+        <p>Contact Number: <span>{{ patient.contact_number }}</span></p>
+        <p>City: <span>{{ patient.city }}</span></p>
+        <p>Province: <span>{{ patient.province }}</span></p>
+        <p>Condition: <span>{{ patient.condition }}</span></p>
+    
 
     <a href="
     {% if is_patient %} 
@@ -17,6 +20,7 @@
     class="btn btn-secondary my-5">
     Back
     </a>
+</div>
 
 
 
