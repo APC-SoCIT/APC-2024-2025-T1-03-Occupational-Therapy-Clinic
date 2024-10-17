@@ -9,3 +9,7 @@ class PatientInformationAdmin(admin.ModelAdmin):
     search_fields = ('first_name', 'last_name', 'contact_number')
     list_filter = ('city', 'province', 'condition')
     ordering = ('last_name', 'first_name')
+    
+@admin.register(PatientNotes)
+class PatientNotesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'patient_id', 'title', 'session_date', 'content')

@@ -8,6 +8,28 @@
     <p>Province: {{ patient.province }}</p>
     <p>Condition: {{ patient.condition }}</p>
 
+    <h2>Notes</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Note Title</th>
+                <th>Session Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in patient_notes %}
+            <tr>
+                <td>
+                    <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
+                        {{ note.title }}
+                    </a>
+                </td>
+                <td>{{ note.session_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <a href="
     {% if is_patient %} 
         {% url 'welcome' %}
@@ -17,8 +39,6 @@
     class="btn btn-secondary my-5">
     Back
     </a>
-
-
 
     {% if is_therapist %}
         <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary my-5">Edit</a>

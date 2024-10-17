@@ -33,4 +33,10 @@
             {% endif %}
         </tbody>
     </table>
+    
+    {% if is_therapist %} 
+    <a href="{% url 'welcome' %}" class="btn btn-secondary my-5">Back</a>
+    {% endif %}
+
+
 {% endblock %}
