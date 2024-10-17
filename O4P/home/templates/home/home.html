@@ -1,5 +1,67 @@
 {% extends "home_navbar.html" %}
+{% load static %}
 
 {% block content %}
-        <h1>HOME</h1>
+<div class="home-1">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="home-1-cont">
+                <h1 class="home-1-header">SLOGAN</h1>
+                <p class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <button class="btn btn-appointment">Book an Appointment</button>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <img src="{% static 'images/kid.png' %}" class="child-image" alt="Child Image">
+            </div>
+          </div>
+        </div>
+</div>
+
+<div class="home-2">
+        <div class="container">
+                <div class="row">
+                <!-- Left side content -->
+                <h2 class="home-2-header">GOALS</h2>
+                <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="text-box">
+                <p class="home-2-cont">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                </div>
+                <!-- Right side content with goals -->
+                <div class="col-md-6">
+                <ul class="home-2-goal">
+                <li>
+                        <div class="goal-number">1</div>
+                        <span class="goal-text">Goal?</span>
+                </li>
+                <li>
+                        <div class="goal-number">2</div>
+                        <span class="goal-text">Goal?</span>
+                </li>
+                <li>
+                        <div class="goal-number">3</div>
+                        <span class="goal-text">Goal?</span>
+                </li>
+                </ul>
+                </div>
+                </div>
+        </div>
+</div>
+
+<div class="home-3">
+        <div class="container">
+                <div class="row align-items-center">
+                <div class="col-md-6 text-container">
+                <h2 class="home-3-header">Meet the Therapist</h2>
+                <h4 class="therapist-name">Full Name</h4>
+                <p class="home-3-cont">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="col-md-6">
+                <img src="{% static 'images/pochacco.png' %}" class="therapist-image" alt="Therapist Image"> <!-- Replace with actual image -->
+                </div>
+                </div>
+        </div>
+</div>
 {% endblock %}
