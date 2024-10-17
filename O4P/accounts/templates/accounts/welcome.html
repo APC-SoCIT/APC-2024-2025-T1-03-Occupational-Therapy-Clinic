@@ -4,6 +4,14 @@
     <body>
         <h1>Welcome to Therapro!</h1>
         <p>Today is {{ today }}</p>
+        <p>Your Role: 
+            {% for group in request.user.groups.all %}
+                {{ group.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                No roles assigned.
+            {% endfor %}
+        </p>
+        <p>Your User ID: {{ request.user.id }}</p>
         {% if is_patient %}
             {% if patient %}
                 <a href="{% url 'patients.details' pk=patient.id %}" class="btn btn-primary">View My Details</a>
@@ -15,15 +23,5 @@
         {% else %}
             <p>Unknown role</p>
         {% endif %}
-
-
-        <p>Your Role: 
-            {% for group in request.user.groups.all %}
-                {{ group.name }}{% if not forloop.last %}, {% endif %}
-            {% empty %}
-                No roles assigned.
-            {% endfor %}
-        </p>
-        <p>Your User ID: {{ request.user.id }}</p>
     </body>
 {% endblock %}

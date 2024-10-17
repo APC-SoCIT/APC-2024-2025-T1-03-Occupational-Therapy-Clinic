@@ -62,15 +62,17 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UserPassesTestMixin,
     template_name = "patients/patients_form.html"
     success_url = '/patients'
     form_class = PatientInformationForm
-    
+   
     def test_func(self):
-        return self.request.user.groups.filter(name__in=['Therapist']).exists()
-    
+        return self.request.user.groups.filter(name='Therapist').exists()
+ 
     def get_queryset(self):
         user = self.request.user
-        
-        if user.groups.filter(name='Patient').exists():
+       
+        if user and user.groups.filter(name='Patient').exists():
             raise PermissionDenied
+       
+        return super().get_queryset()
 
 class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     model = PatientInformation
