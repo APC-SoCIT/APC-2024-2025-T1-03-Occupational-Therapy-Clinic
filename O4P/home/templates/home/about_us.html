@@ -1,5 +1,21 @@
 {% extends "home_navbar.html" %}
+{% load static %}
 
 {% block content %}
-        <h1>ABOUT US</h1>
+<div class="home-1">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="home-1-cont">
+                <h1 class="home-1-header">SLOGAN</h1>
+                <p class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <button class="btn btn-appointment">Book an Appointment</button>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <img src="{% static 'images/kid.png' %}" class="child-image" alt="Child Image">
+            </div>
+          </div>
+        </div>
+</div>
 {% endblock %}
