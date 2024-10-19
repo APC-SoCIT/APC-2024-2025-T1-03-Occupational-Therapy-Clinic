@@ -44,9 +44,7 @@
     </a>
 </div>
 
-
-
-    {% if is_therapist %}
+    {% if is_therapist or is_administrator%}
         <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary my-5">Edit</a>
         <a href="{% url 'patients.delete' pk=patient.id %}" class="btn btn-danger my-5">Delete</a>
     {% endif %}

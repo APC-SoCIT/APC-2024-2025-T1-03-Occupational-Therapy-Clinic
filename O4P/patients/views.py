@@ -5,8 +5,10 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from .models import PatientInformation
 from .models import PatientNotes
 from .forms import PatientInformationForm
+from .models import Guardian
 from core.mixins import UserRoleMixin
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
     model = PatientInformation
@@ -26,7 +28,7 @@ class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
-class PatientDetailView(LoginRequiredMixin, DetailView,):
+class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
     model = PatientInformation
     template_name = 'patients/patients_detail.html'
     context_object_name = "patient"
@@ -42,47 +44,41 @@ class PatientDetailView(LoginRequiredMixin, DetailView,):
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
+        context['is_administrator'] = user.is_superuser
 
         return context
     
     def get_queryset(self):
-        user = self.request.user
+        return self.get_role_based_queryset(PatientInformation)
 
-        if user.groups.filter(name__in=['Therapist', 'Assistant']).exists():
-            return PatientInformation.objects.all()
-        if user.groups.filter(name='Patient').exists():
-            return PatientInformation.objects.filter(account_id=user)
-        
-        raise PermissionDenied
-
-
-class PatientsCreateView(LoginRequiredMixin,CreateView, UserRoleMixin):
-    model = PatientInformation
-    success_url = '/patients'
-    form_class = PatientInformation
-    
-    def test_func(self):
-        return self.request.user.groups.filter(name__in=['Therapist']).exists()
-    
-    def get_queryset(self):
-        user = self.request.user
-        
-        if user.groups.filter(name='Patient').exists():
-            raise PermissionDenied
-    
-class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UserPassesTestMixin, UpdateView):
+class PatientsCreateView(LoginRequiredMixin, UserRoleMixin, CreateView):
     model = PatientInformation
     template_name = "patients/patients_form.html"
     success_url = '/patients'
     form_class = PatientInformationForm
-   
+    
     def test_func(self):
-        return self.request.user.groups.filter(name='Therapist').exists()
- 
+        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
+    
     def get_queryset(self):
         user = self.request.user
-       
-        if user and user.groups.filter(name='Patient').exists():
+        
+        if not user.groups.filter(name__in=['Therapist', 'Administrator']).exists():
+            raise PermissionDenied
+    
+class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
+    model = PatientInformation
+    success_url = '/patients'
+    form_class = PatientInformationForm
+    template_name = "patients/patients_form.html"
+   
+    def test_func(self):
+        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.groups.filter(name__in=['Patient', 'Guardian', 'Assistant']).exists():
             raise PermissionDenied
        
         return super().get_queryset()
@@ -93,15 +89,20 @@ class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     success_url = '/patients'
     
     def test_func(self):
-        return self.request.user.groups.filter(name='Therapist').exists()
-
+        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
+    
     def get_queryset(self):
         user = self.request.user
         
-        if user and user.groups.filter(name='Patient').exists():
+        if user.groups.filter(name__in=['Patient', 'Guardian', 'Assistant']).exists():
             raise PermissionDenied
         
         return super().get_queryset()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = get_object_or_404(PatientInformation, pk=self.object.pk)  # Ensure patient is in context
+        return context
 
 class NoteDetailView(LoginRequiredMixin, DetailView):
     model = PatientNotes
@@ -119,6 +120,7 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
+        context['is_administrator'] = user.is_superuser
 
         return context
     
@@ -127,9 +129,13 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
         
         if user.groups.filter(name='Patient').exists():
             return PatientNotes.objects.filter(patient__account_id=user)
-        #elif user.groups.filter(name='Guardian').exists():
-        #    return PatientNotes.objects.filter(patient__guardian=user)  # Adjust this based on your model
-        elif user.groups.filter(name__in=['Therapist', 'Assistant']).exists():
+        elif user.groups.filter(name='Guardian').exists():
+            try:
+                guardian = Guardian.objects.get(user=user)  
+                return PatientNotes.objects.filter(patient__guardian=guardian)  
+            except Guardian.DoesNotExist:
+                return PatientNotes.objects.none() 
+        elif user.groups.filter(name__in=['Therapist', 'Assistant', 'Administrator']).exists():
             return PatientNotes.objects.all()
         else:
             raise PermissionDenied
