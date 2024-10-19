@@ -20,8 +20,10 @@ class WelcomeView(LoginRequiredMixin, TemplateView):
 
         # Add role flags to the context using the mixin logic
         context['is_patient'] = user.groups.filter(name='Patient').exists()
+        context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
+        context['is_administrator'] = user.is_superuser
 
         if context['is_patient']:
             # Assuming a patient has only one information record
