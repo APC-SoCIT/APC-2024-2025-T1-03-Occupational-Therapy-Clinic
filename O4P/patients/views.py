@@ -1,7 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import UserPassesTestMixin
 from .models import PatientInformation
 from .models import PatientNotes
 from .forms import PatientInformationForm
@@ -9,13 +8,16 @@ from .models import Guardian
 from core.mixins import UserRoleMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.shortcuts import redirect
+
+from allauth.account.views import SignupView
 
 class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
     model = PatientInformation
     context_object_name = "patients"
     template_name = "patients/patients_list.html"
-    login_url="/login"
-    
+
     def get_queryset(self):
         user = self.request.user
         
@@ -50,21 +52,6 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
     
     def get_queryset(self):
         return self.get_role_based_queryset(PatientInformation)
-
-class PatientsCreateView(LoginRequiredMixin, UserRoleMixin, CreateView):
-    model = PatientInformation
-    template_name = "patients/patients_form.html"
-    success_url = '/patients'
-    form_class = PatientInformationForm
-    
-    def test_func(self):
-        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
-    
-    def get_queryset(self):
-        user = self.request.user
-        
-        if not user.groups.filter(name__in=['Therapist', 'Administrator']).exists():
-            raise PermissionDenied
     
 class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
     model = PatientInformation

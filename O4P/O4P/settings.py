@@ -40,7 +40,11 @@ INSTALLED_APPS = [
     'accounts',
     'patients',
     'home',
-    'core'
+    'core',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'O4P.urls'
@@ -127,5 +133,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-LOGIN_URL = '/login'
+LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/welcome'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+ACCOUNT_FORMS = {
+    'signup': 'patients.forms.CustomSignupForm',
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+
+LOGOUT_REDIRECT_URL = '/auth/login'
