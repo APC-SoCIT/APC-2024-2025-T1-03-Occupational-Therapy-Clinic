@@ -1,5 +1,38 @@
 {% extends "home_navbar.html" %}
+{% load static %}
 
 {% block content %}
-        <h1>CONTACT US</h1>
+<div class="contact-1">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+                <div class="contact-1-cont">
+                    <h2 class="contact-1-header text-center mt-3">How to Find Us</h2>
+                    <img src="{% static 'images/clinic-bg.jpg' %}" alt="Location Image">
+                    <div class="contact-1-text">
+                        <p>Address here</p>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6 d-flex flex-column align-items-center">
+                <h2 class="contact-1-header mb-4">Where to Find Us</h2>
+                <p class="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et</p>
+                
+                <div class="contact-1-card">
+                    <i class="bi bi-telephone-fill"></i>
+                    <span>Number</span>
+                </div>
+                <div class="contact-1-card">
+                    <i class="bi bi-envelope-fill"></i>
+                    <span>Email</span>
+                </div>
+                <div class="contact-1-card">
+                    <i class="bi bi-facebook"></i>
+                    <span>Facebook</span>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
 {% endblock %}

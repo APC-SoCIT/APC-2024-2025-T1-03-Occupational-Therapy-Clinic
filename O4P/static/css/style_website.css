@@ -1,327 +1,373 @@
 html, body {
-    height: 100%;
-    margin: 0;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    }
+  height: 100%;
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
 
 .navbar {
-    padding: 15px 20px;
-    background-color: #00A5CF;
-    }
-  
+  padding: 15px 20px;
+  background-color: #00A5CF;
+  }
+
 .navbar-nav .nav-link {
-    color: white;
-    margin-left: 20px;
-    }
-      
-  
+  color: white;
+  margin-left: 20px;
+  }
+    
+
 .nav-item .nav-link:hover {
-    color: #64CA6C;
-    }
-  
+  color: #004E64;
+  }
+
 .navbar-brand {
-    color: rgb(255, 255, 255);
-    font-weight: bold;
-    }
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  }
 
 .home-1 {
-    position: relative;
-    background-image: url("/static/images/clinic-bg.jpg");
-    background-size: cover;
-    background-position: center;
-    color: white;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-    
+  position: relative;
+  background-image: url("/static/images/clinic-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+  
 .home-1::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #004E64;
-    opacity: 50%; /* Change opacity and color as needed */
-    z-index: 1; /* Make sure this is behind the content */
-    }
-    
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #004E64;
+  opacity: 50%; /* Change opacity and color as needed */
+  z-index: 1; /* Make sure this is behind the content */
+  }
+  
 .home-1-cont {
-    position: relative;
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 2; /* Ensure content is above the overlay */
-    }
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 2; /* Ensure content is above the overlay */
+  }
 
 .home-1-header {
-    font-size: 3rem;
-    font-weight: bold;
-    }
+  font-size: 3rem;
+  font-weight: bold;
+  }
 
 .body-text {
-    font-size: 1.1rem;
-    margin-top: 10px;
-    }
+  font-size: 1.1rem;
+  margin-top: 10px;
+  }
 
 .btn-appointment {
-    background-color: #64CA6C;
-    border: none;
-    padding: 10px 20px;
-    color: white;
-    border-radius: 5px;
-    margin-top: 20px;
-    }
+  background-color: #64CA6C;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 5px;
+  margin-top: 20px;
+  }
 
 .child-image {
-    position: absolute;
-    bottom: 0;
-    max-width: 50%;
-    z-index: 2;
-    }
+  position: absolute;
+  bottom: 0;
+  max-width: 50%;
+  z-index: 2;
+  }
 
 .goals-section {
-    background-color: #f8f9fa;
-    height: 100vh;
-    display:flex;
-    }
+  background-color: #f8f9fa;
+  height: 100vh;
+  display:flex;
+  }
 
-    .home-2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #EBF2FA;
-    }
-    
-    .text-box {
-    background-color: #385E81;
-    color: white;
-    padding: 100px;
-    padding-right: 40px;
-    border-radius: 15px;
-    text-align: center;
-    }
-    
-    .home-2-header {
-    font-size: 3rem;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 80px;
-    margin-bottom: 20px;
-    padding-right: 280px;
-    }
-    
-    .home-2-cont {
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: right;
-    }
-    
-    .home-2-goal {
-    list-style-type: none;
-    padding-left: 50px;
-    }
-    
-    .home-2-goal li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    }
-    
-    .goal-number {
-    background-color: #CFE0F0;
-    color: #385E81;
-    font-size: 60px;
-    font-weight: bold;
-    padding: 0px;
-    border-radius: 50%;
-    display: inline-block;
-    width: 90px;
-    text-align: center;
-    }
-    
-    .goal-text {
-    margin-left: 20px;
-    font-size: 1.2rem;
-    color: #2f4e6e;
-    }
+  .home-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #EBF2FA;
+  }
+  
+  .text-box {
+  background-color: #385E81;
+  color: white;
+  padding: 100px;
+  padding-right: 40px;
+  border-radius: 15px;
+  text-align: center;
+  }
+  
+  .home-2-header {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  padding-right: 280px;
+  }
+  
+  .home-2-cont {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: right;
+  }
+  
+  .home-2-goal {
+  list-style-type: none;
+  padding-left: 50px;
+  }
+  
+  .home-2-goal li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  }
+  
+  .goal-number {
+  background-color: #CFE0F0;
+  color: #385E81;
+  font-size: 60px;
+  font-weight: bold;
+  padding: 0px;
+  border-radius: 50%;
+  display: inline-block;
+  width: 90px;
+  text-align: center;
+  }
+  
+  .goal-text {
+  margin-left: 20px;
+  font-size: 1.2rem;
+  color: #2f4e6e;
+  }
 
-    /*therapist*/
-    .therapist-section {
-    background-color: #EBF2FA;
-    height: 100vh;
-    }
+  /*therapist*/
+  .therapist-section {
+  background-color: #EBF2FA;
+  height: 100vh;
+  }
 
-    .home-3 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #EBF2FA; /* Top half background color */
-    position: relative;
-    padding: 50px 0;
-    height: 70vh;
-    z-index: 1;
+  .home-3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #EBF2FA; /* Top half background color */
+  position: relative;
+  padding: 50px 0;
+  height: 70vh;
+  z-index: 1;
 }
 
 .home-3::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70%;
-    background-color: #385E81; /* Bottom half background color */
-    z-index: 0;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  background-color: #385E81; /* Bottom half background color */
+  z-index: 0;
 }
 
 .text-container {
-    z-index: 2;
-    padding: 20px;
+  z-index: 2;
+  padding: 20px;
 }
 
-    .home-3-header {
-    font-size: 40px;
-    margin-top: 90px;
-    font-weight: bold;
-    text-align: left;
-    color: white;
-    }
+  .home-3-header {
+  font-size: 40px;
+  margin-top: 90px;
+  font-weight: bold;
+  text-align: left;
+  color: white;
+  }
 
-    .home-3-cont {
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: left;
-    color: white;
-    }
+  .home-3-cont {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left;
+  color: white;
+  }
 
-    .therapist-name {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-top: 15px;
-    color: white;
-    }
-    
-    .therapist-image {
-    max-width: 100%;
-    position: absolute;
-    bottom: 0;
-    right: 120px;
-    z-index: 2;
+  .therapist-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 15px;
+  color: white;
+  }
+  
+  .therapist-image {
+  max-width: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 120px;
+  z-index: 2;
 }
 
 .home-3 .home-3-cont {
-    margin-top: 10px;
-    font-size: 1rem;
-    color: white;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: white;
 }
 
 /*about us*/
 .about-1 {
-    position: relative;
-    background-image: url('images/clinic-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .about-1::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #004E64;
-    opacity: 50%; /* Change opacity and color as needed */
-    z-index: 1; /* Make sure this is behind the content */
-  }
-  
-  .about-1-header {
-    font-size: 3rem;
-    font-weight: bold;
-  }
-  
-  .about-1-cont {
-    position: relative;
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 2; /* Ensure content is above the overlay */
-    text-align: right;
-  }
+  position: relative;
+  background-image: url("/static/images/clinic-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .about-2 {
-    position: relative;
-    background-color: #325d83;
-    color: white;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .about-2-header {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  .icon {
-    font-size: 2rem;
-    margin-right: 15px;
-  }
-  
-  .about-2-cont {
-    font-size: 1rem;
-  }
-  
-  .mission-box {
-    border-radius: 15px;
-  }
-  
-  .about-2-img {
-    border-radius: 15px;
-    width: 100%;
-  }
-  
-  .about-3 {
-    position: relative;
-    background-color: #EBF2FA;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  
-  .about-3-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .about-3-card h4 {
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-  
-  .about-3-card .icon-circle {
-    width: 50px;
-    height: 50px;
-    background-color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-text {
-    color: #6c757d;
-  }
+.about-1::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #004E64;
+  opacity: 50%; /* Change opacity and color as needed */
+  z-index: 1; /* Make sure this is behind the content */
+}
+
+.about-1-header {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.about-1-cont {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 2; /* Ensure content is above the overlay */
+  text-align: right;
+}
+
+.about-2 {
+  position: relative;
+  background-color: #325d83;
+  color: white;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-2-header {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.icon {
+  font-size: 2rem;
+  margin-right: 15px;
+}
+
+.about-2-cont {
+  font-size: 1rem;
+}
+
+.mission-box {
+  border-radius: 15px;
+}
+
+.about-2-img {
+  border-radius: 15px;
+  width: 100%;
+}
+
+.about-3 {
+  position: relative;
+  background-color: #EBF2FA;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.about-3-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.about-3-card h4 {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.about-3-card .icon-circle {
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-text {
+  color: #6c757d;
+}
+
+.contact-1 {
+  position: relative;
+  background-color: #EBF2FA;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-1-cont {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.contact-1-cont img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px 8px 0 0;
+}
+.contact-1-text {
+  padding: 20px;
+  background-color: #1F3F57;
+  color: #fff;
+  border-radius: 0 0 8px 8px;
+}
+.contact-1-card {
+  background-color: #335F79;
+  color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 15px;
+  width: 80%;
+}
+.contact-1-card:hover {
+  background-color: #23495C;
+}
+.contact-1-card i {
+  margin-right: 10px;
+}
+.contact-1 h2 {
+  font-weight: bold;
+}
