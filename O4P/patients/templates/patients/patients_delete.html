@@ -2,11 +2,11 @@
 
 {% block content %}
 <form method="POST"> {% csrf_token %}
-    <p>Are you sure you want to delete "{{notes.title}}"?</p>
+    <p>Are you sure you want to delete "{{patient.first_name}} {{patient.last_name}}"?</p>
     <p>This action cannot be undone.</p>
 
     <input type="submit" class="btn btn-danger" value="Confirm"/>
 </form>
-    <a href="{% url 'notes.list' %}" class="btn btn-secondary my-2">Back</a>
+    <a href="{% url 'patients.list' %}" class="btn btn-secondary my-2">Back</a>
 
 {% endblock %}

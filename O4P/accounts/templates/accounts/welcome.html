@@ -18,7 +18,7 @@
             {% else %}
                 <p>You do not have patient details available.</p>
             {% endif %}
-        {% elif is_therapist %}
+            {% elif is_therapist or is_assistant or is_administrator or is_guardian %}
             <a href="{% url 'patients.list' %}" class="btn btn-primary">Patient List</a>
         {% else %}
             <p>Unknown role</p>
