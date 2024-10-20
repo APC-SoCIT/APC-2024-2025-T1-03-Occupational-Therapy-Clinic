@@ -4,14 +4,11 @@ from datetime import datetime
 # from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LogoutView
 
 from patients.models import PatientInformation
 class WelcomeView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/welcome.html'
-    login_url = '/login'
     extra_context = {'today': datetime.today()}
     
     def get_context_data(self, **kwargs):
@@ -31,13 +28,8 @@ class WelcomeView(LoginRequiredMixin, TemplateView):
             context['patient'] = patient_info
 
         return context
-class LoginInterfaceView(LoginView):
-    template_name='accounts/login.html'
     
 class LogoutInterfaceView(LogoutView):
     template_name='accounts/logout.html'
     
-class SignupView(CreateView):
-    form_class = UserCreationForm
-    template_name='accounts/register.html'
-    success_url='accounts/login.html'
+
