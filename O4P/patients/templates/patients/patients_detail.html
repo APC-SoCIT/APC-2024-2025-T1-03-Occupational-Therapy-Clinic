@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
         <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
         <p>Date of Birth: <span>{{ patient.date_of_birth }}</span></p>
         <p>Contact Number: <span>{{ patient.contact_number }}</span></p>
@@ -42,7 +41,6 @@
     class="btn btn-secondary my-5">
     Back
     </a>
-</div>
 
     {% if is_therapist or is_administrator%}
         <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary my-5">Edit</a>

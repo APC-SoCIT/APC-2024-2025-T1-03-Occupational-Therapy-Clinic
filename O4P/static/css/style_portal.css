@@ -72,15 +72,38 @@ p {
 }
 
 .btn {
-    border-radius: 20px;
+    border-radius: 5px;
 }
 
 .btn-secondary {
-    background-color: #009688; /* Teal button */
-    border-color: #009688;
+    background-color: #64CA6C;
+    border-radius: 5px; /* Adjust this value to control the roundness */
 }
 
+.btn-secondary:hover {
+  background-color: #4CAF50; /* Change this to your desired hover color */
+}
 .btn-danger {
     background-color: #d9534f; /* Red button */
     border-color: #d9534f;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+label {
+  font-weight: bold;
 }

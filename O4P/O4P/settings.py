@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount'
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -137,11 +139,13 @@ LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/welcome'
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ACCOUNT_FORMS = {
     'signup': 'patients.forms.CustomSignupForm',
+    'login': 'patients.forms.CustomLoginForm',
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
