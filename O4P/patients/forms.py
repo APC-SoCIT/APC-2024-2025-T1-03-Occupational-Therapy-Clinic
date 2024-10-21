@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import Group
 from allauth.account.forms import SignupForm
+from allauth.account.forms import LoginForm
 from django.core.exceptions import ValidationError
 
 import datetime
@@ -62,3 +63,8 @@ class CustomSignupForm(SignupForm):
         user.groups.add(Group.objects.get(name='Patient'))
 
         return user
+    
+class CustomLoginForm(LoginForm):
+
+    def login(self, *args, **kwargs):
+        return super(CustomLoginForm, self).login(*args, **kwargs)

@@ -8,7 +8,7 @@ from django.contrib.auth.views import LogoutView
 
 from patients.models import PatientInformation
 class WelcomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'accounts/welcome.html'
+    template_name = 'account/welcome.html'
     extra_context = {'today': datetime.today()}
     
     def get_context_data(self, **kwargs):
