@@ -89,8 +89,12 @@ WSGI_APPLICATION = 'O4P.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'o4p',
+        'USER': 'postgres',
+        'PASSWORD': 'Th1sismypassword42@',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -150,8 +154,13 @@ ACCOUNT_FORMS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
+
+ACCOUNT_USERNAME_REQUIRED = True
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
