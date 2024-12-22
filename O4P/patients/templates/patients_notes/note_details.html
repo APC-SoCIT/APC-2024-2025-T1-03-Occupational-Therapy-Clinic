@@ -5,5 +5,9 @@
 
 <p>{{ note.content }}</p>
 
-<a href="{% url 'patients.details' note.patient.id %}" class="btn btn-secondary my-5">Back</a>
+<a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary my-5">Back</a>
+{% if is_therapist or is_administrator%}
+<a href="{% url 'notes.update' pk=note.id %} " class="btn btn-secondary my-5">Edit</a>
+<a href="{% url 'notes.delete' pk=note.id %} " class="btn btn-danger my-5">Delete</a>
+{% endif %}
 {% endblock %}

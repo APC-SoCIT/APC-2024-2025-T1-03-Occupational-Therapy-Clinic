@@ -4,15 +4,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import PatientInformation
 from .models import PatientNotes
 from .forms import PatientInformationForm
+from .forms import PatientNotesForm
 from .models import Guardian
 from core.mixins import UserRoleMixin
+from core.mixins import RolePermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.shortcuts import redirect
 
 from allauth.account.views import SignupView
+from django.http import HttpResponseForbidden
 
+#
+# PATIENTS
+#
 class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
     model = PatientInformation
     context_object_name = "patients"
@@ -88,8 +94,12 @@ class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patient'] = get_object_or_404(PatientInformation, pk=self.object.pk)  # Ensure patient is in context
+        context['patient'] = get_object_or_404(PatientInformation, pk=self.object.pk)  
         return context
+
+"""
+PATIENT NOTES
+"""
 
 class NoteDetailView(LoginRequiredMixin, DetailView):
     model = PatientNotes
@@ -109,6 +119,8 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
         context['is_administrator'] = user.is_superuser
 
+        patient = note.patient
+        context['patient'] = patient
         return context
     
     def get_queryset(self):
@@ -126,3 +138,63 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
             return PatientNotes.objects.all()
         else:
             raise PermissionDenied
+        
+class NoteCreateView(RolePermissionRequiredMixin, CreateView):
+    model = PatientNotes
+    form_class = PatientNotesForm
+    template_name = "patients_notes/note_form.html"
+    allowed_roles = ['Therapist']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        patient = get_object_or_404(PatientInformation, id=self.kwargs['pk'])
+        context['patient'] = patient 
+        return context
+
+    def form_valid(self, form):
+        patient = get_object_or_404(PatientInformation, id=self.kwargs['pk'])
+        form.instance.patient = patient
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('patients.details', kwargs={'pk': self.kwargs['pk']})
+
+class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
+    model = PatientNotes
+    form_class = PatientNotesForm
+    template_name = "patients_notes/note_form.html"
+    allowed_roles = ['Therapist']
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        note = self.get_object()
+
+        context['patient_notes'] = PatientNotes.objects.filter(patient=note.patient)
+
+        user = self.request.user
+        context['is_patient'] = user.groups.filter(name='Patient').exists()
+        context['is_guardian'] = user.groups.filter(name='Guardian').exists()
+        context['is_assistant'] = user.groups.filter(name='Assistant').exists()
+        context['is_therapist'] = user.groups.filter(name='Therapist').exists()
+        context['is_administrator'] = user.is_superuser
+
+        patient = note.patient
+        context['patient'] = patient
+        return context
+
+    def get_success_url(self):
+        return reverse('patients.details', kwargs={'pk': self.object.patient.pk})
+    
+class NotesDeleteView(RolePermissionRequiredMixin, DeleteView):
+    model = PatientNotes 
+    template_name='patients_notes/note_delete.html'
+    allowed_roles = ['Therapist']
+    
+    def get_success_url(self):
+        return reverse('patients.details', kwargs={'pk': self.object.patient.pk})
+
+class RoleBasedSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.groups.filter(name__in=['Admin', 'Therapist']).exists():
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
