@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'patients',
     'home',
     'core',
+    'games',
 
     'allauth',
     'allauth.account',

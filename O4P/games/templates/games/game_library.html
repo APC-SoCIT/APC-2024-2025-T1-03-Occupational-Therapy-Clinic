@@ -1,0 +1,164 @@
+{% extends "home_navbar.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Title Section -->
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1>Game Library</h1>
+            <p class="lead">Browse through our collection of games!</p>
+        </div>
+    </div>
+
+    <!-- Games of the Week -->
+    <div class="mb-5">
+        <h2>Games of the Week <span class="fs-6 text-muted">Discover more ></span></h2>
+        <p>Explore the most engaging games of the past seven days</p>
+        <div class="d-flex overflow-auto gap-3">
+            <!-- Game Card Example -->
+            <div class="game-card">
+                <img src="{% static 'images/game1_thumbnail.jpg' %}" class="game-image" alt="DPS IDLE">
+                <h5 class="game-title">DPS IDLE</h5>
+            </div>
+            <div class="game-card">
+                <img src="{% static 'images/game2_thumbnail.jpg' %}" class="game-image" alt="Idle Pinball">
+                <h5 class="game-title">Idle Pinball</h5>
+            </div>
+            <!-- Add more cards as needed -->
+        </div>
+    </div>
+
+    <!-- Discovery Zone -->
+    <div>
+        <h2>Discovery Zone</h2>
+        <p>Discover the new additions to GX.games</p>
+        <div class="d-flex overflow-auto gap-3">
+            <div class="game-card">
+                <img src="{% static 'images/game3_thumbnail.jpg' %}" class="game-image" alt="FightPack10">
+                <div class="game-hover-content">
+                    <video class="game-video" autoplay muted loop>
+                        <source src="{% static 'videos/game3_demo.mp4' %}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <span class="game-genre">Multiplayer</span>
+                </div>
+                <h5 class="game-title">FightPack10</h5>
+            </div>
+            <div class="game-card">
+                <img src="{% static 'images/game4_thumbnail.jpg' %}" class="game-image" alt="Free Throw Master">
+                <h5 class="game-title">Free Throw Master</h5>
+            </div>
+            <!-- Add more cards as needed -->
+        </div>
+    </div>
+</div>
+
+<style>
+/***** General Styles *****/
+body {
+    background-color: #d053d1;
+}
+
+.container {
+    color: #fff;
+}
+
+/***** Game Card Styling *****/
+.game-card {
+    position: relative;
+    width: 200px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.game-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 0, 150, 0.4), rgba(0, 204, 255, 0.4));
+    z-index: 1;
+    opacity: 0.5;
+}
+
+.game-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-bottom: 2px solid #444;
+}
+
+.game-title {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin: 10px 0 0;
+    font-size: 1rem;
+    color: #fff;
+}
+
+/***** Hover Content Styling *****/
+.game-hover-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.game-card:hover .game-hover-content {
+    opacity: 1;
+}
+
+.game-video {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.game-genre {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 0, 150, 0.8);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/***** Scrolling Container *****/
+.d-flex {
+    display: flex;
+}
+
+.overflow-auto {
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.gap-3 > * {
+    margin-right: 15px;
+}
+</style>
+{% endblock %}
