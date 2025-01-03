@@ -5,8 +5,11 @@ from datetime import datetime
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
+from allauth.account.views import SignupView
+from django.http import HttpResponseForbidden
 
 from patients.models import PatientInformation
+
 class WelcomeView(LoginRequiredMixin, TemplateView):
     template_name = 'account/welcome.html'
     extra_context = {'today': datetime.today()}
@@ -31,5 +34,10 @@ class WelcomeView(LoginRequiredMixin, TemplateView):
     
 class LogoutInterfaceView(LogoutView):
     template_name='accounts/logout.html'
-    
+
+class RoleBasedSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.groups.filter(name__in=['Admin', 'Therapist']).exists():
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
 
