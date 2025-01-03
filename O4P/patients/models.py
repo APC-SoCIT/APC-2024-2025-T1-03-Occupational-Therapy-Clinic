@@ -23,7 +23,7 @@ class PatientInformation(models.Model):
     
     class Meta:
         verbose_name = "Patient Information"
-        verbose_name_plural = "Patients Information"
+        verbose_name_plural = "Patient Information"
 
         indexes = [
         models.Index(fields=['account_id']),
@@ -41,7 +41,7 @@ class PatientNotes(models.Model):
 
     class Meta:
         verbose_name = "Patient Notes"
-        verbose_name_plural = "Patients Notes"
+        verbose_name_plural = "Patient Notes"
         
     def __str__(self):
         return f"{self.title} - {self.patient.id} - {self.session_date}"

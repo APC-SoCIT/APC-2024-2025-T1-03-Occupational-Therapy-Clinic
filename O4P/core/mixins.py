@@ -1,6 +1,8 @@
 from django.views import View
 from django.http import Http404
 from patients.models import Guardian
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 
 class UserRoleMixin(View):
     def get_context_data(self, **kwargs):
@@ -16,12 +18,6 @@ class UserRoleMixin(View):
         return context
 
     def get_role_based_queryset(self, model_class):
-        """
-        Returns a queryset based on the user's role.
-        - Therapists and Assistants get all records.
-        - Patients get only their own records.
-        - Guardians get all records whose guardian id matches them.
-        """
         user = self.request.user
         
         if user.groups.filter(name__in=['Therapist', 'Assistant', 'Administrator']).exists():
@@ -39,3 +35,24 @@ class UserRoleMixin(View):
         
         else:
             raise Http404("You do not have permission to view these records.")
+
+class RolePermissionRequiredMixin(PermissionRequiredMixin):
+    allowed_roles = []
+
+    def has_permission(self):
+        user = self.request.user
+
+        # Ensure the user is authenticated
+        if not user.is_authenticated:
+            return False
+
+        # Check if the user is part of any of the allowed groups
+        if user.groups.filter(name__in=self.allowed_roles).exists():
+            return True
+
+        return False
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not self.has_permission():
+            raise PermissionDenied("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)

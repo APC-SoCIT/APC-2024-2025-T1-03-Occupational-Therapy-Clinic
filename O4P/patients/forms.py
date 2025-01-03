@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 
 import datetime
 from .models import PatientInformation
+from .models import PatientNotes
 
 class PatientInformationForm(forms.ModelForm):
     class Meta:
@@ -34,17 +35,36 @@ class PatientInformationForm(forms.ModelForm):
         }
 
 class CustomSignupForm(SignupForm):
-    first_name = forms.CharField(max_length=50)
-    last_name = forms.CharField(max_length=50)
+    first_name = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'First Name'})
+    )
+    last_name = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'Last Name'})
+    )
     date_of_birth = forms.DateField(
         widget=forms.SelectDateWidget(
-            years=range(1940, datetime.date.today().year)  
+            years=range(1940, datetime.date.today().year)
         )
     )
-    contact_number = forms.CharField(max_length=15)
-    city = forms.CharField(max_length=50)
-    province = forms.CharField(max_length=50)
-    condition = forms.CharField(max_length=50)
+    contact_number = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={'placeholder': 'Contact Number'})
+    )
+    city = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'City'})
+    )
+    province = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'Province'})
+    )
+    condition = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'Medical Condition'})
+    )
+    
 
     def save(self, request):
         user = super(CustomSignupForm, self).save(request)
@@ -63,8 +83,17 @@ class CustomSignupForm(SignupForm):
         user.groups.add(Group.objects.get(name='Patient'))
 
         return user
-    
+
 class CustomLoginForm(LoginForm):
 
     def login(self, *args, **kwargs):
         return super(CustomLoginForm, self).login(*args, **kwargs)
+    
+class PatientNotesForm(forms.ModelForm):
+    class Meta:
+        model = PatientNotes
+        fields = ['title', 'session_date', 'content']
+        widgets = {
+            'session_date': forms.DateInput(attrs={'type': 'date'}),
+            'content': forms.Textarea(attrs={'rows': 4}),
+        }

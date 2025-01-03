@@ -18,6 +18,9 @@
             </tr>
         </thead>
         <tbody>
+            {%if is_therapist or is_administrator%}
+            <a href="{% url 'notes.create' pk=patient.id %}" class="btn btn-secondary my-5">Add Note</a>
+            {% endif %}
             {% for note in patient_notes %}
             <tr>
                 <td>
