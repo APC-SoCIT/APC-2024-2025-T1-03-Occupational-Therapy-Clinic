@@ -18,8 +18,13 @@
             {% else %}
                 <p>You do not have patient details available.</p>
             {% endif %}
-            {% elif is_therapist or is_assistant or is_administrator or is_guardian %}
+            {% elif is_therapist or is_assistant or is_guardian %}
             <a href="{% url 'patients.list' %}" class="btn btn-primary">Patient List</a>
+            {% elif is_administrator%}
+            <a href="{% url 'patients.list' %}" class="btn btn-primary">Patient List</a></br>
+            <a href="{% url 'therapist_signup' %}" class="btn btn-primary">Create Therapist Account</a>
+            <a href="{% url 'guardian_signup' %}" class="btn btn-primary">Create Guardian Account</a>
+            <a href="{% url 'assistant_signup' %}" class="btn btn-primary">Create Assistant Account</a>
         {% else %}
             <p>Unknown role</p>
         {% endif %}
