@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Request Appointment</title>
+</head>
+<body>
+    <h1>Request an Appointment</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="therapist">Select Therapist:</label>
+        <select name="therapist" id="therapist" required>
+            {% for therapist in therapists %}
+            <option value="{{ therapist.id }}">{{ therapist.username }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="requested_date">Requested Date:</label>
+        <input type="date" name="requested_date" id="requested_date" required>
+        <br><br>
+
+        <label for="requested_time">Requested Time:</label>
+        <input type="time" name="requested_time" id="requested_time" required>
+        <br><br>
+
+        <label for="notes">Additional Notes:</label>
+        <textarea name="notes" id="notes" rows="4" cols="50"></textarea>
+        <br><br>
+
+        <button type="submit">Submit Request</button>
+    </form>
+    <a href="{% url 'patient_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
