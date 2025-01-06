@@ -36,7 +36,7 @@
 
   <div class="d-flex justify-content-between"> <a href="{% url 'welcome' %}" class="btn btn-secondary my-5">Back</a>
     {% if is_therapist or is_administrator %}
-      <a href="{% url 'account_signup' %}" class="btn btn-secondary my-5">Create Patient Account</a>
+      <a href="{% url 'patient_signup' %}" class="btn btn-secondary my-5">Create Patient Account</a>
     {% endif %}
   </div>
 {% endblock %}

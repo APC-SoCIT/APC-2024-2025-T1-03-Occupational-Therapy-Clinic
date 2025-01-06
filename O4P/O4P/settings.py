@@ -150,7 +150,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_FORMS = {
-    'signup': 'patients.forms.CustomSignupForm',
     'login': 'patients.forms.CustomLoginForm',
 }
 
@@ -167,5 +166,3 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
 LOGOUT_REDIRECT_URL = '/auth/login'
-
-CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
