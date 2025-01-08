@@ -7,8 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 import json
+from .models import NonWorkingDay
 from .models import Appointment
 from .models import AppointmentRequest
+from .models import AppointmentSlot
 from .models import RecurringAppointment
 from .forms import AppointmentForm
 from .forms import RecurringAppointmentForm
@@ -58,7 +60,7 @@ def create_appointment(request):
             return redirect('therapist_dashboard')
     else:
         form = AppointmentForm()
-    return render(request, 'appointments/create_appointment.html', {'form': form})
+    return render(request, 'appointments/create_appointment.html')
 
 # Update Appointment (Therapists only)
 @login_required
@@ -202,42 +204,56 @@ def create_recurring_appointment(request):
 
 
 def appointments_calendar_api(request):
-    """API to fetch appointments for FullCalendar."""
-    if request.method == 'GET':
-        appointments = Appointment.objects.all()
-        events = [
-            {
-                'title': f"{appointment.patient.username} with {appointment.therapist.username}",
-                'start': f"{appointment.date}T{appointment.start_time}",
-                'end': f"{appointment.date}T{appointment.end_time}",
-                'id': appointment.id,
-            }
-            for appointment in appointments
-        ]
-        return JsonResponse(events, safe=False)
-    
-@csrf_exempt
-def create_appointment_api(request):
-    """API to handle creating new appointments."""
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        date = data.get('date')
-        details = data.get('details')
+    # Query all appointments
+    appointments = Appointment.objects.all()
 
-        # Replace with actual user objects
-        therapist = request.user  # Example: logged-in user as therapist
-        patient = request.user  # Replace with logic for selecting patient
+    # Prepare events in FullCalendar's expected format
+    events = [
+        {
+            "title": f"{appointment.patient.first_name} {appointment.patient.last_name} with {appointment.therapist.first_name} {appointment.therapist.last_name}",
+            "start": appointment.start_time.isoformat(),  # ISO format for the start time
+            "end": appointment.end_time.isoformat(),  # ISO format for the end time
+            "url": f"/appointment/{appointment.id}/update/",  # Optional: URL for event details
+        }
+        for appointment in appointments
+    ]
 
-        Appointment.objects.create(
-            patient=patient,
-            therapist=therapist,
-            date=date,
-            start_time='09:00',  # Example fixed time
-            end_time='10:00',    # Example fixed duration
-            status='scheduled',
-        )
-        return JsonResponse({'message': 'Appointment created successfully!'}, status=201)
+    # Return JSON response
+    return JsonResponse(events, safe=False)
+
     
 def calendar_view(request):
     """Render the calendar interface."""
     return render(request, 'appointments/calendar.html')
+
+
+def get_non_working_days(request):
+    therapist_id = request.GET.get('therapist_id')
+    non_working_days = NonWorkingDay.objects.filter(therapist_id=therapist_id).values_list('date', flat=True)
+    return JsonResponse({'non_working_days': list(non_working_days)})
+
+def get_available_slots(request):
+    # Extract date from the request
+    selected_date = request.GET.get('date')
+
+    if not selected_date:
+        return JsonResponse({"error": "Date is required."}, status=400)
+
+    # Define working hours (example: 9 AM to 5 PM)
+    working_hours = [
+        (9, 0), (10, 0), (11, 0), (12, 0), (13, 0),
+        (14, 0), (15, 0), (16, 0), (17, 0)
+    ]
+
+    # Check appointments for the selected date
+    appointments = Appointment.objects.filter(date__date=selected_date)
+    booked_slots = {appt.date.strftime("%H:%M") for appt in appointments}
+
+    # Generate available slots
+    available_slots = []
+    for hour, minute in working_hours:
+        slot_time = f"{hour:02}:{minute:02}"
+        if slot_time not in booked_slots:
+            available_slots.append(f"{hour:02}:{minute:02}")
+
+    return JsonResponse({"slots": available_slots})

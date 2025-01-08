@@ -104,3 +104,19 @@ class RecurringAppointment(models.Model):
 
     def __str__(self):
         return f"{self.patient.username} - Recurring {self.recurrence_pattern} with {self.therapist.username}"
+
+class NonWorkingDay(models.Model):
+    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='non_working_days')
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.therapist.username} - {self.date}"
+    
+class AppointmentSlot(models.Model):
+    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointment_slots')
+    date = models.DateField()
+    start_time = models.TimeField()
+    is_booked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.date} - {self.start_time} ({'Booked' if self.is_booked else 'Available'})"
