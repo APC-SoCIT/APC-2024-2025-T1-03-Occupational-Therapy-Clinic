@@ -2,8 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+import json
 from .models import Appointment
 from .models import AppointmentRequest
+from .models import RecurringAppointment
 from .forms import AppointmentForm
 from .forms import RecurringAppointmentForm
 from .utils import generate_recurring_appointments
@@ -17,12 +23,22 @@ def is_patient(user):
     return user.groups.filter(name="Patient").exists()
 
 # Therapist Dashboard
-@login_required
-@user_passes_test(is_therapist)
-def therapist_dashboard(request):
-    appointments = Appointment.objects.filter(therapist=request.user)
-    print("Appointments:", appointments)  # Debug statement
-    return render(request, 'appointments/therapist_dashboard.html', {'appointments': appointments})
+class TherapistDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "appointments/therapist_dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        appointments = Appointment.objects.filter(therapist=self.request.user)
+        # Add appointments as events for the calendar
+        context['appointments'] = appointments
+        context['events'] = [
+            {
+                "title": f"Appointment with {appt.patient.username}",
+                "start": f"{appt.date}T{appt.start_time}",
+            }
+            for appt in appointments
+        ]
+        return context
 
 # Patient Dashboard
 @login_required
@@ -182,3 +198,46 @@ def create_recurring_appointment(request):
     else:
         form = RecurringAppointmentForm()
     return render(request, 'appointments/create_recurring_appointment.html', {'form': form})
+
+
+
+def appointments_calendar_api(request):
+    """API to fetch appointments for FullCalendar."""
+    if request.method == 'GET':
+        appointments = Appointment.objects.all()
+        events = [
+            {
+                'title': f"{appointment.patient.username} with {appointment.therapist.username}",
+                'start': f"{appointment.date}T{appointment.start_time}",
+                'end': f"{appointment.date}T{appointment.end_time}",
+                'id': appointment.id,
+            }
+            for appointment in appointments
+        ]
+        return JsonResponse(events, safe=False)
+    
+@csrf_exempt
+def create_appointment_api(request):
+    """API to handle creating new appointments."""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        date = data.get('date')
+        details = data.get('details')
+
+        # Replace with actual user objects
+        therapist = request.user  # Example: logged-in user as therapist
+        patient = request.user  # Replace with logic for selecting patient
+
+        Appointment.objects.create(
+            patient=patient,
+            therapist=therapist,
+            date=date,
+            start_time='09:00',  # Example fixed time
+            end_time='10:00',    # Example fixed duration
+            status='scheduled',
+        )
+        return JsonResponse({'message': 'Appointment created successfully!'}, status=201)
+    
+def calendar_view(request):
+    """Render the calendar interface."""
+    return render(request, 'appointments/calendar.html')
