@@ -143,7 +143,7 @@ class NoteCreateView(RolePermissionRequiredMixin, CreateView):
     model = PatientNotes
     form_class = PatientNotesForm
     template_name = "patients_notes/note_form.html"
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Administrator']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -163,7 +163,7 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
     model = PatientNotes
     form_class = PatientNotesForm
     template_name = "patients_notes/note_form.html"
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Administrator']
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -188,13 +188,7 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
 class NotesDeleteView(RolePermissionRequiredMixin, DeleteView):
     model = PatientNotes 
     template_name='patients_notes/note_delete.html'
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Administrator']
     
     def get_success_url(self):
         return reverse('patients.details', kwargs={'pk': self.object.patient.pk})
-
-class RoleBasedSignupView(SignupView):
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.groups.filter(name__in=['Admin', 'Therapist']).exists():
-            return HttpResponseForbidden("You do not have permission to access this page.")
-        return super().dispatch(request, *args, **kwargs)

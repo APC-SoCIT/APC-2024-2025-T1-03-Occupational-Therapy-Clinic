@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 import datetime
 from .models import PatientInformation
 from .models import PatientNotes
+from accounts.forms import BaseSignupForm
 
 class PatientInformationForm(forms.ModelForm):
     class Meta:
@@ -34,7 +35,7 @@ class PatientInformationForm(forms.ModelForm):
             'condition': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-class CustomSignupForm(SignupForm):
+class PatientSignupForm(BaseSignupForm):
     first_name = forms.CharField(
         max_length=50,
         widget=forms.TextInput(attrs={'placeholder': 'First Name'})
@@ -64,11 +65,10 @@ class CustomSignupForm(SignupForm):
         max_length=50,
         widget=forms.TextInput(attrs={'placeholder': 'Medical Condition'})
     )
-    
 
     def save(self, request):
-        user = super(CustomSignupForm, self).save(request)
-
+        user = super().save(request, role="Patient") 
+        
         PatientInformation.objects.create(
             account_id=user,
             first_name=self.cleaned_data['first_name'],
@@ -79,8 +79,6 @@ class CustomSignupForm(SignupForm):
             province=self.cleaned_data['province'],
             condition=self.cleaned_data['condition'],
         )
-
-        user.groups.add(Group.objects.get(name='Patient'))
 
         return user
 

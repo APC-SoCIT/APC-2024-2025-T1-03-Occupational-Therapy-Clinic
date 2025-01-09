@@ -1,6 +1,5 @@
 from django.urls import path, include
 from . import views
-from .views import RoleBasedSignupView
 
 urlpatterns = [
     path('patients', views.PatientsListView.as_view(), name="patients.list"),
