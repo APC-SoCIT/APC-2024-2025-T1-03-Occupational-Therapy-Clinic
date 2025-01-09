@@ -1,8 +1,8 @@
 {% extends 'calendar_base.html' %}
 {% load static %}
 {% block customCSS %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'appointments/css/calendar.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css">
+<link rel="stylesheet" href="{% static 'appointments/css/calendar.css' %}">
 {% endblock %}
 
 {% block title %}Appointments Calendar{% endblock %}
@@ -42,31 +42,23 @@
 </div>
 {% endblock %}
 
-{% block customJS %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="{% static 'appointments/js/calendar.js' %}"></script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth', // Month view
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' // Month, Week, Day, List views
-            },
-            events: '/calendar/api/', // Your API endpoint for fetching events
-            eventClick: function(info) {
-                window.location.href = info.event.url; // Redirect on event click
-            },
-            themeSystem: 'bootstrap', // Use Bootstrap styling
-            editable: false, // Events are not editable by drag-and-drop
-            eventColor: '#378006', // Event color
+    // Initialize the calendar using the configuration
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeCalendar({
+            calendarId: 'calendar',
+            slotListId: 'slot-list',
+            selectedDatetimeId: 'selected-datetime',
+            submitButtonId: 'submit-appointment',
+            dateInputId: 'appointment-date',
+            timeInputId: 'appointment-time',
+            eventsApiUrl: '/appointments/calendar/api/',  // Update this with your API endpoint for appointments
+            availableSlotsApiUrl: '/appointments/available-slots/',  // Update this with your API endpoint for available slots
         });
-        calendar.render();
     });
-</script>
 
-{% endblock %}
+</script>

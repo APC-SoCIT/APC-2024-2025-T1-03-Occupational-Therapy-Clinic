@@ -15,6 +15,7 @@ from .models import RecurringAppointment
 from .forms import AppointmentForm
 from .forms import RecurringAppointmentForm
 from .utils import generate_recurring_appointments
+from datetime import datetime, timedelta
 
 # Check if the user is in the Therapist group
 def is_therapist(user):
@@ -53,14 +54,13 @@ def patient_dashboard(request):
 @login_required
 @user_passes_test(is_therapist)
 def create_appointment(request):
+    form = AppointmentForm()
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('therapist_dashboard')
-    else:
-        form = AppointmentForm()
-    return render(request, 'appointments/create_appointment.html')
+    return render(request, 'appointments/create_appointment.html', {'form': form})
 
 # Update Appointment (Therapists only)
 @login_required
@@ -203,22 +203,32 @@ def create_recurring_appointment(request):
 
 
 
-def appointments_calendar_api(request):
-    # Query all appointments
-    appointments = Appointment.objects.all()
 
-    # Prepare events in FullCalendar's expected format
+def appointments_calendar_api(request):
+    start = request.GET.get('start')  # Start date in ISO format
+    end = request.GET.get('end')  # End date in ISO format
+
+    # Parse the start and end dates (if they exist)
+    start_date = datetime.fromisoformat(start).date() if start else None
+    end_date = datetime.fromisoformat(end).date() if end else None
+
+    # Query appointments within the date range
+    if start_date and end_date:
+        appointments = Appointment.objects.filter(date__range=(start_date, end_date))
+    else:
+        appointments = Appointment.objects.all()
+
+    # Format the events for FullCalendar
     events = [
         {
-            "title": f"{appointment.patient.first_name} {appointment.patient.last_name} with {appointment.therapist.first_name} {appointment.therapist.last_name}",
-            "start": appointment.start_time.isoformat(),  # ISO format for the start time
-            "end": appointment.end_time.isoformat(),  # ISO format for the end time
-            "url": f"/appointment/{appointment.id}/update/",  # Optional: URL for event details
+            "title": f"Session with {appt.patient.username}",
+            "start": datetime.combine(appt.date, appt.start_time).isoformat(),
+            "end": (datetime.combine(appt.date, appt.start_time) + timedelta(hours=1)).isoformat(),
+            "url": f"/appointment/{appt.id}/update/"  # Optional: URL for event details
         }
-        for appointment in appointments
+        for appt in appointments
     ]
 
-    # Return JSON response
     return JsonResponse(events, safe=False)
 
     
