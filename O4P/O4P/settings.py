@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'appointments',
     'patients',
     'home',
     'core',
@@ -150,7 +151,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_FORMS = {
-    'signup': 'patients.forms.CustomSignupForm',
     'login': 'patients.forms.CustomLoginForm',
 }
 

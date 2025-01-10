@@ -1,9 +1,16 @@
 from django.views import View
 from django.http import Http404
 from patients.models import Guardian
+from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 
+class CustomLoginRequiredMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            raise PermissionDenied 
+        return super().dispatch(request, *args, **kwargs)
+    
 class UserRoleMixin(View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  
