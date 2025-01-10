@@ -52,7 +52,7 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
-        context['is_administrator'] = user.is_superuser
+        context['is_administrator'] = user.groups.filter(name='Administrator').exists()
 
         return context
     
@@ -75,6 +75,11 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
             raise PermissionDenied
        
         return super().get_queryset()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = self.object  
+        return context
 
 class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     model = PatientInformation
