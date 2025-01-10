@@ -1,13 +1,26 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 {% block content %}
-<h1>{{ note.title }}</h1>
-<h3>{{ note.session_date }}</h3>
+<div class="header-1">
+    <h1>{{ note.title }}</h1>
+    <h6 class="text-secondary">{{ note.session_date }}</h6>
+</div>
+<hr>
+<h6 class="text-secondary">by Therapist</h6>
 
-<p>{{ note.content }}</p>
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="mt-3">
+            <p>{{ note.content }}</p>
+        </div>
+    </div>
+</div>
 
-<a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary my-5">Back</a>
-{% if is_therapist or is_administrator%}
-<a href="{% url 'notes.update' pk=note.id %} " class="btn btn-secondary my-5">Edit</a>
-<a href="{% url 'notes.delete' pk=note.id %} " class="btn btn-danger my-5">Delete</a>
-{% endif %}
+<div>
+    <a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary my-5">Back</a>
+    {% if is_therapist or is_administrator%}
+    <a href="{% url 'notes.update' pk=note.id %} " class="btn btn-secondary my-5">Edit</a>
+    <a href="{% url 'notes.delete' pk=note.id %} " class="btn btn-danger my-5">Delete</a>
+    {% endif %}
+</div>
+
 {% endblock %}

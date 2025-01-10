@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 
 {% block content %}
     <body>
-        <h1>Welcome to Therapro!</h1>
+        <h1>Good Day, Mrs. Zoraida.</h1>
         <p>Today is {{ today }}</p>
         <p>Your Role: 
             {% for group in request.user.groups.all %}

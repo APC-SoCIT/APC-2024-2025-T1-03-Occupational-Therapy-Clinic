@@ -1,26 +1,43 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 
 {% block content %}
-  <h1 class="my-5 fw-bold">Patient List:</h1>
-  
-  <table class="table">
+<div class="header-1">
+  <h1>Patient List</h1>
+    {% if is_therapist or is_administrator %}
+  <a href="{% url 'account_signup' %}" class="btn">Create Patient Account</a>
+    {% endif %}
+</div>
+<div class="header-1">
+  <input class="search-bar" placeholder="Search..." type="text">
+</div>
+
+<div class="table-container">
+  <table class="custom-table">
     <thead>
       <tr>
-        <th>Full Name</th>
-        <th>Contact Number</th>
-        <th>Province</th>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Diagnosis</th>
+      <th>Sex</th>
+      <th>Date of Birth</th>
+      <th>Address</th>
+      <th>Contact Number</th>
       </tr>
     </thead>
     <tbody>
       {% for patient in patients %}
         <tr>
+          <td>{{ patient.id }}</td>
           <td>
             <a href="{% url 'patients.details' pk=patient.id %}" class="text-blue text-decoration-none">
               {{ patient.first_name }} {{ patient.last_name }}
             </a>
           </td>
-          <td>{{ patient.contact_number }}</td>
+          <td>{{ patient.condition }}</td>
+          <td></td>
+          <td></td>
           <td>{{ patient.city }}</td>
+          <td>{{ patient.contact_number }}</td>
         </tr>
       {% endfor %}
       
@@ -34,9 +51,7 @@
     </tbody>
   </table>
 
-  <div class="d-flex justify-content-between"> <a href="{% url 'welcome' %}" class="btn btn-secondary my-5">Back</a>
-    {% if is_therapist or is_administrator %}
-      <a href="{% url 'account_signup' %}" class="btn btn-secondary my-5">Create Patient Account</a>
-    {% endif %}
+  <div class="header-1">
+    <a href="{% url 'welcome' %}" class="btn">Back</a>
   </div>
 {% endblock %}
