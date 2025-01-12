@@ -181,7 +181,7 @@ def create_recurring_appointment(request):
             try:
                 generate_recurring_appointments(recurring_appointment)  # Generate appointments
                 messages.success(request, "Recurring appointments scheduled successfully!")
-                return redirect('therapist_dashboard')
+                return redirect('calendar_view')
             except ValueError as e:
                 # Handle conflicts
                 messages.error(request, str(e))
