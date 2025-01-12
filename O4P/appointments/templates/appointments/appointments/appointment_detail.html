@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Appointment Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Appointment Details</h1>
+    <table class="table">
+        <tr>
+            <th>Patient:</th>
+            <td>{{ appointment.patient.username }}</td>
+        </tr>
+        <tr>
+            <th>Therapist:</th>
+            <td>{{ appointment.therapist.username }}</td>
+        </tr>
+        <tr>
+            <th>Date:</th>
+            <td>{{ appointment.date }}</td>
+        </tr>
+        <tr>
+            <th>Start Time:</th>
+            <td>{{ appointment.start_time }}</td>
+        </tr>
+        <tr>
+            <th>End Time:</th>
+            <td>{{ appointment.end_time }}</td>
+        </tr>
+        <tr>
+            <th>Status:</th>
+            <td>{{ appointment.status }}</td>
+        </tr>
+    </table>
+
+    {% if user.groups.first.name == 'Therapist' %}
+    <!-- Button to Edit -->
+    <a href="{% url 'update_appointment' appointment.id %}" class="btn btn-primary">Update Appointment</a>
+    <!-- Button to Delete -->
+    <a href="{% url 'delete_appointment' appointment.id %}" class="btn btn-danger">Delete Appointment</a>
+    {% endif %}
+
+    {% if user.groups.first.name == 'Patient' %}
+    {% endif %}
+
+    <a href="{% url 'appointment_list' %}" class="btn btn-secondary mt-3">Back to Appointments</a>
+</div>
+{% endblock %}

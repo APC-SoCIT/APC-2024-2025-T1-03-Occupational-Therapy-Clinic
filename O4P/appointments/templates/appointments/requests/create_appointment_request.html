@@ -1,0 +1,29 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="first_name">First Name:</label>
+    <input type="text" name="first_name" id="first_name" required>
+
+    <label for="last_name">Last Name:</label>
+    <input type="text" name="last_name" id="last_name" required>
+
+    <label for="contact_number">Contact Number:</label>
+    <input type="text" name="contact_number" id="contact_number" required>
+
+    <label for="therapist">Select Therapist:</label>
+    <select name="therapist" id="therapist" required>
+        {% for therapist in therapists %}
+        <option value="{{ therapist.id }}">{{ therapist.username }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="requested_date">Requested Date:</label>
+    <input type="date" name="requested_date" id="requested_date" required>
+
+    <label for="requested_time">Requested Time:</label>
+    <input type="time" name="requested_time" id="requested_time" required>
+
+    <label for="notes">Additional Notes:</label>
+    <textarea name="notes" id="notes" rows="4"></textarea>
+
+    <button type="submit">Submit Request</button>
+</form>
