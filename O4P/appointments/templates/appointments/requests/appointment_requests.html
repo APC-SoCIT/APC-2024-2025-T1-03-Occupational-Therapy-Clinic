@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Manage Appointment Requests</h1>
+<ul>
+    {% for request in requests %}
+    <li>
+        <strong>Patient:</strong> 
+        {% if request.patient %}
+            {{ request.patient.username }}
+        {% else %}
+            {{ request.first_name }} {{ request.last_name }}
+        {% endif %}
+        <br>
+        <strong>Requested Date:</strong> {{ request.requested_date }}<br>
+        <strong>Requested Time:</strong> {{ request.requested_time }}<br>
+        <strong>Notes:</strong> {{ request.notes|default:"None provided" }}<br>
+
+        <form method="post" action="{% url 'update_request_status' request.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="approved">
+            <button type="submit">Approve</button>
+        </form>
+        <form method="post" action="{% url 'update_request_status' request.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="declined">
+            <button type="submit">Decline</button>
+        </form>
+    </li>
+    <hr>
+    {% empty %}
+    <li>No pending appointment requests found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

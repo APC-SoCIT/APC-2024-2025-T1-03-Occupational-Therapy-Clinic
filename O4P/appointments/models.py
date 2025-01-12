@@ -4,15 +4,15 @@ from datetime import timedelta, datetime
 
 class Appointment(models.Model):
     patient = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name="patient_appointments",
-        limit_choices_to={'groups__name': 'Patient'}
+        User,
+        on_delete=models.CASCADE,
+        related_name="appointments",
+        limit_choices_to={'groups__name': 'Patient'},
     )
     therapist = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
-        related_name="therapist_appointments",
+        related_name="therapist_appointments", 
         limit_choices_to={'groups__name': 'Therapist'}
     )
     date = models.DateField()
@@ -27,6 +27,7 @@ class Appointment(models.Model):
         default='scheduled'
     )
 
+
     def __str__(self):
         return f"{self.patient.username} with {self.therapist.username} on {self.date}"
 
@@ -37,15 +38,23 @@ class Appointment(models.Model):
 
 
 class AppointmentRequest(models.Model):
+    # For non-account patients
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    contact_number = models.CharField(max_length=15, blank=True, null=True)
+
+    # Optional reference to a user account
     patient = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name="appointment_requests",
-        limit_choices_to={'groups__name': 'Patient'}
+        User,
+        on_delete=models.SET_NULL,
+        related_name='appointment_requests',
+        limit_choices_to={'groups__name': 'Patient'},
+        blank=True,
+        null=True,
     )
     therapist = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name="therapist_requests",
         limit_choices_to={'groups__name': 'Therapist'}
     )
@@ -62,17 +71,7 @@ class AppointmentRequest(models.Model):
         default='pending'
     )
 
-    class Meta:
-        verbose_name = "Appointment Request"
-        verbose_name_plural = "Appointment Requests"
 
-        indexes = [
-            models.Index(fields=['patient']),
-            models.Index(fields=['therapist']),
-        ]
-
-    def __str__(self):
-        return f"Request by {self.patient.username} for {self.therapist.username} on {self.requested_date}"
 
 
 class RecurringAppointment(models.Model):
@@ -104,3 +103,19 @@ class RecurringAppointment(models.Model):
 
     def __str__(self):
         return f"{self.patient.username} - Recurring {self.recurrence_pattern} with {self.therapist.username}"
+
+class NonWorkingDay(models.Model):
+    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='non_working_days')
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.therapist.username} - {self.date}"
+    
+class AppointmentSlot(models.Model):
+    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointment_slots')
+    date = models.DateField()
+    start_time = models.TimeField()
+    is_booked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.date} - {self.start_time} ({'Booked' if self.is_booked else 'Available'})"
