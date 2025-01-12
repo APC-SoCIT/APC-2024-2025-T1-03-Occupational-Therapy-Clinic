@@ -1,6 +1,6 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f8f9fa; /* Light gray background */
     margin: 0;
     padding: 0;
@@ -8,116 +8,146 @@ body {
 
 .container {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-/* Calendar Styles */
+/* Calendar Container */
 #calendar {
     background: white;
-    border: 1px solid #c63030;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-/* Disabled Days */
-.fc-daygrid-day.disabled-day {
-    background-color: #f5f5f5;
-    color: #ccc;
-    pointer-events: none;
-    cursor: not-allowed;
+/* Calendar Header */
+.fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-/* Selected Cell */
-.selected-cell {
-    background-color: #007bff !important; /* Bootstrap primary color */
-    color: white !important;
+.fc-toolbar h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
 }
 
-/* Slot List Styles */
-#slot-list {
-    margin-top: 10px;
-    padding: 0;
-    list-style: none;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    max-height: 300px;
-    overflow-y: auto;
+.fc-button {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-#slot-list .list-group-item {
-    padding: 10px 15px;
-    border-bottom: 1px solid #f0f0f0;
+.fc-button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Day Cells */
+.fc-daygrid-day {
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
-#slot-list .list-group-item:last-child {
-    border-bottom: none;
-}
-
-/* Hover and Active States */
-#slot-list .list-group-item:hover {
+.fc-daygrid-day:hover {
     background-color: #e9ecef;
 }
 
-#slot-list .list-group-item.active {
+.fc-day-today {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+    border: 1px solid #007bff;
+}
+
+/* Event Styles */
+.fc-event {
+    background-color: #007bff !important;
+    color: #fff !important;
+    font-size: 0.85rem;
+    padding: 5px;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+}
+
+.fc-event:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Appointments List */
+#appointment-list {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+#appointment-list .list-group-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#appointment-list .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+#appointment-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Buttons */
+.filter-buttons .btn {
+    margin: 0 5px;
+    padding: 5px 15px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.filter-buttons .btn:hover {
     background-color: #007bff;
     color: white;
 }
 
-/* Selected Date and Time Display */
-#selected-datetime {
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+.action-buttons .btn {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 15px;
+    margin: 5px 0;
     border-radius: 5px;
+    transition: all 0.3s ease;
 }
 
-#selected-datetime p {
-    margin: 0;
-    font-size: 14px;
-    color: #333;
-}
-
-/* Button Styles */
-.btn {
-    width: 100%;
-    font-size: 16px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.btn-primary:hover {
+.action-buttons .btn:hover {
     background-color: #0056b3;
-    border-color: #004085;
+    color: white;
 }
 
-.btn-primary:disabled {
-    background-color: #cccccc;
-    border-color: #cccccc;
-    cursor: not-allowed;
-}
-
-/* Scrollbar for Slot List */
-#slot-list::-webkit-scrollbar {
+/* Scrollbar for Appointments List */
+#appointment-list::-webkit-scrollbar {
     width: 10px;
 }
 
-#slot-list::-webkit-scrollbar-track {
+#appointment-list::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
 }
 
-#slot-list::-webkit-scrollbar-thumb {
+#appointment-list::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 10px;
 }
 
-#slot-list::-webkit-scrollbar-thumb:hover {
+#appointment-list::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
