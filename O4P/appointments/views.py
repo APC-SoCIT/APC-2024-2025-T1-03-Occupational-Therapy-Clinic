@@ -6,7 +6,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.db import transaction
 import json
+from openai import PermissionDeniedError
 from .models import NonWorkingDay
 from .models import Appointment
 from .models import AppointmentRequest
@@ -14,6 +16,7 @@ from .models import AppointmentSlot
 from .models import RecurringAppointment
 from .forms import AppointmentForm
 from .forms import RecurringAppointmentForm
+from .forms import AppointmentRequestForm
 from .utils import generate_recurring_appointments
 from datetime import datetime, timedelta
 
@@ -25,42 +28,21 @@ def is_therapist(user):
 def is_patient(user):
     return user.groups.filter(name="Patient").exists()
 
-# Therapist Dashboard
-class TherapistDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "appointments/therapist_dashboard.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        appointments = Appointment.objects.filter(therapist=self.request.user)
-        # Add appointments as events for the calendar
-        context['appointments'] = appointments
-        context['events'] = [
-            {
-                "title": f"Appointment with {appt.patient.username}",
-                "start": f"{appt.date}T{appt.start_time}",
-            }
-            for appt in appointments
-        ]
-        return context
-
-# Patient Dashboard
-@login_required
-@user_passes_test(is_patient)
-def patient_dashboard(request):
-    appointments = Appointment.objects.filter(patient=request.user)
-    return render(request, 'appointments/patient_dashboard.html', {'appointments': appointments})
-
 # Create Appointment (Therapists only)
 @login_required
 @user_passes_test(is_therapist)
 def create_appointment(request):
-    form = AppointmentForm()
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('therapist_dashboard')
-    return render(request, 'appointments/create_appointment.html', {'form': form})
+            return render(request, 'appointments/appointments/appointment_success.html')
+    else:
+        form = AppointmentForm()
+    return render(request, 'appointments/appointments/create_appointment.html', {'form': form})
+
+def appointment_success(request):
+    return render(request, 'appointments/appointments/appointment_success.html')
 
 # Update Appointment (Therapists only)
 @login_required
@@ -71,10 +53,10 @@ def update_appointment(request, pk):
         form = AppointmentForm(request.POST, instance=appointment)
         if form.is_valid():
             form.save()
-            return redirect('therapist_dashboard')
+            return redirect('appointment_list')
     else:
         form = AppointmentForm(instance=appointment)
-    return render(request, 'appointments/update_appointment.html', {'form': form, 'appointment': appointment})
+    return render(request, 'appointments/appointments/update_appointment.html', {'form': form, 'appointment': appointment})
 
 # Delete Appointment (Therapists only)
 @login_required
@@ -83,54 +65,68 @@ def delete_appointment(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk, therapist=request.user)
     if request.method == 'POST':
         appointment.delete()
-        return redirect('therapist_dashboard')
-    return render(request, 'appointments/delete_appointment.html', {'appointment': appointment})
+        return redirect('appointment_list')
+    return render(request, 'appointments/appointments/delete_appointment.html', {'appointment': appointment})
 
-
-# Appointment list for therapists
 @login_required
-@user_passes_test(is_therapist)
 def appointment_list(request):
-    appointments = Appointment.objects.filter(therapist=request.user)
-    return render(request, 'appointments/appointment_list.html', {'appointments': appointments})
+    user = request.user
 
-# Appointment list for patients
-@login_required
-@user_passes_test(is_patient)
-def patient_appointment_list(request):
-    appointments = Appointment.objects.filter(patient=request.user)
-    return render(request, 'appointments/appointment_list.html', {'appointments': appointments})
+    if user.groups.filter(name='Therapist').exists():
+        # Therapist: Show appointments where they are the therapist
+        appointments = Appointment.objects.filter(therapist=user)
+    elif user.groups.filter(name='Patient').exists():
+        # Patient: Show appointments where they are the patient
+        appointments = Appointment.objects.filter(patient=user)
+    else:
+        appointments = Appointment.objects.none()
 
-# Create Appointment Request (Patient)
+    return render(request, 'appointments/appointments/appointment_list.html', {'appointments': appointments})
+
 @login_required
-@user_passes_test(is_patient)
+def appointment_detail(request, pk):
+    # Fetch the appointment if the logged-in user has access to it
+    appointment = get_object_or_404(Appointment, pk=pk)
+
+    # Ensure the user is authorized to view this appointment
+    if request.user != appointment.patient and request.user != appointment.therapist:
+        raise PermissionDeniedError
+
+    return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
+
 def create_appointment_request(request):
     if request.method == 'POST':
         therapist_id = request.POST.get('therapist')
         requested_date = request.POST.get('requested_date')
         requested_time = request.POST.get('requested_time')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        contact_number = request.POST.get('contact_number')
         notes = request.POST.get('notes')
-        
+
         therapist = get_object_or_404(User, id=therapist_id, groups__name="Therapist")
         AppointmentRequest.objects.create(
-            patient=request.user,
+            first_name=first_name,
+            last_name=last_name,
+            contact_number=contact_number,
             therapist=therapist,
             requested_date=requested_date,
             requested_time=requested_time,
-            notes=notes
+            notes=notes,
         )
-        return redirect('patient_dashboard')
-    
+        return redirect('request_success')
+
     therapists = User.objects.filter(groups__name="Therapist")
-    return render(request, 'appointments/create_appointment_request.html', {'therapists': therapists})
+    return render(request, 'appointments/requests/create_appointment_request.html', {'therapists': therapists})
+
 
 # View and Manage Appointment Requests (Therapist)
-@login_required
+login_required
 @user_passes_test(lambda user: user.groups.filter(name='Therapist').exists())
 def manage_appointment_requests(request):
-    # Show only pending appointment requests
-    appointment_requests = AppointmentRequest.objects.filter(therapist=request.user, status='pending')
-    return render(request, 'appointments/appointment_requests.html', {'appointment_requests': appointment_requests})
+    # Fetch only pending appointment requests
+    requests = AppointmentRequest.objects.filter(status='pending', therapist=request.user)
+    return render(request, 'appointments/requests/appointment_requests.html', {'requests': requests})
 
 # Update Appointment Request Status
 @login_required
@@ -146,40 +142,35 @@ def update_request_status(request, request_id):
 
         # If approved, create a new Appointment
         if new_status == 'approved':
+            # Try to find an existing patient User instance
+            patient_user = User.objects.filter(
+                first_name=appointment_request.first_name,
+                last_name=appointment_request.last_name,
+            ).first()
+
+            if not patient_user:
+                # Handle the case for non-account patients
+                patient_user = User.objects.create(
+                    username=f"{appointment_request.first_name.lower()}_{appointment_request.last_name.lower()}_{appointment_request.id}",
+                    first_name=appointment_request.first_name,
+                    last_name=appointment_request.last_name,
+                    is_active=False,  # Ensure this account cannot be used for login
+                )
+
+            # Create the appointment
             Appointment.objects.create(
-                patient=appointment_request.patient,
+                patient=patient_user,
                 therapist=appointment_request.therapist,
                 date=appointment_request.requested_date,
                 start_time=appointment_request.requested_time,
-                status='scheduled'
+                status='scheduled',
             )
 
         return redirect('manage_appointment_requests')
-    
 
-@login_required
-@user_passes_test(lambda user: user.groups.filter(name='Therapist').exists())
-def update_request_status(request, request_id):
-    appointment_request = get_object_or_404(AppointmentRequest, id=request_id, therapist=request.user)
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
+def request_success(request):
+    return render(request, 'appointments/requests/request_success.html')
 
-        # Update the AppointmentRequest status
-        appointment_request.status = new_status
-        appointment_request.save()
-
-        # If approved, create a new Appointment
-        if new_status == 'approved':
-            Appointment.objects.create(
-                patient=appointment_request.patient,
-                therapist=appointment_request.therapist,
-                date=appointment_request.requested_date,
-                start_time=appointment_request.requested_time,
-                status='scheduled'
-            )
-
-        return redirect('manage_appointment_requests')
-    
 @login_required
 @user_passes_test(is_therapist)
 def create_recurring_appointment(request):
@@ -199,11 +190,11 @@ def create_recurring_appointment(request):
             messages.error(request, "Invalid form submission.")
     else:
         form = RecurringAppointmentForm()
-    return render(request, 'appointments/create_recurring_appointment.html', {'form': form})
+    return render(request, 'appointments/recurring/create_recurring_appointment.html', {'form': form})
 
 
 
-
+@login_required
 def appointments_calendar_api(request):
     start = request.GET.get('start')  # Start date in ISO format
     end = request.GET.get('end')  # End date in ISO format
@@ -218,13 +209,30 @@ def appointments_calendar_api(request):
     else:
         appointments = Appointment.objects.all()
 
+    # Get the logged-in user
+    user = request.user
+
+        # Filter appointments based on user role
+    if user.groups.filter(name='Therapist').exists():
+        appointments = Appointment.objects.filter(
+            therapist=user,
+            date__range=(start_date, end_date) if start_date and end_date else None,
+        )
+    elif user.groups.filter(name='Patient').exists():
+        appointments = Appointment.objects.filter(
+            patient=user,
+            date__range=(start_date, end_date) if start_date and end_date else None,
+        )
+    else:
+        appointments = Appointment.objects.none()  # No appointments for other roles
+
     # Format the events for FullCalendar
     events = [
         {
             "title": f"Session with {appt.patient.username}",
             "start": datetime.combine(appt.date, appt.start_time).isoformat(),
             "end": (datetime.combine(appt.date, appt.start_time) + timedelta(hours=1)).isoformat(),
-            "url": f"/appointment/{appt.id}/update/"  # Optional: URL for event details
+            "url": f"/appointment/{appt.id}"  # Optional: URL for event details
         }
         for appt in appointments
     ]
@@ -267,3 +275,45 @@ def get_available_slots(request):
             available_slots.append(f"{hour:02}:{minute:02}")
 
     return JsonResponse({"slots": available_slots})
+
+@login_required
+def patient_appointments(request):
+    # Ensure the user is in the 'Patient' group
+    if not request.user.groups.filter(name="Patient").exists():
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+    
+    # Fetch appointments assigned to the logged-in patient
+    appointments = Appointment.objects.filter(patient=request.user)
+    
+    # Serialize data for FullCalendar
+    events = [
+        {
+            "title": f"Therapist: {appt.therapist.username}",
+            "start": f"{appt.date}T{appt.start_time}",
+            "end": f"{appt.date}T{appt.end_time}",
+            "status": appt.status,
+        }
+        for appt in appointments
+    ]
+    return JsonResponse(events, safe=False)
+
+@login_required
+def therapist_appointments(request):
+    # Ensure the user is in the 'Therapist' group
+    if not request.user.groups.filter(name="Therapist").exists():
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+    
+    # Fetch appointments assigned to the logged-in therapist
+    appointments = Appointment.objects.filter(therapist=request.user)
+    
+    # Serialize data for FullCalendar
+    events = [
+        {
+            "title": f"Patient: {appt.patient.username}",
+            "start": f"{appt.date}T{appt.start_time}",
+            "end": f"{appt.date}T{appt.end_time}",
+            "status": appt.status,
+        }
+        for appt in appointments
+    ]
+    return JsonResponse(events, safe=False)
