@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Back to Game Library Button -->
+<div class="mb-3" style="margin-top: 10px;">
+    <a href="{% url 'game_library' %}" class="btn" style="background-color: gray; color: white;">Back to Game Library</a>
+</div>
+
+<div class="my-5" style="width: 100%; max-width: 2000px; margin: 0 auto;"> <!-- Explicitly set width and max-width -->
+    <h2 class="fw-bold">Admin Game Library</h2>
+    <p>Manage your games here:</p>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Game ID</th>
+                    <th scope="col">Thumbnail</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Genre</th>
+                    <th scope="col">Release Date</th>
+                    <th scope="col">Developer</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Game Link</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.id }}</td>
+                    <td>
+                        {% if game.thumbnail %}
+                        <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 100px; max-width: 100px;">
+                        {% else %}
+                        <span class="text-muted">No Thumbnail</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ game.title }}</td>
+                    <td>{{ game.genre }}</td>
+                    <td>{{ game.release_date }}</td>
+                    <td>{{ game.developer }}</td>
+                    <td class="text-wrap">{{ game.description }}</td>
+                    <td><a href="{{ game.game_link }}" target="_blank">Play</a></td>
+                    <td>
+                        <a href="{% url 'edit_game' game.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{% url 'delete_game' game.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Add New Game button only at the bottom -->
+    <a href="{% url 'add_game' %}" class="btn btn-success">Add New Game</a>
+</div>
+
+<style>
+    .table {
+        table-layout: auto; /* Allows columns to adjust dynamically */
+    }
+
+    .table td, .table th {
+        white-space: normal; /* Allows text wrapping inside cells */
+        word-wrap: break-word; /* Ensures long text wraps */
+        text-align: center; /* Centers content for better readability */
+        vertical-align: middle; /* Vertically centers the content */
+    }
+
+    .btn {
+        margin: 0 5px; /* Adds spacing between buttons */
+    }
+
+    .thead-light th {
+        background-color: #f8f9fa; /* Light background for header */
+    }
+
+    img {
+        border-radius: 8px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
