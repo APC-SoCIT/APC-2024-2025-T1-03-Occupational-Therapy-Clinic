@@ -2,13 +2,14 @@ from django.db import models, migrations
 
 def apply_migration(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
-    Group.objects.bulk_create([
-        Group(name=u'Patient'),
-        Group(name=u'Guardian'),
-        Group(name=u'Assistant'),
-        Group(name=u'Therapist'),
-        Group(name=u'Administrator'),
-    ])
+    
+    groups_to_create = [
+        'Patient', 'Guardian', 'Assistant', 'Therapist', 'Administrator'
+    ]
+    
+    for group_name in groups_to_create:
+        if not Group.objects.filter(name=group_name).exists():
+            Group.objects.create(name=group_name)
 
 def revert_migration(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
