@@ -142,6 +142,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'games/media')
+
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/welcome'
 
@@ -151,6 +155,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_FORMS = {
+    'signup': 'patients.forms.CustomSignupForm',
     'login': 'patients.forms.CustomLoginForm',
 }
 
@@ -167,3 +172,5 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
 LOGOUT_REDIRECT_URL = '/auth/login'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

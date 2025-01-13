@@ -1,0 +1,13 @@
+{% extends "home_navbar.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Delete Game</h2>
+    <p>Are you sure you want to delete "{{ game.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'game_library' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
