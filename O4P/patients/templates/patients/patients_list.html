@@ -16,7 +16,7 @@
         <tr>
           <td>
             <a href="{% url 'patients.details' pk=patient.id %}" class="text-blue text-decoration-none">
-              {{ patient.first_name }} {{ patient.last_name }}
+              {{ patient.first_name }} {{patient.middle_name}} {{ patient.last_name }}
             </a>
           </td>
           <td>{{ patient.contact_number }}</td>

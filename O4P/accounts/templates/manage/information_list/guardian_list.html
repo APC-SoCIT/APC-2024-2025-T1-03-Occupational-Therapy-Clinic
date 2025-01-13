@@ -17,7 +17,7 @@
         <tr>
           <td>
             <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-blue text-decoration-none">
-              {{ guardian.first_name }} {{ guardian.last_name }}
+              {{ guardian.first_name }} {{guardian.middle_name}} {{ guardian.last_name }}
             </a>
           </td>
           <td>{{ guardian.contact_number }}</td>

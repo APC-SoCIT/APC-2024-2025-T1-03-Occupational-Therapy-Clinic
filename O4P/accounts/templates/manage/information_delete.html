@@ -5,9 +5,8 @@
     <p>Are you sure you want to delete "{{object.first_name}} {{object.middle_name}} {{object.last_name}}"?</p>
     <p>This action cannot be undone.</p>
 
+{% if role == 'guardian'%}
 {% if guardian %}
-    <h2>Guardian Details</h2>
-    <p>Guardian Account ID: {{ guardian_info.account_id}}</p>
 {% else %}
     <p>No Guardian information found.</p>
 {% endif %}
@@ -21,6 +20,7 @@
     </ul>
 {% else %}
     <p>No patients are currently associated with this guardian.</p>
+{% endif %}
 {% endif %}
 
     <input type="submit" class="btn btn-danger" value="Confirm"/>
