@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
+from accounts.models import BaseInformation
 # Create your models here.
 
 class Guardian(models.Model):
@@ -9,24 +10,15 @@ class Guardian(models.Model):
     def __str__(self):
         return self.user.username
     
-class PatientInformation(models.Model):
-    account_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="information")
-    first_name = models.CharField(max_length=50) 
-    last_name = models.CharField(max_length=50)  
-    date_of_birth = models.DateField()             
-    contact_number = models.CharField(max_length=15)
-    city = models.CharField(max_length=50)           
-    province = models.CharField(max_length=50)                  
+class PatientInformation(BaseInformation):              
     condition = models.CharField(max_length=50)    
-
-    guardian = models.ForeignKey(Guardian, on_delete=models.CASCADE, related_name="patients", null=True)
+    guardian = models.ForeignKey(Guardian, on_delete=models.CASCADE, related_name="%(class)s_information", null=True)
     
     class Meta:
         verbose_name = "Patient Information"
         verbose_name_plural = "Patient Information"
 
         indexes = [
-        models.Index(fields=['account_id']),
         models.Index(fields=['guardian']),
     ]
     
