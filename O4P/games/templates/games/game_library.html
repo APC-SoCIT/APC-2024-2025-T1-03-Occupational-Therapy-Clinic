@@ -3,9 +3,16 @@
 
 {% block content %}
 <div class="container my-5">
+    <!-- Admin Mode Button -->
+    {% if request.user.is_superuser %}
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'admin_game_library' %}" class="btn btn-secondary">Admin Mode</a>
+    </div>
+    {% endif %}
+
     <!-- Title Section -->
     <div class="text-start mb-4">
-        <h2 class="fw-bold">Games</h2>
+        <h2 class="fw-bold">Game Library</h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
     </div>
 
@@ -15,15 +22,19 @@
         <div class="d-flex overflow-hidden align-items-center" id="game-cards-container">
             {% for game in games %}
             <div class="card mx-2 bg-light">
-                <a href="https://www.8thwall.com/ruffleskeiser/" class="text-decoration-none">
+                <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
                     <div class="card-body text-center">
                         <div class="mb-3">
+                            {% if game.thumbnail %}
+                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px; max-width: 100%;">
+                            {% else %}
                             <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded">
                                 <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
                             </div>
+                            {% endif %}
                         </div>
-                        <h5 class="fw-bold text-dark">{{ game.name }}</h5>
-                        <p class="text-muted">{{ game.description }}</p>
+                        <h5 class="fw-bold text-dark">{{ game.title }}</h5>
+                        <p class="text-muted">{{ game.genre }}</p>
                     </div>
                 </a>
             </div>
