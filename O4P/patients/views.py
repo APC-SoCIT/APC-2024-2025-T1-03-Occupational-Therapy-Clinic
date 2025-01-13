@@ -12,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 from allauth.account.views import SignupView
 from django.http import HttpResponseForbidden
@@ -75,6 +76,11 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
             raise PermissionDenied
        
         return super().get_queryset()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = self.object
+        return context
 
 class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     model = PatientInformation

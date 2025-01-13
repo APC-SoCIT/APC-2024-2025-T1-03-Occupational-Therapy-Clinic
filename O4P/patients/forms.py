@@ -92,6 +92,15 @@ class PatientNotesForm(forms.ModelForm):
         model = PatientNotes
         fields = ['title', 'session_date', 'content']
         widgets = {
-            'session_date': forms.DateInput(attrs={'type': 'date'}),
-            'content': forms.Textarea(attrs={'rows': 4}),
+            'title': forms.TextInput(attrs={
+                'style': 'width: 92%;',
+                }),
+            'session_date': forms.DateInput(attrs={
+                'type': 'date',
+                'style': 'width: 80%;',
+                }),
+            'content': forms.Textarea(attrs={
+                'rows': 4,
+                'style': 'width: 100%;',
+                }),
         }

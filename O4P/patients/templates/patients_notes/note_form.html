@@ -1,11 +1,53 @@
-{% extends 'dashboard_navbar.html' %}
+{% extends 'form_navbar.html' %}
 
 {% block content %}
-  <h2>Create Patient Note</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary my-5">Back</a>
-  </form>
+<div class="container-fluid">
+  <div class="container">
+    <div class="header-1 mb-3">
+      <h1>Create Progress Notes for {{ patient.first_name }}</h1>
+      <div>
+        <a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary">Back</a>
+        <button type="submit" form="nForm" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+
+    <form id="nForm" method="POST"> 
+      {% csrf_token %} 
+
+      <div class="row">
+          <div class="col-lg-12">
+              <!-- Basic information -->
+              <div class="card mb-4">
+                  <div class="card-body">
+                      <h3 class="h6 mb-3 text-secondary">Note</h3>
+                      <div class="row">
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">Title:</label>
+                                  {{ form.title }}
+                              </div>
+                          </div>
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">Session Date:</label>
+                                  {{ form.session_date }}
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <div class="mb-3">
+                                  {{ form.content }}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>
 {% endblock %}

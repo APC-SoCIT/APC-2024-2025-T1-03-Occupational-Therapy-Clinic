@@ -7,7 +7,9 @@
         <div>
             {% if is_therapist or is_administrator%}
                 <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary">Edit</a>
-                <a href="{% url 'patients.delete' pk=patient.id %}" class="btn btn-danger">Delete</a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
             {% endif %}
         </div>
     </div>
@@ -112,13 +114,37 @@
         </div>
     </div>
 
-    <a href="
-    {% if is_patient %} 
-        {% url 'welcome' %}
-    {% else %} 
-        {% url 'patients.list' %}
-    {% endif %}" 
-    class="btn btn-secondary my-5">
-    Back
-    </a>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "{{ patient.first_name }} {{ patient.last_name }}"?</p>
+                    <p>This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'patients.delete' pk=patient.id %}">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-danger" value="Confirm">
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="my-3">
+        <a href="
+        {% if is_patient %} 
+            {% url 'welcome' %}
+        {% else %} 
+            {% url 'patients.list' %}
+        {% endif %}" 
+        class="btn btn-secondary">Back</a>
+    </div>
+    
+
 {% endblock %}
