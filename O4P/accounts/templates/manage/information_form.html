@@ -1,15 +1,110 @@
-{% extends "base.html" %}
+{% extends "form_navbar.html" %}
+
 {% block content %}
-  <h2>Edit {{ role|title }} Information</h2>
-  
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
+<div class="container-fluid">
+  <div class="container">
+    <div class="header-1">
+      <h2>Edit {{ role|title }} Information</h2>
+      <div>
+          <a href="{% url role|add:'_detail' pk=object.id %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" form="iForm" class="btn btn-primary">Save</button>
+      </div>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-  </form>
+    <form id="iForm" method="POST"> 
+      {% csrf_token %} 
 
-  <div class="d-flex justify-content-between">
-    <a href="{% url role|add:'_detail' pk=object.id %}" class="btn btn-secondary my-5">Back</a>
+      <div class="row">
+          <div class="col-lg-8">
+              <!-- Basic information -->
+              <div class="card mb-4">
+                  <div class="card-body">
+                      <h3 class="h6 mb-3 text-secondary">Basic Information</h3>
+                      <div class="row">
+                          <div class="col-lg-4">
+                              <div class="mb-3">
+                                  <label class="form-label">First Name</label>
+                                  {{ form.first_name }}
+                              </div>
+                          </div>
+                          <div class="col-lg-4">
+                              <div class="mb-3">
+                                  <label class="form-label">Middle Name</label>
+                                  {{ form.middle_name }}
+                              </div>
+                          </div>
+                          <div class="col-lg-4">
+                              <div class="mb-3">
+                                  <label class="form-label">Last Name</label>
+                                  {{ form.last_name }}
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">Diagnosis</label>
+                                  {{ form.condition }}
+                              </div>
+                          </div>
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">Date of Birth</label>
+                                  {{ form.date_of_birth }}
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <div class="mb-3">
+                                  <label class="form-label">Contact Number</label>
+                                  {{ form.contact_number }}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Address -->
+              <div class="card mb-4">
+                  <div class="card-body">
+                      <h3 class="h6 mb-4 text-secondary">Address</h3>
+                      <div class="row">
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">City</label>
+                                  {{ form.city }}
+                              </div>
+                          </div>
+                          <div class="col-lg-6">
+                              <div class="mb-3">
+                                  <label class="form-label">Province</label>
+                                  {{ form.province }}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Right side -->
+          <div class="col-lg-4">
+              <!-- Assigned Guardian -->
+              <div class="card mb-4">
+                  <div class="card-body">
+                      <h3 class="h6">Assigned Guardian</h3>
+                      {{ form.assigned_guardian }}
+                  </div>
+              </div>
+          </div>
+      </div>
+    </form>
+    
+    {% if form.errors %}
+    <div class="alert alert-danger my-5">
+        {{ form.errors.as_text }}
+    </div>
+    {% endif %}
   </div>
+</div>
 {% endblock %}
