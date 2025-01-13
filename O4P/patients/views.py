@@ -159,6 +159,7 @@ class NoteCreateView(RolePermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         patient = get_object_or_404(PatientInformation, id=self.kwargs['pk'])
         form.instance.patient = patient
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):

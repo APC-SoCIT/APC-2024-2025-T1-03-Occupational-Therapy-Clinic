@@ -76,18 +76,21 @@ class BaseSignupForm(SignupForm):
         }
 
         if role == "Therapist":           
+            specialization = self.cleaned_data.get("specialization")
+            
             TherapistInformation.objects.create(
                 **base_information_data,
-                specialization=self.cleaned_data.get("specialization") 
+                specialization=specialization 
             )
         elif role == "Assistant":
             AssistantInformation.objects.create(
                 **base_information_data
             )
         elif role == "Guardian":
+            relationship_to_patient = self.cleaned_data.get("relationship_to_patient")
             GuardianInformation.objects.create(
                 **base_information_data,
-                relationship_to_patient=""  
+                relationship_to_patient=relationship_to_patient  
             )
         elif role == "Patient":
             PatientInformation.objects.create(
@@ -99,13 +102,14 @@ class BaseSignupForm(SignupForm):
         return user
 
 class TherapistSignupForm(BaseSignupForm):
-    specialty = forms.CharField(
+    specialization = forms.CharField(
                     max_length=50,
                     widget=forms.TextInput(attrs={'placeholder': 'Specialty'}),
                     required=True
                                 )
     def save(self, request):
         user = super().save(request, role="Therapist") 
+        
         return user
 
 class AssistantSignupForm(BaseSignupForm):
@@ -133,7 +137,7 @@ class GuardianSignupForm(BaseSignupForm):
         )
 
         self.fields['assigned_patients'].label_from_instance = lambda obj: (
-            f"{obj.first_name} {obj.last_name} ({obj.account_id.email})"
+            f"{obj.id}{obj.first_name} {obj.last_name} {obj.account_id.email}"
         )
     
     def save(self, request):
@@ -155,7 +159,7 @@ class TherapistInformationForm(forms.ModelForm):
     class Meta:
         model = TherapistInformation
         fields = [
-            'first_name', 'last_name', 'date_of_birth', 
+            'first_name', 'middle_name', 'last_name', 'date_of_birth', 
             'contact_number', 'city', 'province', 
             'specialization'
         ]
@@ -167,7 +171,7 @@ class AssistantInformationForm(forms.ModelForm):
     class Meta:
         model = AssistantInformation
         fields = [
-            'first_name', 'last_name', 'date_of_birth', 
+            'first_name',  'middle_name', 'last_name', 'date_of_birth', 
             'contact_number', 'city', 'province'
         ]
         widgets = {
@@ -178,8 +182,8 @@ class GuardianInformationForm(forms.ModelForm):
     class Meta:
         model = GuardianInformation
         fields = [
-            'first_name', 'last_name', 'date_of_birth', 
-            'contact_number', 'city', 'province', 
+            'first_name', 'middle_name', 'last_name', 'date_of_birth', 
+            'contact_number', 'city', 'province',
             'relationship_to_patient'
         ]
         widgets = {

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="my-5 fw-bold">Therapist List:</h1>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Contact Number</th>
+        <th>City</th>
+        <th>Province</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for therapist in therapists %}
+        <tr>
+          <td>
+            <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-blue text-decoration-none">
+              {{ therapist.first_name }} {{ therapist.last_name }}
+            </a>
+          </td>
+          <td>{{ therapist.contact_number }}</td>
+          <td>{{ therapist.city }}</td>
+          <td>{{ therapist.province }}</td>
+        </tr>
+      {% endfor %}
+      
+      {% if not therapists %}
+        <tr>
+          <td colspan="4">
+            <p>No therapists available.</p>  
+          </td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'role_list' %}" class="btn btn-secondary my-5">Back</a>
+    {% if is_administrator %}
+      <a href="{% url 'therapist_signup' %}" class="btn btn-primary my-5">Create therapist Account</a>
+    {% endif %}
+  </div>
+{% endblock %}

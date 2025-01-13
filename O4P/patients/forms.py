@@ -8,11 +8,12 @@ class PatientInformationForm(forms.ModelForm):
     class Meta:
         model = PatientInformation
         fields = [
-            'first_name', 'last_name', 'date_of_birth', 
-            'contact_number', 'city', 'province', 'condition'
+            'first_name', 'middle_name', 'last_name', 'date_of_birth', 
+            'contact_number', 'city', 'province', 'condition', 'guardian'
         ]
         labels = {
             'first_name': 'First Name',
+            'middle_name': 'Middle Name',
             'last_name': 'Last Name',
             'date_of_birth': 'Date of Birth',
             'contact_number': 'Contact Number',
@@ -22,6 +23,7 @@ class PatientInformationForm(forms.ModelForm):
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
@@ -37,7 +39,7 @@ class PatientSignupForm(BaseSignupForm):
     )
 
     def save(self, request):
-        user = super().save(request, role="Patient") 
+        user = super().save(request, role="Patient")  
         return user
 
 class CustomLoginForm(LoginForm):

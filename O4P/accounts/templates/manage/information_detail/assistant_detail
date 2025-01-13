@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>{{ assistant.first_name }} {% if assistant.middle_name %}{{ assistant.middle_name }} {% endif %}{{ assistant.last_name }}</h1>
+    <p>Date of Birth: <span>{{ assistant.date_of_birth }}</span></p>
+    <p>Contact Number: <span>{{ assistant.contact_number }}</span></p>
+    <p>City: <span>{{ assistant.city }}</span></p>
+    <p>Province: <span>{{ assistant.province }}</span></p>
+
+    <a href=" {% url 'assistant_list' %}" 
+    class="btn btn-secondary my-5">
+    Back
+    </a>
+
+    {% if is_therapist or is_administrator%}
+        <a href="{% url 'assistant_edit' pk=assistant.id %}" class="btn btn-secondary my-5">Edit</a>
+        <a href="{% url 'assistant_delete' pk=assistant.id %}" class="btn btn-danger my-5">Delete</a>
+    {% endif %}
+{% endblock %}

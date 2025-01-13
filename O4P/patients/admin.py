@@ -18,4 +18,9 @@ class GuardianAdmin(admin.ModelAdmin):
 
 @admin.register(PatientNotes)
 class PatientNotesAdmin(admin.ModelAdmin):
-    list_display = ('id', 'patient_id', 'title', 'session_date', 'content')
+    list_display = ('id', 'patient_id', 'author', 'title', 'session_date', 'content')
+    
+    def author_username(self, obj):
+        return obj.author.username if obj.author else None
+    author_username.admin_order_field = 'author'  # Allows sorting by author
+    author_username.short_description = 'Author'  # Column header name in admin

@@ -12,7 +12,7 @@ class Guardian(models.Model):
     
 class PatientInformation(BaseInformation):              
     condition = models.CharField(max_length=50)    
-    guardian = models.ForeignKey(Guardian, on_delete=models.CASCADE, related_name="%(class)s_information", null=True)
+    guardian = models.ForeignKey(Guardian, on_delete=models.SET_NULL, related_name="%(class)s_information", null=True, blank=True)
     
     class Meta:
         verbose_name = "Patient Information"
@@ -27,6 +27,7 @@ class PatientInformation(BaseInformation):
 
 class PatientNotes(models.Model):
     patient = models.ForeignKey(PatientInformation, on_delete=models.CASCADE, related_name="notes")
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=100)  
     session_date = models.DateField()         
     content = models.TextField()               
