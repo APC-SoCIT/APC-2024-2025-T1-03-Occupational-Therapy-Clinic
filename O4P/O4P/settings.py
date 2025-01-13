@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+<<<<<<< HEAD
+=======
     'appointments',
+>>>>>>> 44cd0bcf56d261caee180073fa4ccf68ac1bb560
     'patients',
     'home',
     'core',
@@ -142,6 +145,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+<<<<<<< HEAD
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'games/media')
+
+=======
+>>>>>>> 44cd0bcf56d261caee180073fa4ccf68ac1bb560
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/welcome'
 
@@ -151,6 +161,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_FORMS = {
+<<<<<<< HEAD
+    'signup': 'patients.forms.CustomSignupForm',
+=======
+>>>>>>> 44cd0bcf56d261caee180073fa4ccf68ac1bb560
     'login': 'patients.forms.CustomLoginForm',
 }
 
