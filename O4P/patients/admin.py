@@ -18,4 +18,6 @@ class GuardianAdmin(admin.ModelAdmin):
 
 @admin.register(PatientNotes)
 class PatientNotesAdmin(admin.ModelAdmin):
-    list_display = ('id', 'patient_id', 'title', 'session_date', 'content')
+    list_display = ('id', 'patient_id', 'author', 'title', 'session_date', 'content')
+    
+    

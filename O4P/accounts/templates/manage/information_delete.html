@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST"> {% csrf_token %}
+    <p>Are you sure you want to delete "{{object.first_name}} {{object.middle_name}} {{object.last_name}}"?</p>
+    <p>This action cannot be undone.</p>
+
+{% if role == 'guardian'%}
+{% if guardian %}
+{% else %}
+    <p>No Guardian information found.</p>
+{% endif %}
+
+{% if patients %}
+    <h3>Associated Patients</h3>
+    <ul>
+        {% for patient in patients %}
+            <li>{{ patient.first_name }} {{ patient.last_name }} (Condition: {{ patient.condition }})</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No patients are currently associated with this guardian.</p>
+{% endif %}
+{% endif %}
+
+    <input type="submit" class="btn btn-danger" value="Confirm"/>
+</form>
+    <a href="{% url role|add:'_list' %}" class="btn btn-secondary my-2">Back</a>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>{{ therapist.first_name }} {% if therapist.middle_name %}{{ therapist.middle_name }} {% endif %}{{ therapist.last_name }}</h1>
+    <p>Date of Birth: <span>{{ therapist.date_of_birth }}</span></p>
+    <p>Contact Number: <span>{{ therapist.contact_number }}</span></p>
+    <p>City: <span>{{ therapist.city }}</span></p>
+    <p>Province: <span>{{ therapist.province }}</span></p>
+
+    <a href=" {% url 'therapist_list' %}" 
+    class="btn btn-secondary my-5">
+    Back
+    </a>
+
+    {% if is_therapist or is_administrator%}
+        <a href="{% url 'therapist_edit' pk=therapist.id %}" class="btn btn-secondary my-5">Edit</a>
+        <a href="{% url 'therapist_delete' pk=therapist.id %}" class="btn btn-danger my-5">Delete</a>
+    {% endif %}
+{% endblock %}

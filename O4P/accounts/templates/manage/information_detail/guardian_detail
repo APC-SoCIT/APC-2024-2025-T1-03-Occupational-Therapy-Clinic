@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>{{ guardian.first_name }} {% if guardian.middle_name %}{{ guardian.middle_name }} {% endif %}{{ guardian.last_name }}</h1>
+    <p>Date of Birth: <span>{{ guardian.date_of_birth }}</span></p>
+    <p>Contact Number: <span>{{ guardian.contact_number }}</span></p>
+    <p>City: <span>{{ guardian.city }}</span></p>
+    <p>Province: <span>{{ guardian.province }}</span></p>
+
+    <a href=" {% url 'guardian_list' %}" 
+    class="btn btn-secondary my-5">
+    Back
+    </a>
+
+    {% if is_therapist or is_administrator%}
+        <a href="{% url 'guardian_edit' pk=guardian.id %}" class="btn btn-secondary my-5">Edit</a>
+        
+        <a href="{% url 'guardian_delete' pk=guardian.id %}" class="btn btn-danger my-5">Delete</a>
+    {% endif %}
+{% endblock %}

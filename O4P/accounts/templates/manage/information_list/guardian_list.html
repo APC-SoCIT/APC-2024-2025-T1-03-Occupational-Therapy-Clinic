@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="my-5 fw-bold">Guardian List:</h1>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Contact Number</th>
+        <th>City</th>
+        <th>Province</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for guardian in guardians %}
+        <tr>
+          <td>
+            <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-blue text-decoration-none">
+              {{ guardian.first_name }} {{guardian.middle_name}} {{ guardian.last_name }}
+            </a>
+          </td>
+          <td>{{ guardian.contact_number }}</td>
+          <td>{{ guardian.city }}</td>
+          <td>{{ guardian.province }}</td>
+        </tr>
+      {% endfor %}
+      
+      {% if not guardians %}
+        <tr>
+          <td colspan="4">
+            <p>No guardians available.</p>  
+          </td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'role_list' %}" class="btn btn-secondary my-5">Back</a>
+    {% if is_administrator %}
+      <a href="{% url 'guardian_signup' %}" class="btn btn-primary my-5">Create Guardian Account</a>
+    {% endif %}
+  </div>
+{% endblock %}
