@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="header-1">
+<div class="header-1 my-2">
     <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
     <div>
         {% if is_therapist or is_administrator%}
@@ -11,6 +11,7 @@
                 Delete
             </button>
         {% endif %}
+    </div>
 </div>
 
 <div class="row gutters-sm">
@@ -42,18 +43,18 @@
                     <div class="col-sm-3">
                         <h6 class="mb-0">Diagnosis:</h6>
                     </div>
-                    <div class="col-sm-3 text-secondary">
+                    <div class="col-sm-9 text-secondary">
                         {{ patient.condition }}
                     </div>
+                </div>
+                <hr>
+                <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Date of Birth:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
                         {{ patient.date_of_birth }}
                     </div>
-                </div>
-                <hr>
-                <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Contact Number:</h6>
                     </div>
@@ -64,10 +65,19 @@
                 <hr>
                 <div class="row">
                     <div class="col-sm-3">
-                        <h6 class="mb-0">Address</h6>
+                        <h6 class="mb-0">Address:</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                         {{ patient.city }} , {{ patient.province }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Assigned Guardian:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ patient.guardian }}
                     </div>
                 </div>
             </div>

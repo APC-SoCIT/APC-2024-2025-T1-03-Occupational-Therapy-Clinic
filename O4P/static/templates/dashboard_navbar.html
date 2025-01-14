@@ -36,9 +36,8 @@
         <div id="mySidenav" class="sidenav">
             <hr class="hr2" width="100%">
             <a href="{% url 'welcome' %}">Home</a>
-            <a href="{% url 'patients.list' %}">Progress Notes</a>
-            <a href="{% url 'welcome' %}">Appointments</a>
-            <a href="{% url 'game_library' %}">Games</a>
+            <a href="{% url 'calendar_view' %}">Appointments</a>
+            <a href="{% url 'game_library' %}">Game Library</a>
         </div>
         <div class="main">
             {% block content %}
