@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="container">
         <div class="header-1">
-            <h2>Create Appointment Request</h2>
+            <h2 class="my-3">Create Appointment Request</h2>
             <div>
                 <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" form="appointmentRequestForm" class="btn btn-primary">Submit</button>
@@ -13,66 +13,70 @@
 
         <form id="appointmentRequestForm" method="POST">
             {% csrf_token %}
+
             <div class="row">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h3 class="h6 mb-3 text-secondary">Appointment Request Details</h3>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="first_name" class="form-label">First Name</label>
-                                    <input type="text" name="first_name" id="first_name" class="form-control" required>
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h3 class="h6 mb-3 text-secondary">Appointment Request Details</h3>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <input type="text" name="first_name" id="first_name" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" name="last_name" id="last_name" class="form-control" required>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="last_name" class="form-label">Last Name</label>
-                                    <input type="text" name="last_name" id="last_name" class="form-control" required>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="contact_number" class="form-label">Contact Number</label>
+                                        <input type="text" name="contact_number" id="contact_number" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="therapist" class="form-label">Select Therapist</label>
+                                        <select name="therapist" id="therapist" class="form-select" required>
+                                            {% for therapist in therapists %}
+                                            <option value="{{ therapist.id }}">{{ therapist.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="contact_number" class="form-label">Contact Number</label>
-                                    <input type="text" name="contact_number" id="contact_number" class="form-control" required>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="requested_date" class="form-label">Requested Date</label>
+                                        <input type="date" name="requested_date" id="requested_date" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="requested_time" class="form-label">Requested Time</label>
+                                        <input type="time" name="requested_time" id="requested_time" class="form-control" required>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="therapist" class="form-label">Select Therapist</label>
-                                    <select name="therapist" id="therapist" class="form-select" required>
-                                        {% for therapist in therapists %}
-                                        <option value="{{ therapist.id }}">{{ therapist.username }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="requested_date" class="form-label">Requested Date</label>
-                                    <input type="date" name="requested_date" id="requested_date" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3">
-                                    <label for="requested_time" class="form-label">Requested Time</label>
-                                    <input type="time" name="requested_time" id="requested_time" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="mb-3">
-                                    <label for="notes" class="form-label">Additional Notes</label>
-                                    <textarea name="notes" id="notes" class="form-control" rows="4"></textarea>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">Additional Notes</label>
+                                        <textarea name="notes" id="notes" class="form-control" rows="4"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </form>
     </div>

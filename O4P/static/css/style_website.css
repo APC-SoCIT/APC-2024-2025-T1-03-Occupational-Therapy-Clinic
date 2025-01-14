@@ -4,6 +4,14 @@ html, body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
 
+.header-1 {
+  display: flex; /* Enables Flexbox */
+  justify-content: space-between; /* Positions items at opposite ends */
+  align-items: center; /* Vertically aligns items */
+  padding: 5px 0px;
+
+}
+
 .navbar {
   padding: 15px 20px;
   background-color: #00A5CF;
