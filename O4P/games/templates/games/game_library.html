@@ -1,4 +1,4 @@
-{% extends "home_navbar.html" %}
+{% extends "dashboard_navbar.html" %}
 {% load static %}
 
 {% block content %}
@@ -7,7 +7,7 @@
     {% if request.user.is_superuser %}
     <div class="d-flex justify-content-end">
         <a href="{% url 'admin_game_library' %}" class="btn btn-secondary">Admin Mode</a>
-    </div>
+    </div>  
     {% endif %}
 
     <!-- Title Section -->

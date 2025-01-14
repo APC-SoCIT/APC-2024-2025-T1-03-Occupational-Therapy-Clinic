@@ -1,23 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Create Recurring Appointment</title>
-</head>
-<body>
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% extends "form_navbar.html" %}
 
-    <h1>Schedule Recurring Appointment</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Schedule</button>
-    </form>
-    <a href="{% url 'calendar_view' %}">Back to Dashboard</a>
-</body>
-</html>
+{% block content %}
+<div class="container-fluid">
+
+    <div class="container">
+        <div class="header-1">
+            <h2>Schedule Recurring Appointment</h2>
+            <div>
+                <a href="{% url 'calendar_view' %}">Cancel</a>
+                <button type="submit" form="recurringAppointmentForm" class="btn btn-primary">Schedule</button>
+            </div>
+        </div>
+
+        <form id="recurringAppointmentForm" method="POST"> 
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Recurring Appointment Details</h3>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Patient</label>
+                                    {{ form.patient }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Therapist</label>
+                                    {{ form.therapist }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    {{ form.start_date }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Time</label>
+                                    {{ form.start_time }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Recurrence Pattern</label>
+                                    {{ form.recurrence_pattern }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Number of Occurrences</label>
+                                    {{ form.number_of_occurrences }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

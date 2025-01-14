@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="header-1">
+<div class="header-1 my-2">
     <h1>{{ assistant.first_name }} {{ assistant.last_name }}</h1>
     <div>
         {% if is_therapist or is_administrator%}
@@ -90,7 +90,7 @@
 
 <div class="my-3">
     <a href=" {% url 'assistant_list' %}" 
-    class="btn btn-secondary my-5">
+    class="btn btn-secondary">
     Back
     </a>
 </div>
