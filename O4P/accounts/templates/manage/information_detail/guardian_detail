@@ -1,21 +1,126 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 {% load static %}
 
 {% block content %}
-    <h1>{{ guardian.first_name }} {% if guardian.middle_name %}{{ guardian.middle_name }} {% endif %}{{ guardian.last_name }}</h1>
-    <p>Date of Birth: <span>{{ guardian.date_of_birth }}</span></p>
-    <p>Contact Number: <span>{{ guardian.contact_number }}</span></p>
-    <p>City: <span>{{ guardian.city }}</span></p>
-    <p>Province: <span>{{ guardian.province }}</span></p>
+<div class="header-1 my-2">
+    <h1>{{ guardian.first_name }} {{ guardian.last_name }}</h1>
+    <div>
+        {% if is_therapist or is_administrator%}
+            <a href="{% url 'guardian_edit' pk=guardian.id %}" class="btn btn-secondary">Edit</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Delete
+            </button>
+        {% endif %}
+    </div>
+</div>
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">First Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ guardian.first_name }}
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Middle Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {% if guardian.middle_name %}{{ guardian.middle_name }} {% endif %}
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Last Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ guardian.last_name }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Assigned Patients:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ guardian.assigned_patients }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Date of Birth:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ guardian.date_of_birth }}
+                    </div>
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Contact Number:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ guardian.contact_number }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Address:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ guardian.city }} , {{ guardian.province }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'guardian_delete' pk=guardian.id %}">
+                    {% csrf_token %}
+                    <p>Are you sure you want to delete "{{ guardian.first_name }} {{ guardian.last_name }}"?</p>
+                    <p>This action cannot be undone.</p>
+
+                    {% if role == 'guardian' %}
+                        {% if guardian %}
+                        {% else %}
+                            <p>No Guardian information found.</p>
+                        {% endif %}
+
+                        {% if patients %}
+                            <h3>Associated Patients</h3>
+                            <ul>
+                                {% for patient in patients %}
+                                    <li>{{ patient.first_name }} {{ patient.last_name }} (Condition: {{ patient.condition }})</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No patients are currently associated with this guardian.</p>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-danger" value="Confirm">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="my-3">
     <a href=" {% url 'guardian_list' %}" 
-    class="btn btn-secondary my-5">
+    class="btn btn-secondary">
     Back
     </a>
+</div>
 
-    {% if is_therapist or is_administrator%}
-        <a href="{% url 'guardian_edit' pk=guardian.id %}" class="btn btn-secondary my-5">Edit</a>
-        
-        <a href="{% url 'guardian_delete' pk=guardian.id %}" class="btn btn-danger my-5">Delete</a>
-    {% endif %}
 {% endblock %}

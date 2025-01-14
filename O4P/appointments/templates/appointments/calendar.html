@@ -31,6 +31,7 @@
                 {% if request.user.groups.first.name == 'Therapist' %}
                     <!-- Only therapists see these buttons -->
                     <a href="{% url 'create_appointment' %}" class="btn btn-success w-100 my-2">Create Appointment</a>
+                    <a href="{% url 'create_recurring_appointment' %}" class="btn btn-success w-100 my-2">Create Recurring Appointment</a>
                     <a href="{% url 'appointment_list' %}" class="btn btn-primary w-100 my-2">View All Appointments</a>
                 {% endif %}
 

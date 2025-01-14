@@ -1,43 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_navbar.html' %}
 {% block title %}Your Appointments{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="header-1">
     <h1>Your Appointments</h1>
-    {% if appointments %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Patient/Therapist</th>
-                    <th>Date</th>
-                    <th>Start Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in appointments %}
-                    <tr>
-                        <td>
-                            {% if user.groups.first.name == 'Therapist' %}
-                                {{ appointment.patient.username }}
-                            {% else %}
-                                {{ appointment.therapist.username }}
-                            {% endif %}
-                        </td>
-                        <td>{{ appointment.date }}</td>
-                        <td>{{ appointment.start_time }}</td>
-                        <td>{{ appointment.status }}</td>
-                        <td>
-                            <a href="{% url 'appointment_detail' appointment.id %}" class="btn btn-info btn-sm">View Details</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <a href="{% url 'calendar_view' %}" class="btn btn-secondary">Back to Dashboard</a>
-    {% else %}
-        <p>No appointments found.</p>
-    {% endif %}
 </div>
+
+{% if appointments %}
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Patient/Therapist</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+                <tr>
+                    <td>
+                        {% if user.groups.first.name == 'Therapist' %}
+                            {{ appointment.patient.username }}
+                        {% else %}
+                            {{ appointment.therapist.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ appointment.date }}</td>
+                    <td>{{ appointment.start_time }}</td>
+                    <td>{{ appointment.status }}</td>
+                    <td>
+                        <a href="{% url 'appointment_detail' appointment.id %}" class="text-blue text-decoration-none">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            
+{% else %}
+                <tr>
+                    <td colspan="5">
+                        <p>No appointments available.</p>
+                    </td>
+                </tr>
+{% endif %}
+        </tbody>
+    </table>
+    <div class="my-3">
+        <a href="{% url 'calendar_view' %}" class="btn">Back</a>
+    </div>
+</div>
+
 {% endblock %}

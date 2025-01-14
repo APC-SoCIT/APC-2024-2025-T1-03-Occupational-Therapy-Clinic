@@ -1,20 +1,98 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 {% load static %}
 
 {% block content %}
-    <h1>{{ assistant.first_name }} {% if assistant.middle_name %}{{ assistant.middle_name }} {% endif %}{{ assistant.last_name }}</h1>
-    <p>Date of Birth: <span>{{ assistant.date_of_birth }}</span></p>
-    <p>Contact Number: <span>{{ assistant.contact_number }}</span></p>
-    <p>City: <span>{{ assistant.city }}</span></p>
-    <p>Province: <span>{{ assistant.province }}</span></p>
+<div class="header-1 my-2">
+    <h1>{{ assistant.first_name }} {{ assistant.last_name }}</h1>
+    <div>
+        {% if is_therapist or is_administrator%}
+            <a href="{% url 'assistant_edit' pk=assistant.id %}" class="btn btn-secondary">Edit</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Delete
+            </button>
+        {% endif %}
+    </div>
+</div>
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">First Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ assistant.first_name }}
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Middle Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {% if assistant.middle_name %}{{ assistant.middle_name }} {% endif %}
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Last Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ assistant.last_name }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Date of Birth:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ patient.date_of_birth }}
+                    </div>
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Contact Number:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ assistant.contact_number }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Address:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ assistant.city }} , {{ assistant.province }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "{{ assistant.first_name }} {{ assistant.last_name }}"?</p>
+                <p>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'assistant_delete' pk=assistant.id %}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Confirm">
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="my-3">
     <a href=" {% url 'assistant_list' %}" 
-    class="btn btn-secondary my-5">
+    class="btn btn-secondary">
     Back
     </a>
+</div>
 
-    {% if is_therapist or is_administrator%}
-        <a href="{% url 'assistant_edit' pk=assistant.id %}" class="btn btn-secondary my-5">Edit</a>
-        <a href="{% url 'assistant_delete' pk=assistant.id %}" class="btn btn-danger my-5">Delete</a>
-    {% endif %}
 {% endblock %}

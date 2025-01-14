@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.http import JsonResponse
 
 
 
@@ -37,7 +38,7 @@ class RoleListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixi
     template_name = 'manage/role_list.html'
     
 class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Administrator',]
+    allowed_roles = ['Administrator', 'Therapist']
     model = GuardianInformation
     context_object_name = "guardians"
     template_name = "manage/information_list/guardian_list.html"

@@ -1,46 +1,99 @@
-{% extends 'base.html' %}
+{% extends "dashboard_navbar.html" %}
 {% block title %}Appointment Details{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="header-1">
     <h1>Appointment Details</h1>
-    <table class="table">
-        <tr>
-            <th>Patient:</th>
-            <td>{{ appointment.patient.username }}</td>
-        </tr>
-        <tr>
-            <th>Therapist:</th>
-            <td>{{ appointment.therapist.username }}</td>
-        </tr>
-        <tr>
-            <th>Date:</th>
-            <td>{{ appointment.date }}</td>
-        </tr>
-        <tr>
-            <th>Start Time:</th>
-            <td>{{ appointment.start_time }}</td>
-        </tr>
-        <tr>
-            <th>End Time:</th>
-            <td>{{ appointment.end_time }}</td>
-        </tr>
-        <tr>
-            <th>Status:</th>
-            <td>{{ appointment.status }}</td>
-        </tr>
-    </table>
-
-    {% if user.groups.first.name == 'Therapist' %}
-    <!-- Button to Edit -->
-    <a href="{% url 'update_appointment' appointment.id %}" class="btn btn-primary">Update Appointment</a>
-    <!-- Button to Delete -->
-    <a href="{% url 'delete_appointment' appointment.id %}" class="btn btn-danger">Delete Appointment</a>
-    {% endif %}
-
-    {% if user.groups.first.name == 'Patient' %}
-    {% endif %}
-
-    <a href="{% url 'appointment_list' %}" class="btn btn-secondary mt-3">Back to Appointments</a>
+    <div>
+        {% if user.groups.first.name == 'Therapist' %}
+            <a href="{% url 'update_appointment' appointment.id %}" class="btn btn-secondary">Edit</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Delete
+            </button>
+        {% endif %}
+    </div>
 </div>
+
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Date:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ appointment.date }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Patient:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ appointment.patient.username }}
+                    </div>
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Therapist:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ appointment.therapist.username }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Start Time:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ appointment.start_time }}
+                    </div>
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">End Time:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ appointment.end_time }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Status:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ appointment.status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this appointment?</p>
+                <p>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'delete_appointment' appointment.id %}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Confirm">
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="my-3">
+    <a href="{% url 'appointment_list' %}" class="btn btn-secondary">Back to Appointments</a>
+</div>
+
 {% endblock %}

@@ -1,15 +1,28 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 
 {% block content %}
-  <h1 class="my-5 fw-bold">Role Information List:</h1>
-  
-  <ul class="list-unstyled">
-    {% if is_administrator %}
-    <li class="mb-3"><a href="{% url 'guardian_list' %}" class="btn btn-primary">Guardian Information</a></li>
-    <li class="mb-3"><a href="{% url 'assistant_list' %}" class="btn btn-primary">Assistant Information</a></li>
-    <li class="mb-3"><a href="{% url 'therapist_list' %}" class="btn btn-primary">Therapist Information</a></li>
-    <li class="mb-3"><a href="{% url 'welcome' %}" class="btn btn-secondary">Back</a></li>
-    {% endif %}
-</ul>
+<div class="container">
+  <div class="container-fluid">
+    <div class="header-1">
+      <h3>List of Roles</h3>
+    </div>
+    <div class="card">
+      <div class="card-body">
+          <h6 class="text-secondary">Roles</h6>
+          <div class="list-group">
+            {% if is_administrator %}
+            <a href="{% url 'guardian_list' %}" class="btn btn-primary my-2">Guardian Information</a>
+            <a href="{% url 'assistant_list' %}" class="btn btn-primary my-2">Assistant Information</a>
+            <a href="{% url 'therapist_list' %}" class="btn btn-primary my-2">Therapist Information</a>
+            {% endif %}
+          </div>
+      </div>
+    </div>
+    <div class="my-3">
+    <a href="{% url 'welcome' %}" class="btn">Back</a>
+  </div>
+  </div>
+</div>
+
 
 {% endblock %}

@@ -1,12 +1,18 @@
-{% extends "base.html" %}
+{% extends "dashboard_navbar.html" %}
 
 {% block content %}
-  <h1 class="my-5 fw-bold">Assistant List:</h1>
-  
-  <table class="table">
+<div class="header-1">
+  <h1>Assistant List</h1>
+    {% if is_therapist or is_administrator %}
+  <a href="{% url 'account_signup' %}" class="btn">Create Assistant Account</a>
+    {% endif %}
+</div>
+
+<div class="table-container">
+  <table class="custom-table">
     <thead>
       <tr>
-        <th>Full Name</th>
+        <th>Name</th>
         <th>Contact Number</th>
         <th>City</th>
         <th>Province</th>
@@ -35,11 +41,9 @@
       {% endif %}
     </tbody>
   </table>
+</div>
 
-  <div class="d-flex justify-content-between">
-    <a href="{% url 'role_list' %}" class="btn btn-secondary my-5">Back</a>
-    {% if is_administrator %}
-      <a href="{% url 'assistant_signup' %}" class="btn btn-primary my-5">Create Assistant Account</a>
-    {% endif %}
+  <div class="my-3">
+    <a href="{% url 'role_list' %}" class="btn">Back</a>
   </div>
 {% endblock %}

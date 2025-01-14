@@ -2,123 +2,156 @@
 {% load static %}
 
 {% block content %}
-    <div class="header-1">
-        <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
-        <div>
-            {% if is_therapist or is_administrator%}
-                <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary">Edit</a>
-                <a href="{% url 'patients.delete' pk=patient.id %}" class="btn btn-danger">Delete</a>
-            {% endif %}
-        </div>
+<div class="header-1 my-2">
+    <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+    <div>
+        {% if is_therapist or is_administrator%}
+            <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary">Edit</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Delete
+            </button>
+        {% endif %}
     </div>
-    <div class="row gutters-sm">
-        <div class="col-md-12">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-sm-2">
-                            <h6 class="mb-0">First Name</h6>
-                        </div>
-                        <div class="col-sm-2 text-secondary">
-                            {{ patient.first_name }}
-                        </div>
-                        <div class="col-sm-2">
-                            <h6 class="mb-0">Middle Name</h6>
-                        </div>
-                        <div class="col-sm-2 text-secondary">
-                        <!--Middle Name-->
-                        </div>
-                        <div class="col-sm-2">
-                            <h6 class="mb-0">Last Name</h6>
-                        </div>
-                        <div class="col-sm-2 text-secondary">
-                            {{ patient.last_name }}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Email</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            <!--Email-->
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Contact Number</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ patient.contact_number }}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Address</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ patient.city }} , {{ patient.province }}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Diagnosis</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ patient.condition }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row gutters-sm">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body d-flex justify-content-between">
-                    <h4 class="d-flex align-items-center mb-3">Notes</h4>
-                    {%if is_therapist or is_administrator%}
-                        <a href="{% url 'notes.create' pk=patient.id %}" class="btn">Add Note</a>
-                    {% endif %}
-                </div>
-                <div class="table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                            <th>Title</th>
-                            <th>Date</th>
-                            <th>Note By</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for note in patient_notes %}
-                            <tr>
-                                <td>
-                                    <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
-                                        {{ note.title }}
-                                    </a>
-                                </td>
-                                <td>{{ note.session_date }}</td>
-                                <td></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">First Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ patient.first_name }}
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Middle Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                    <!--Middle Name-->
+                    </div>
+                    <div class="col-sm-2">
+                        <h6 class="mb-0">Last Name:</h6>
+                    </div>
+                    <div class="col-sm-2 text-secondary">
+                        {{ patient.last_name }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Diagnosis:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ patient.condition }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Date of Birth:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ patient.date_of_birth }}
+                    </div>
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Contact Number:</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                        {{ patient.contact_number }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Address:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ patient.city }} , {{ patient.province }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Assigned Guardian:</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ patient.guardian }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between">
+                <h4 class="d-flex align-items-center mb-3">Notes</h4>
+                {%if is_therapist or is_administrator%}
+                    <a href="{% url 'notes.create' pk=patient.id %}" class="btn">Add Note</a>
+                {% endif %}
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Note By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in patient_notes %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
+                                    {{ note.title }}
+                                </a>
+                            </td>
+                            <td>{{ note.session_date }}</td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "{{ patient.first_name }} {{ patient.last_name }}"?</p>
+                <p>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'patients.delete' pk=patient.id %}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Confirm">
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="my-3">
     <a href="
     {% if is_patient %} 
         {% url 'welcome' %}
     {% else %} 
         {% url 'patients.list' %}
     {% endif %}" 
-    class="btn btn-secondary my-5">
-    Back
-    </a>
+    class="btn btn-secondary">Back</a>
+</div>
+
 {% endblock %}

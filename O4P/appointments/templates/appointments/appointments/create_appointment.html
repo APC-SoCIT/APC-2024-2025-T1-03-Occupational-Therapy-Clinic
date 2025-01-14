@@ -1,15 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Create Appointment</title>
-</head>
-<body>
-    <h1>Create Appointment</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
-    <a href="{% url 'calendar_view' %}">Back to Dashboard</a>
-</body>
-</html>
+{% extends "form_navbar.html" %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="container">
+        <div class="header-1">
+            <h2>Create Appointment</h2>
+            <div>
+                <a href="{% url 'calendar_view' %}">Cancel</a>
+                <button type="submit" form="apptForm" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+
+        <form id="apptForm" method="POST"> 
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Appointment Details</h3>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    {{ form.date }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Patient</label>
+                                    {{ form.patient }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Therapist</label>
+                                    {{ form.therapist }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Time</label>
+                                    {{ form.start_time }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    {{ form.status }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@
     <h6 class="text-secondary">{{ note.session_date }}</h6>
 </div>
 <hr>
-<h6 class="text-secondary">by Therapist</h6>
+<h6 class="text-secondary">{{ note.author }}</h6>
 
 <div class="card mb-3">
     <div class="card-body">
@@ -19,8 +19,32 @@
     <a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary my-5">Back</a>
     {% if is_therapist or is_administrator%}
     <a href="{% url 'notes.update' pk=note.id %} " class="btn btn-secondary my-5">Edit</a>
-    <a href="{% url 'notes.delete' pk=note.id %} " class="btn btn-danger my-5">Delete</a>
+    <button type="button" class="btn btn-danger my-5" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        Delete
+    </button>
     {% endif %}
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this note?</p>
+                <p>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="{% url 'notes.delete' pk=note.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

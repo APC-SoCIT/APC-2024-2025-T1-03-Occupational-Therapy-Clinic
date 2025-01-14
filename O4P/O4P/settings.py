@@ -155,7 +155,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_FORMS = {
-    'signup': 'patients.forms.CustomSignupForm',
     'login': 'patients.forms.CustomLoginForm',
 }
 
