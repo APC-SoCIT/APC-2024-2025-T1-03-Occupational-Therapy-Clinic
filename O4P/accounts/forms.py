@@ -5,7 +5,7 @@ from patients.models import PatientInformation
 from patients.models import Guardian
 from .models import TherapistInformation, AssistantInformation, GuardianInformation
 import datetime, re, requests
-
+from .nationalities import NATIONALITIES_duble_tuple_for as NATIONALITIES
 
 class BaseSignupForm(SignupForm):
     first_name = forms.CharField(
@@ -35,6 +35,19 @@ class BaseSignupForm(SignupForm):
     )
     province = forms.ChoiceField(choices=[])
     city = forms.ChoiceField(choices=[])
+    sex = forms.ChoiceField(
+        choices=(('M', 'Male'), ('F', 'Female')),
+        required=True
+    )
+    nationality = forms.ChoiceField(
+        choices=NATIONALITIES,
+        required=True
+    )
+    religion = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'placeholder': 'Religion'}),
+        required=True
+    )
     
     
     def __init__(self, *args, **kwargs):
@@ -105,7 +118,10 @@ class BaseSignupForm(SignupForm):
             "date_of_birth": self.cleaned_data.get("date_of_birth"),
             "contact_number": self.cleaned_data.get("contact_number"),
             "city": self.cleaned_data.get("city"),
-            "province": self.cleaned_data.get("province")
+            "province": self.cleaned_data.get("province"),
+            "sex": self.cleaned_data.get("sex"),
+            "nationality": self.cleaned_data.get("nationality"),
+            "religion": self.cleaned_data.get("religion"),
         }
 
         if role == "Therapist":           
@@ -124,11 +140,6 @@ class BaseSignupForm(SignupForm):
             GuardianInformation.objects.create(
                 **base_information_data,
                 relationship_to_patient=relationship_to_patient  
-            )
-        elif role == "Patient":
-            PatientInformation.objects.create(
-                **base_information_data,
-                condition=self.cleaned_data['condition'],
             )
         else:
             raise ValueError(f"Unsupported role: {role}")
@@ -191,7 +202,7 @@ class GuardianSignupForm(BaseSignupForm):
 class BaseInformationForm(forms.ModelForm):
     class Meta:
         fields = [
-            'first_name', 'middle_name', 'last_name', 'date_of_birth', 
+            'first_name', 'middle_name', 'last_name', 'date_of_birth', 'sex', 'nationality', 'religion', 
             'contact_number', 'province', 'city'
         ]
         labels = {
@@ -199,6 +210,9 @@ class BaseInformationForm(forms.ModelForm):
             'middle_name': 'Middle Name',
             'last_name': 'Last Name',
             'date_of_birth': 'Date of Birth',
+            'sex': 'Sex',
+            'nationality': 'Nationality',
+            'religion': 'Religion',
             'contact_number': 'Contact Number',
             'province': 'Province',
             'city': 'City',
@@ -208,14 +222,14 @@ class BaseInformationForm(forms.ModelForm):
             'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'sex': forms.Select(attrs={'class': 'form-control'}),
+            'nationality': forms.Select(attrs={'class': 'form-control'}),
+            'religion': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
             'province': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control', }),
         }
-        
-
-
-        
+      
 class TherapistInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):
         model = TherapistInformation

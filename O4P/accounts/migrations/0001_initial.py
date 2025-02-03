@@ -4,7 +4,7 @@ def apply_migration(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
     
     groups_to_create = [
-        'Patient', 'Guardian', 'Assistant', 'Therapist', 'Administrator'
+        'Guardian', 'Assistant', 'Therapist', 'Administrator'
     ]
     
     for group_name in groups_to_create:
@@ -15,7 +15,6 @@ def revert_migration(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
     Group.objects.filter(
         name__in=[
-            u'Patient',
             u'Guardian',
             u'Assistant',
             u'Therapist',

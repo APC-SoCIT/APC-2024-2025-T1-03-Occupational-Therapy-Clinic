@@ -6,9 +6,9 @@ from .models import Guardian
 
 @admin.register(PatientInformation)
 class PatientInformationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'account_id','first_name', 'last_name', 'date_of_birth', 'contact_number', 'city', 'province', 'condition', 'guardian')
+    list_display = ('id', 'account_id','first_name', 'last_name', 'date_of_birth', 'contact_number', 'city', 'province')
     search_fields = ('first_name', 'last_name', 'contact_number')
-    list_filter = ('city', 'province', 'condition')
+    list_filter = ('city', 'province',)
     ordering = ('last_name', 'first_name')
 
 @admin.register(Guardian)

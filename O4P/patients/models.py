@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from accounts.models import BaseInformation
+from django.core.validators import RegexValidator
 # Create your models here.
 
 class Guardian(models.Model):
@@ -11,19 +12,37 @@ class Guardian(models.Model):
         return self.user.username
     
 class PatientInformation(BaseInformation):              
-    condition = models.CharField(max_length=50)    
-    guardian = models.ForeignKey(Guardian, on_delete=models.SET_NULL, related_name="%(class)s_information", null=True, blank=True)
+    diagnosis = models.CharField(max_length=50)    
+    mother_name = models.CharField(max_length=50)
+    mother_number = models.CharField(
+        max_length=13,  
+        validators=[
+            RegexValidator(
+                regex=r'^(\+63|0)9\d{9}$',  
+                message="Phone number must be entered in the format: '+639123456789' or '09123456789'."
+            )
+        ]
+    )
+    father_name = models.CharField(max_length=50)
+    father_number = models.CharField(
+        max_length=13,  
+        validators=[
+            RegexValidator(
+                regex=r'^(\+63|0)9\d{9}$',  
+                message="Phone number must be entered in the format: '+639123456789' or '09123456789'."
+            )
+        ]
+    )
+    referring_doctor = models.CharField(max_length=50)
+    school = models.CharField(max_length=50, blank=True, null=True)
+    initial_evaluation = models.CharField(max_length=100)
     
     class Meta:
         verbose_name = "Patient Information"
         verbose_name_plural = "Patient Information"
-
-        indexes = [
-        models.Index(fields=['guardian']),
-    ]
     
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.contact_number}"
+        return f"{self.first_name} {self.middle_name} - {self.last_name} - {self.contact_number}"
 
 class PatientNotes(models.Model):
     patient = models.ForeignKey(PatientInformation, on_delete=models.CASCADE, related_name="notes")

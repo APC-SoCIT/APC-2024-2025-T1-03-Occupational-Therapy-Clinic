@@ -1,13 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from datetime import date
+from .nationalities import NATIONALITIES_duble_tuple_for as Nationalities
 
 class BaseInformation(models.Model):
     account_id = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50) 
     middle_name = models.CharField(max_length=50, blank=True, null=True) 
     last_name = models.CharField(max_length=50)  
-    date_of_birth = models.DateField()             
+    date_of_birth = models.DateField()  
+
+    @property
+    def age(self):
+        today = date.today()
+        age = today.year - self.date_of_birth.year
+        if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
+            age -= 1
+        return age  
+             
     contact_number = models.CharField(
         max_length=13,  
         validators=[
@@ -17,8 +28,21 @@ class BaseInformation(models.Model):
             )
         ]
     )
+    
+    sex_choices = (
+        ('M', 'Male'),
+        ('F', 'Female')
+    )
+    sex = models.CharField(max_length=1, choices=sex_choices, blank=True, null=True)
     city = models.CharField(max_length=50)           
-    province = models.CharField(max_length=50)                  
+    province = models.CharField(max_length=50)   
+    nationality = models.CharField(
+        max_length=30,
+        choices=Nationalities, 
+        blank=True,
+        null=True
+    )
+    religion = models.CharField(max_length=50, null=True)              
 
     class Meta:
         abstract = True
@@ -30,7 +54,7 @@ class BaseInformation(models.Model):
     ]
     
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.contact_number}"
+        return f"{self.first_name} {self.middle_name} - {self.last_name} - {self.contact_number}"
     
 class TherapistInformation(BaseInformation):
     specialization = models.CharField(max_length=100, blank=True, null=True)  
