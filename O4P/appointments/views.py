@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db import transaction
 import json
-from openai import PermissionDeniedError
+from django.core.exceptions import PermissionDenied
 from .models import NonWorkingDay
 from .models import Appointment
 from .models import AppointmentRequest
@@ -90,7 +90,7 @@ def appointment_detail(request, pk):
 
     # Ensure the user is authorized to view this appointment
     if request.user != appointment.patient and request.user != appointment.therapist:
-        raise PermissionDeniedError
+        raise PermissionDenied
 
     return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
 
