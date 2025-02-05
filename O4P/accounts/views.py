@@ -224,14 +224,14 @@ class TherapistSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin,
     extra_context = {'role_name': 'Therapist'}
 
 class AssistantSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = AssistantSignupForm
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Assistant'}
 
 class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = GuardianSignupForm
     template_name = "account/signup.html"
