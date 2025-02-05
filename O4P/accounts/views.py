@@ -34,7 +34,7 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
 
 # ACCOUNT MANAGEMENT
 class RoleListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, TemplateView):
-    allowed_roles = ['Administrator']
+    allowed_roles = ['Administrator', 'Therapist']
     template_name = 'manage/role_list.html'
     
 class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
@@ -217,13 +217,6 @@ class TherapistDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
     
 # SIGN UP VIEWS
-class PatientSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Administrator', 'Therapist']
-
-    form_class = PatientSignupForm
-    template_name = "account/signup.html"
-    extra_context = {'role_name': 'Patient'}
-
 class TherapistSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
     allowed_roles = ['Administrator']
 

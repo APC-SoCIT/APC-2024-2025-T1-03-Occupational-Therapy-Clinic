@@ -150,7 +150,6 @@ class PatientSignupForm(BaseSignupForm):
             referring_doctor=self.cleaned_data.get("referring_doctor"),
             school=self.cleaned_data.get("school"),
             initial_evaluation=self.cleaned_data.get("initial_evaluation"),
-            diagnosis=self.cleaned_data.get("diagnosis"),
         )
         return user
 

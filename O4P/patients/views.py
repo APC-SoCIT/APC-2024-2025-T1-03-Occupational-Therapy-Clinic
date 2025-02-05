@@ -13,24 +13,35 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.http import JsonResponse
-
+from django.urls import reverse_lazy
 from allauth.account.views import SignupView
 from django.http import HttpResponseForbidden
 
 #
 # PATIENTS
 #
+class PatientInformationCreateView(RolePermissionRequiredMixin, CreateView):
+    model = PatientInformation
+    form_class = PatientInformationForm
+    template_name = "patients/patients_information_form.html"
+    allowed_roles = ['Guardian']
+    success_url = reverse_lazy('patients.list')
+
+    def form_valid(self, form):
+        form.instance.account_id = self.request.user
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    
 class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
     model = PatientInformation
     context_object_name = "patients"
     template_name = "patients/patients_list.html"
 
     def get_queryset(self):
-        user = self.request.user
-        
-        if user.groups.filter(name='Patient').exists():
-            raise PermissionDenied
-        
         return self.get_role_based_queryset(PatientInformation)
 
     def get_context_data(self, **kwargs):

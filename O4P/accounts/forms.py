@@ -162,38 +162,13 @@ class AssistantSignupForm(BaseSignupForm):
         return user
 
 class GuardianSignupForm(BaseSignupForm):
-    assigned_patients = forms.ModelMultipleChoiceField(
-        queryset=PatientInformation.objects.none(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Assigned Patient/s",
-    )
     relationship_to_patient = forms.CharField(
                     max_length=50,
                     widget=forms.TextInput(attrs={'placeholder': 'Relationship'}), 
                     required=True)
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['assigned_patients'].queryset = PatientInformation.objects.filter(
-            guardian__isnull=True  
-        )
-
-        self.fields['assigned_patients'].label_from_instance = lambda obj: (
-            f"{obj.id}{obj.first_name} {obj.last_name} {obj.account_id.email}"
-        )
-    
     def save(self, request):
         user = super().save(request, role="Guardian")
-        
-        guardian = Guardian.objects.create(user=user)
-        
-        assigned_patients = self.cleaned_data.get('assigned_patients')
-        if assigned_patients:
-            for patient_info in assigned_patients:
-                patient_info.guardian = guardian 
-                patient_info.save() 
                 
         return user
 
@@ -243,12 +218,10 @@ class TherapistInformationForm(BaseInformationForm):
             'specialization': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-
 class AssistantInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):
         model = AssistantInformation
         # No extra fields; inherits everything from BaseInformationForm
-
 
 class GuardianInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):

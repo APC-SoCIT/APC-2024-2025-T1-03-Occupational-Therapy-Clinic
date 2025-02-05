@@ -10,7 +10,7 @@
       <div class="card-body">
           <h6 class="text-secondary">Roles</h6>
           <div class="list-group">
-            {% if is_administrator %}
+            {% if is_administrator or is_therapist %}
             <a href="{% url 'guardian_list' %}" class="btn btn-primary my-2">Guardian Information</a>
             <a href="{% url 'assistant_list' %}" class="btn btn-primary my-2">Assistant Information</a>
             <a href="{% url 'therapist_list' %}" class="btn btn-primary my-2">Therapist Information</a>
