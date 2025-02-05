@@ -3,7 +3,6 @@ from django.views.generic import TemplateView, ListView, UpdateView, DetailView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 from allauth.account.views import SignupView
 from patients.models import PatientInformation, Guardian
-from patients.forms import PatientSignupForm
 from .forms import TherapistSignupForm, AssistantSignupForm, GuardianSignupForm, TherapistInformationForm, AssistantInformationForm, GuardianInformationForm
 from allauth.account.views import SignupView
 from core.mixins import RolePermissionRequiredMixin, CustomLoginRequiredMixin, UserRoleMixin
