@@ -16,7 +16,6 @@ class UserRoleMixin(View):
         context = super().get_context_data(**kwargs)  
         
         user = self.request.user
-        context['is_patient'] = user.groups.filter(name='Patient').exists()
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()

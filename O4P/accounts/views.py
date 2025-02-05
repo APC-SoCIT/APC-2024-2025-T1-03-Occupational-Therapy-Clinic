@@ -23,11 +23,6 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-
-        if context['is_patient']:
-            patient_info = PatientInformation.objects.filter(account_id=user).first()
-            context['patient'] = patient_info
 
         return context
 
@@ -160,7 +155,7 @@ class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
     
 class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Administrator']
+    allowed_roles = ['Administrator', 'Therapist']
     model = AssistantInformation
     context_object_name = "therapists"
     template_name = "manage/information_list/therapist_list.html"
@@ -224,14 +219,14 @@ class TherapistSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin,
     extra_context = {'role_name': 'Therapist'}
 
 class AssistantSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = AssistantSignupForm
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Assistant'}
 
 class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = GuardianSignupForm
     template_name = "account/signup.html"
