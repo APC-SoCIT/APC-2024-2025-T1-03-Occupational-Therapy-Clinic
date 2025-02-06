@@ -56,10 +56,11 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         patient = self.get_object()
-
+        user = self.request.user
+        
         context['patient_notes'] = PatientNotes.objects.filter(patient_id=patient)
 
-        user = self.request.user
+        
         context['is_patient'] = user.groups.filter(name='Patient').exists()
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
@@ -141,17 +142,29 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
     
     def get_queryset(self):
         user = self.request.user
-        
+        note_id = self.kwargs.get('pk')  
+
+        try:
+            note = PatientNotes.objects.get(id=note_id)  
+            patient = note.patient    
+        except PatientNotes.DoesNotExist:
+            return PatientNotes.objects.none()  
+
         if user.groups.filter(name='Guardian').exists():
-            try:
-                guardian = Guardian.objects.get(user=user)  
-                return PatientNotes.objects.filter(patient__guardian=guardian)  
-            except Guardian.DoesNotExist:
-                return PatientNotes.objects.none() 
+            patients = PatientInformation.objects.filter(account_id=user)
+
+            if patient in patients:  
+                return PatientNotes.objects.filter(patient=patient)
+            else:
+                return PatientNotes.objects.none()
+
         elif user.groups.filter(name__in=['Therapist', 'Assistant']).exists():
             return PatientNotes.objects.all()
+
         else:
             raise PermissionDenied
+
+
         
 class NoteCreateView(RolePermissionRequiredMixin, CreateView):
     model = PatientNotes
