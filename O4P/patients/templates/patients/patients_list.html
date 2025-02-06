@@ -3,9 +3,6 @@
 {% block content %}
 <div class="header-1">
   <h1>Patient List</h1>
-    {% if is_therapist or is_administrator %}
-  <a href="{% url 'account_signup' %}" class="btn">Create Patient Account</a>
-    {% endif %}
 </div>
 <div class="header-1">
   <input class="search-bar" placeholder="Search..." type="text">
