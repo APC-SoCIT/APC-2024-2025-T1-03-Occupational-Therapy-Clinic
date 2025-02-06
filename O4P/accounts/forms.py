@@ -66,21 +66,17 @@ class BaseSignupForm(SignupForm):
         # Fetch cities
         province_code = None
         if self.is_bound:
-            print("is bound")
             province_code = self.data.get('province')
         else:
-            print("not bound")
             province_code = self.initial.get('province')
 
     # Fetch cities based on province code
         self.fields['city'].choices = []
         if province_code:
-            print("detected province code")
             response_cities = requests.get(
             f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
         )
             if response_cities.status_code == 200:
-                print("skibidi")
                 cities = response_cities.json()
                 sorted_cities = sorted(cities, key=lambda x: x['name'])
                 self.fields['city'].choices = [
