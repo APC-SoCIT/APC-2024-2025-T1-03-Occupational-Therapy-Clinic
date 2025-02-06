@@ -20,6 +20,24 @@
             </div>
         </div>  
     </div>
-    
 </div>
+
+<script>
+    document.getElementById('id_province').addEventListener('change', function() {
+        const provinceCode = this.value;
+        if (!provinceCode) return;
+        
+        fetch(`/get-cities/?province_code=${encodeURIComponent(provinceCode)}`)
+            .then(response => response.json())
+            .then(data => {
+                const citySelect = document.getElementById('id_city');
+                citySelect.innerHTML = '<option value="">---------</option>'; // Reset options
+                data.cities.forEach(city => {
+                    const option = new Option(city.name, city.code);
+                    citySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+    </script>
 {% endblock %}
