@@ -64,15 +64,24 @@ class BaseSignupForm(SignupForm):
             self.fields['province'].choices = []
 
         # Fetch cities
-        response_cities = requests.get('https://psgc.gitlab.io/api/cities-municipalities')
-        if response_cities.status_code == 200:
-            cities = response_cities.json()
-            sorted_cities = sorted(cities, key=lambda x: x['name'])
-            self.fields['city'] = forms.ChoiceField(
-                choices=[(city['code'], city['name']) for city in sorted_cities]
-            )
+        province_code = None
+        if self.is_bound:
+            province_code = self.data.get('province')
         else:
-            self.fields['city'] = forms.ChoiceField(choices=[])
+            province_code = self.initial.get('province')
+
+    # Fetch cities based on province code
+        self.fields['city'].choices = []
+        if province_code:
+            response_cities = requests.get(
+            f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
+        )
+            if response_cities.status_code == 200:
+                cities = response_cities.json()
+                sorted_cities = sorted(cities, key=lambda x: x['name'])
+                self.fields['city'].choices = [
+                    (city['code'], city['name']) for city in sorted_cities
+                ]
             
     def clean(self):
         cleaned_data = super().clean()  

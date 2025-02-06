@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.http import JsonResponse
-
+import requests
 
 
 class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
@@ -232,4 +232,17 @@ class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, 
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Guardian'}
     
-
+def get_cities(request):
+    province_code = request.GET.get('province_code')
+    if not province_code:
+        return JsonResponse({'error': 'Province code required'}, status=400)
+    
+    response = requests.get(
+        f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
+    )
+    if response.status_code == 200:
+        cities = response.json()
+        sorted_cities = sorted(cities, key=lambda x: x['name'])
+        cities_data = [{'code': city['code'], 'name': city['name']} for city in sorted_cities]
+        return JsonResponse({'cities': cities_data})
+    return JsonResponse({'error': 'Failed to fetch cities'}, status=500)
