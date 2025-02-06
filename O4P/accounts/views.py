@@ -28,11 +28,11 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
 
 # ACCOUNT MANAGEMENT
 class RoleListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, TemplateView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     template_name = 'manage/role_list.html'
     
 class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = GuardianInformation
     context_object_name = "guardians"
     template_name = "manage/information_list/guardian_list.html"
@@ -53,7 +53,7 @@ class GuardianDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
         return self.get_role_based_queryset(GuardianInformation)
     
 class GuardianUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = GuardianInformation
     success_url = reverse_lazy('guardian_list')
     form_class = GuardianInformationForm
@@ -70,7 +70,7 @@ class GuardianUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
         return context
 
 class GuardianDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = GuardianInformation
     template_name = "manage/information_delete.html"
     success_url = '/roles/guardian/list'
@@ -101,7 +101,7 @@ class GuardianDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
         return context
 
 class AssistantListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = AssistantInformation
     context_object_name = "assistants"
     template_name = "manage/information_list/assistant_list.html"
@@ -122,7 +122,7 @@ class AssistantDetailView(CustomLoginRequiredMixin, UserRoleMixin, DetailView,):
         return self.get_role_based_queryset(AssistantInformation)
     
 class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = AssistantInformation
     success_url = reverse_lazy('assistant_list')
     form_class = AssistantInformationForm
@@ -139,7 +139,7 @@ class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
 
 class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
     model = AssistantInformation
     template_name = "manage/information_delete.html"
     success_url = '/roles/assistant/list'
@@ -155,7 +155,8 @@ class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
     
 class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Administrator', 'Therapist']
+    allowed_roles = ['Therapist']
+
     model = AssistantInformation
     context_object_name = "therapists"
     template_name = "manage/information_list/therapist_list.html"
@@ -168,7 +169,7 @@ class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRol
         return context
 
 class TherapistDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
-    allowed_roles = ['Administrator']
+    allowed_roles = ['Therapist']
     
     model = TherapistInformation
     template_name = 'manage/information_detail/therapist_detail'
@@ -178,7 +179,7 @@ class TherapistDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return self.get_role_based_queryset(TherapistInformation)
 
 class TherapistUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
-    allowed_roles = ['Administrator']
+    allowed_roles = ['Therapist']
     model = TherapistInformation
     success_url = reverse_lazy('therapist_list')
     form_class = TherapistInformationForm
@@ -195,7 +196,7 @@ class TherapistUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
 
 class TherapistDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
-    allowed_roles = ['Administrator']
+    allowed_roles = ['Therapist']
     model = TherapistInformation
     template_name = "manage/information_delete.html"
     success_url = reverse_lazy('therapist_list')

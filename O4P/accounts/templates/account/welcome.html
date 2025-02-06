@@ -23,13 +23,9 @@
                                 <a href="{% url 'assistant_list' %}" class="btn btn-primary my-1">Assistant List</a>
                                 <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary my-1">Appointment Requests</a>
                             {% elif is_administrator %}
-                                <a href="{% url 'patients.list' %}" class="btn btn-primary d-block my-1">Patient List</a>
-                                <!-- 
                                 <a href="{% url 'therapist_signup' %}" class="btn btn-primary d-block my-2">Create Therapist Account</a>            
                                 <a href="{% url 'guardian_signup' %}" class="btn btn-primary d-block my-2">Create Guardian Account</a>
                                 <a href="{% url 'assistant_signup' %}" class="btn btn-primary d-block my-2">Create Assistant Account</a>
-                                -->
-                                <a href="{% url 'role_list' %}" class="btn btn-secondary d-block my-1">Manage Roles</a>
                             {% else %}
                                 <p>Unknown role</p>
                             {% endif %}
