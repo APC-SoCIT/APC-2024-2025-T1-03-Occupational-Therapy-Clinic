@@ -3,7 +3,6 @@ from django.views.generic import TemplateView, ListView, UpdateView, DetailView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 from allauth.account.views import SignupView
 from patients.models import PatientInformation, Guardian
-from patients.forms import PatientSignupForm
 from .forms import TherapistSignupForm, AssistantSignupForm, GuardianSignupForm, TherapistInformationForm, AssistantInformationForm, GuardianInformationForm
 from allauth.account.views import SignupView
 from core.mixins import RolePermissionRequiredMixin, CustomLoginRequiredMixin, UserRoleMixin
@@ -15,7 +14,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.http import JsonResponse
-
+import requests
 
 
 class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
@@ -24,11 +23,6 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-
-        if context['is_patient']:
-            patient_info = PatientInformation.objects.filter(account_id=user).first()
-            context['patient'] = patient_info
 
         return context
 
@@ -162,6 +156,7 @@ class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
     
 class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
     allowed_roles = ['Therapist']
+
     model = AssistantInformation
     context_object_name = "therapists"
     template_name = "manage/information_list/therapist_list.html"
@@ -225,17 +220,30 @@ class TherapistSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin,
     extra_context = {'role_name': 'Therapist'}
 
 class AssistantSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = AssistantSignupForm
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Assistant'}
 
 class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Administrator']
 
     form_class = GuardianSignupForm
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Guardian'}
     
-
+def get_cities(request):
+    province_code = request.GET.get('province_code')
+    if not province_code:
+        return JsonResponse({'error': 'Province code required'}, status=400)
+    
+    response = requests.get(
+        f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
+    )
+    if response.status_code == 200:
+        cities = response.json()
+        sorted_cities = sorted(cities, key=lambda x: x['name'])
+        cities_data = [{'code': city['code'], 'name': city['name']} for city in sorted_cities]
+        return JsonResponse({'cities': cities_data})
+    return JsonResponse({'error': 'Failed to fetch cities'}, status=500)

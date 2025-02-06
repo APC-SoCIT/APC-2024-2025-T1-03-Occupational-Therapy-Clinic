@@ -130,7 +130,6 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
         context['patient_notes'] = PatientNotes.objects.filter(patient=note.patient)
 
         user = self.request.user
-        context['is_patient'] = user.groups.filter(name='Patient').exists()
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
@@ -143,9 +142,7 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         user = self.request.user
         
-        if user.groups.filter(name='Patient').exists():
-            return PatientNotes.objects.filter(patient__account_id=user)
-        elif user.groups.filter(name='Guardian').exists():
+        if user.groups.filter(name='Guardian').exists():
             try:
                 guardian = Guardian.objects.get(user=user)  
                 return PatientNotes.objects.filter(patient__guardian=guardian)  
@@ -190,7 +187,6 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
         context['patient_notes'] = PatientNotes.objects.filter(patient=note.patient)
 
         user = self.request.user
-        context['is_patient'] = user.groups.filter(name='Patient').exists()
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
