@@ -27,10 +27,6 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
         return context
 
 # ACCOUNT MANAGEMENT
-class RoleListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, TemplateView):
-    allowed_roles = ['Therapist']
-    template_name = 'manage/role_list.html'
-    
 class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
     allowed_roles = ['Therapist']
     model = GuardianInformation

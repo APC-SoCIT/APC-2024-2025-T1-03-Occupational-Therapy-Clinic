@@ -2,7 +2,7 @@ from django.urls import path, include
 
 from . import views
 from .views import TherapistSignupView, AssistantSignupView, GuardianSignupView
-from .views import RoleListView, GuardianListView, AssistantListView, TherapistListView
+from .views import GuardianListView, AssistantListView, TherapistListView
 from .views import AssistantDetailView, TherapistDetailView, GuardianDetailView
 from .views import GuardianUpdateView, GuardianDeleteView, AssistantUpdateView, AssistantDeleteView, TherapistUpdateView, TherapistDeleteView
 from .views import get_cities
@@ -15,7 +15,6 @@ urlpatterns = [
     path('auth/signup/guardian/', GuardianSignupView.as_view(), name='guardian_signup'),
     path('get-cities/', get_cities, name='get_cities'),
      
-    path('roles/', RoleListView.as_view(), name='role_list'),
     path('roles/guardian/list', GuardianListView.as_view(), name='guardian_list'),
     path('roles/assistant/list', AssistantListView.as_view(), name='assistant_list'),
     path('roles/therapist/list', TherapistListView.as_view(), name='therapist_list'),
