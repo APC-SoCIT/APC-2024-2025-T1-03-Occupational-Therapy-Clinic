@@ -78,12 +78,12 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
     template_name = "patients/patients_form.html"
    
     def test_func(self):
-        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
+        return self.request.user.groups.filter(name__in=['Therapist']).exists()
     
     def get_queryset(self):
         user = self.request.user
         
-        if user.groups.filter(name__in=['Patient', 'Guardian', 'Assistant']).exists():
+        if user.groups.filter(name__in=['Guardian', 'Assistant']).exists():
             raise PermissionDenied
        
         return super().get_queryset()
@@ -99,12 +99,12 @@ class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     success_url = '/patients'
     
     def test_func(self):
-        return self.request.user.groups.filter(name__in=['Therapist', 'Administrator']).exists()
+        return self.request.user.groups.filter(name__in=['Therapist']).exists()
     
     def get_queryset(self):
         user = self.request.user
         
-        if user.groups.filter(name__in=['Patient', 'Guardian', 'Assistant']).exists():
+        if user.groups.filter(name__in=['Guardian', 'Assistant']).exists():
             raise PermissionDenied
         
         return super().get_queryset()
@@ -134,7 +134,7 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
-        context['is_administrator'] = user.is_superuser
+        context['is_administrator'] = user.groups.filter(name='Administrator').exists()
 
         patient = note.patient
         context['patient'] = patient
@@ -151,7 +151,7 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
                 return PatientNotes.objects.filter(patient__guardian=guardian)  
             except Guardian.DoesNotExist:
                 return PatientNotes.objects.none() 
-        elif user.groups.filter(name__in=['Therapist', 'Assistant', 'Administrator']).exists():
+        elif user.groups.filter(name__in=['Therapist', 'Assistant']).exists():
             return PatientNotes.objects.all()
         else:
             raise PermissionDenied
@@ -160,7 +160,7 @@ class NoteCreateView(RolePermissionRequiredMixin, CreateView):
     model = PatientNotes
     form_class = PatientNotesForm
     template_name = "patients_notes/note_form.html"
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Therapist']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -181,7 +181,7 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
     model = PatientNotes
     form_class = PatientNotesForm
     template_name = "patients_notes/note_form.html"
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Therapist']
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -194,7 +194,7 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
         context['is_assistant'] = user.groups.filter(name='Assistant').exists()
         context['is_therapist'] = user.groups.filter(name='Therapist').exists()
-        context['is_administrator'] = user.is_superuser
+        context['is_administrator'] = user.groups.filter(name='Administrator').exists()
 
         patient = note.patient
         context['patient'] = patient
@@ -206,7 +206,7 @@ class NotesUpdateView(RolePermissionRequiredMixin, UpdateView):
 class NotesDeleteView(RolePermissionRequiredMixin, DeleteView):
     model = PatientNotes 
     template_name='patients_notes/note_delete.html'
-    allowed_roles = ['Therapist', 'Administrator']
+    allowed_roles = ['Therapist']
     
     def get_success_url(self):
         return reverse('patients.details', kwargs={'pk': self.object.patient.pk})
