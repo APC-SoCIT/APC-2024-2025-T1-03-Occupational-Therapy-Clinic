@@ -14,5 +14,5 @@ class AssistantInformationAdmin(admin.ModelAdmin):
 
 @admin.register(GuardianInformation)
 class GuardianInformationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'relationship_to_patient')
-    search_fields = ('first_name', 'last_name', 'relationship_to_patient')
+    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id')
+    search_fields = ('first_name', 'last_name')

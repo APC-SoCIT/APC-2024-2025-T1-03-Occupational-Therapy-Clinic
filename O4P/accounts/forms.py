@@ -235,12 +235,4 @@ class AssistantInformationForm(BaseInformationForm):
 class GuardianInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):
         model = GuardianInformation
-        fields = BaseInformationForm.Meta.fields + ['relationship_to_patient']
-        labels = {
-            **BaseInformationForm.Meta.labels,
-            'relationship_to_patient': 'Relationship to Patient',
-        }
-        widgets = {
-            **BaseInformationForm.Meta.widgets,
-            'relationship_to_patient': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+ 

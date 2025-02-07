@@ -70,7 +70,6 @@ class AssistantInformation(BaseInformation):
         verbose_name_plural = "Assistant Information"
 
 class GuardianInformation(BaseInformation):
-    relationship_to_patient = models.CharField(max_length=50, blank=True, null=True) 
 
     class Meta:
         verbose_name = "Guardian Information"

@@ -36,6 +36,7 @@ class PatientInformation(BaseInformation):
     referring_doctor = models.CharField(max_length=50)
     school = models.CharField(max_length=50, blank=True, null=True)
     initial_evaluation = models.CharField(max_length=100)
+    relationship_to_guardian = models.CharField(max_length=50)
     
     class Meta:
         verbose_name = "Patient Information"

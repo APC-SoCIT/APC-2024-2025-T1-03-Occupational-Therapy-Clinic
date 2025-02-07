@@ -10,7 +10,7 @@ class PatientInformationForm(BaseInformationForm):
         fields = BaseInformationForm.Meta.fields + [
             'diagnosis', 'mother_name', 'mother_number', 
             'father_name', 'father_number', 'referring_doctor', 
-            'school', 'initial_evaluation'
+            'school', 'relationship_to_guardian', 'initial_evaluation'
         ]
         labels = {
             **BaseInformationForm.Meta.labels,
@@ -21,6 +21,7 @@ class PatientInformationForm(BaseInformationForm):
             'father_number': "Father's Contact Number",
             'referring_doctor': 'Referring Doctor',
             'school': 'School (if applicable)',
+            'relationship_to_guardian': 'Relationship to guardian',
             'initial_evaluation': 'Initial Evaluation Notes',
         }
         widgets = {
@@ -47,6 +48,10 @@ class PatientInformationForm(BaseInformationForm):
             }),
             'referring_doctor': forms.TextInput(attrs={
                 'placeholder': 'Referring Doctor',
+                'class': 'form-control'
+            }),
+            'school': forms.TextInput(attrs={
+                'placeholder': 'School (if applicable)',
                 'class': 'form-control'
             }),
             'school': forms.TextInput(attrs={
