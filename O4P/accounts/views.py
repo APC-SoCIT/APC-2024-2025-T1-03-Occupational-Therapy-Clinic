@@ -69,7 +69,7 @@ class GuardianDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
     allowed_roles = ['Therapist']
     model = GuardianInformation
     template_name = "manage/information_delete.html"
-    success_url = '/roles/guardian/list'
+    success_url = reverse_lazy('guarian_list')
     
     def get_queryset(self):
         return self.get_role_based_queryset(GuardianInformation)
@@ -120,7 +120,6 @@ class AssistantDetailView(CustomLoginRequiredMixin, UserRoleMixin, DetailView,):
 class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
     allowed_roles = ['Therapist']
     model = AssistantInformation
-    success_url = reverse_lazy('assistant_list')
     form_class = AssistantInformationForm
     template_name = "manage/information_form.html"
     
@@ -133,12 +132,15 @@ class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         context['object'] = self.object
         context['role'] = 'assistant' 
         return context
+    
+    def get_success_url(self):
+        return reverse_lazy('assistant_detail', kwargs={'pk': self.object.pk})
 
 class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
     allowed_roles = ['Therapist']
     model = AssistantInformation
     template_name = "manage/information_delete.html"
-    success_url = '/roles/assistant/list'
+    success_url = reverse_lazy('assistant_list')
     
     def get_queryset(self):
         return self.get_role_based_queryset(AssistantInformation)
@@ -177,9 +179,11 @@ class TherapistDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
 class TherapistUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
     allowed_roles = ['Therapist']
     model = TherapistInformation
-    success_url = reverse_lazy('therapist_list')
     form_class = TherapistInformationForm
     template_name = "manage/information_form.html"
+    
+    def get_success_url(self):
+        return reverse_lazy('therapist_detail', kwargs={'pk': self.object.pk})
     
     def get_queryset(self):
         return self.get_role_based_queryset(TherapistInformation)

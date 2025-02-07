@@ -74,7 +74,7 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
     
 class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
     model = PatientInformation
-    success_url = '/patients'
+    success_url = reverse_lazy('patients.list')
     form_class = PatientInformationForm
     template_name = "patients/patients_form.html"
    
@@ -97,7 +97,7 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
 class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     model = PatientInformation
     template_name = "patients/patients_delete.html"
-    success_url = '/patients'
+    success_url = reverse_lazy('patients.list')
     
     def test_func(self):
         return self.request.user.groups.filter(name__in=['Therapist']).exists()
@@ -163,9 +163,7 @@ class NoteDetailView(LoginRequiredMixin, DetailView):
 
         else:
             raise PermissionDenied
-
-
-        
+    
 class NoteCreateView(RolePermissionRequiredMixin, CreateView):
     model = PatientNotes
     form_class = PatientNotesForm
