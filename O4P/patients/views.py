@@ -74,7 +74,6 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
     
 class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
     model = PatientInformation
-    success_url = '/patients'
     form_class = PatientInformationForm
     template_name = "patients/patients_form.html"
    
@@ -93,11 +92,14 @@ class PatientsUpdateView(LoginRequiredMixin, UserRoleMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['patient'] = self.object  
         return context
+    
+    def get_success_url(self):
+        return reverse_lazy('patients.details', kwargs={'pk': self.object.pk})
 
 class PatientsDeleteView(LoginRequiredMixin, UserRoleMixin, DeleteView):
     model = PatientInformation
     template_name = "patients/patients_delete.html"
-    success_url = '/patients'
+    success_url = reverse_lazy('patients.list')
     
     def test_func(self):
         return self.request.user.groups.filter(name__in=['Therapist']).exists()

@@ -51,7 +51,6 @@ class GuardianDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
 class GuardianUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
     allowed_roles = ['Therapist']
     model = GuardianInformation
-    success_url = reverse_lazy('guardian_list')
     form_class = GuardianInformationForm
     template_name = "manage/information_form.html"
     
@@ -64,12 +63,15 @@ class GuardianUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
         context['role'] = 'guardian' 
         context['object'] = self.object
         return context
+    
+    def get_success_url(self):
+        return reverse_lazy('guardian_detail', kwargs={'pk': self.object.pk})
 
 class GuardianDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
     allowed_roles = ['Therapist']
     model = GuardianInformation
     template_name = "manage/information_delete.html"
-    success_url = '/roles/guardian/list'
+    success_url = reverse_lazy('guardian_list')
     
     def get_queryset(self):
         return self.get_role_based_queryset(GuardianInformation)
@@ -120,7 +122,6 @@ class AssistantDetailView(CustomLoginRequiredMixin, UserRoleMixin, DetailView,):
 class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, UpdateView):
     allowed_roles = ['Therapist']
     model = AssistantInformation
-    success_url = reverse_lazy('assistant_list')
     form_class = AssistantInformationForm
     template_name = "manage/information_form.html"
     
@@ -133,12 +134,15 @@ class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         context['object'] = self.object
         context['role'] = 'assistant' 
         return context
+    
+    def get_success_url(self):
+        return reverse_lazy('assistant_detail', kwargs={'pk': self.object.pk})
 
 class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DeleteView):
     allowed_roles = ['Therapist']
     model = AssistantInformation
     template_name = "manage/information_delete.html"
-    success_url = '/roles/assistant/list'
+    success_url = reverse_lazy('assistant_list')
     
     def get_queryset(self):
         return self.get_role_based_queryset(AssistantInformation)
