@@ -3,7 +3,7 @@ from allauth.account.forms import SignupForm
 from django import forms
 from patients.models import PatientInformation
 from patients.models import Guardian
-from .models import TherapistInformation, AssistantInformation, GuardianInformation
+from .models import TherapistInformation, AssistantInformation, GuardianInformation, Province, Municipality
 import datetime, re, requests
 from .nationalities import NATIONALITIES_duble_tuple_for as NATIONALITIES
 
@@ -33,15 +33,28 @@ class BaseSignupForm(SignupForm):
         widget=forms.TextInput(attrs={'placeholder': '09123456789 / +639123456789'}),
         required=True
     )
-    province = forms.ChoiceField(choices=[])
-    city = forms.ChoiceField(choices=[])
+    province = forms.ModelChoiceField(
+        queryset=Province.objects.all().order_by('name'),
+        empty_label="Select Province",
+        to_field_name="code",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    municipality = forms.ModelChoiceField(
+        queryset=Municipality.objects.none(),  
+        empty_label="Select Municipality",
+        to_field_name="code",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
     sex = forms.ChoiceField(
         choices=(('M', 'Male'), ('F', 'Female')),
         required=True
     )
     nationality = forms.ChoiceField(
         choices=NATIONALITIES,
-        required=True
+        required=True,
+        initial='Filipino'
     )
     religion = forms.CharField(
         max_length=50,
@@ -49,39 +62,26 @@ class BaseSignupForm(SignupForm):
         required=True
     )
     
-    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Fetch provinces
-        response_provinces = requests.get('https://psgc.gitlab.io/api/provinces')
-        if response_provinces.status_code == 200:
-            provinces = response_provinces.json()
-            sorted_provinces = sorted(provinces, key=lambda x: x['name'])
-            self.fields['province'].choices = [
-                (province['code'], province['name']) for province in sorted_provinces
-            ]
-        else:
-            self.fields['province'].choices = []
 
-        # Fetch cities
-        province_code = None
-        if self.is_bound:
-            province_code = self.data.get('province')
-        else:
-            province_code = self.initial.get('province')
+        # Default: empty queryset
+        self.fields['municipality'].queryset = Municipality.objects.none()
 
-    # Fetch cities based on province code
-        self.fields['city'].choices = []
-        if province_code:
-            response_cities = requests.get(
-            f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
-        )
-            if response_cities.status_code == 200:
-                cities = response_cities.json()
-                sorted_cities = sorted(cities, key=lambda x: x['name'])
-                self.fields['city'].choices = [
-                    (city['code'], city['name']) for city in sorted_cities
-                ]
+        if 'province' in self.data:
+            province_code = self.data.get('province')  # Get province from form data
+            if province_code:
+                self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_code).order_by('name')
+
+    def clean_municipality(self):
+        """Ensure selected municipality is valid within the province."""
+        municipality = self.cleaned_data.get('municipality')
+        province = self.cleaned_data.get('province')
+
+        if municipality and province:
+            # Check if the municipality belongs to the selected province
+            if not Municipality.objects.filter(code=municipality.code, province=province).exists():
+                raise forms.ValidationError("Invalid municipality selected for the given province.")        
             
     def clean(self):
         cleaned_data = super().clean()  
@@ -93,22 +93,6 @@ class BaseSignupForm(SignupForm):
         if contact_number and not re.match(r'^(\+63|0)9\d{9}$', contact_number):
             self.add_error("contact_number", "Invalid phone number format.")
             
-        # Fetch the name of the province and city by their code
-        province_code = cleaned_data.get('province')
-        city_code = cleaned_data.get('city')
-        
-        response_provinces = requests.get('https://psgc.gitlab.io/api/provinces')
-        if response_provinces.status_code == 200:
-            provinces = response_provinces.json()
-            province_name = next((province['name'] for province in provinces if province['code'] == province_code), None)
-            cleaned_data['province'] = province_name
-
-        response_cities = requests.get('https://psgc.gitlab.io/api/cities-municipalities')
-        if response_cities.status_code == 200:
-            cities = response_cities.json()
-            city_name = next((city['name'] for city in cities if city['code'] == city_code), None)
-            cleaned_data['city'] = city_name
-
         return cleaned_data
     def save(self, request, role=None):
         user = super().save(request)
@@ -126,8 +110,8 @@ class BaseSignupForm(SignupForm):
             "last_name": self.cleaned_data.get("last_name"),
             "date_of_birth": self.cleaned_data.get("date_of_birth"),
             "contact_number": self.cleaned_data.get("contact_number"),
-            "city": self.cleaned_data.get("city"),
             "province": self.cleaned_data.get("province"),
+            "municipality": self.cleaned_data.get("municipality"),
             "sex": self.cleaned_data.get("sex"),
             "nationality": self.cleaned_data.get("nationality"),
             "religion": self.cleaned_data.get("religion"),
@@ -180,7 +164,7 @@ class BaseInformationForm(forms.ModelForm):
     class Meta:
         fields = [
             'first_name', 'middle_name', 'last_name', 'date_of_birth', 'sex', 'nationality', 'religion', 
-            'contact_number', 'province', 'city'
+            'contact_number', 'province', 'municipality'
         ]
         labels = {
             'first_name': 'First Name',
@@ -192,7 +176,7 @@ class BaseInformationForm(forms.ModelForm):
             'religion': 'Religion',
             'contact_number': 'Contact Number',
             'province': 'Province',
-            'city': 'City',
+            'municipality': 'Municipality',
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -203,10 +187,56 @@ class BaseInformationForm(forms.ModelForm):
             'nationality': forms.Select(attrs={'class': 'form-control'}),
             'religion': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'province': forms.TextInput(attrs={'class': 'form-control'}),
-            'city': forms.TextInput(attrs={'class': 'form-control', }),
+            'province': forms.Select(attrs={'class': 'form-control'}),
+            'municipality': forms.Select(attrs={'class': 'form-control'}),
         }
-      
+                
+    province = forms.ModelChoiceField(
+        queryset=Province.objects.all().order_by('name'),
+        empty_label="Select Province",
+        to_field_name="code",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    municipality = forms.ModelChoiceField(
+        queryset=Municipality.objects.none(),  
+        empty_label="Select Municipality",
+        to_field_name="code",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    nationality = forms.ChoiceField(
+        choices=NATIONALITIES,
+        required=True,
+        initial='Filipino'
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # If editing an existing instance, set municipality queryset
+        if self.instance and self.instance.pk and self.instance.province:
+            self.fields['municipality'].queryset = Municipality.objects.filter(province=self.instance.province).order_by('name')
+
+        # If it's a new form submission, dynamically update queryset
+        elif 'province' in self.data:
+            try:
+                province_id = self.data.get('province')
+                self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_id).order_by('name')
+            except ValueError:
+                self.fields['municipality'].queryset = Municipality.objects.none()
+
+    def clean_municipality(self):
+        """Ensure selected municipality is valid within the province."""
+        municipality = self.cleaned_data.get('municipality')
+        province = self.cleaned_data.get('province')
+
+        if municipality and province:
+            # Check if the municipality belongs to the selected province
+            if not Municipality.objects.filter(code=municipality.code, province=province).exists():
+                raise forms.ValidationError("Invalid municipality selected for the given province.")
+
+        return municipality
 class TherapistInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):
         model = TherapistInformation

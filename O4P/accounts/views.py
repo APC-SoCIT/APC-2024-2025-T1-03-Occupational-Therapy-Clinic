@@ -6,7 +6,7 @@ from patients.models import PatientInformation, Guardian
 from .forms import TherapistSignupForm, AssistantSignupForm, GuardianSignupForm, TherapistInformationForm, AssistantInformationForm, GuardianInformationForm
 from allauth.account.views import SignupView
 from core.mixins import RolePermissionRequiredMixin, CustomLoginRequiredMixin, UserRoleMixin
-from .models import TherapistInformation, GuardianInformation, AssistantInformation
+from .models import TherapistInformation, GuardianInformation, AssistantInformation, Province, Municipality
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
@@ -233,17 +233,14 @@ class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, 
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Guardian'}
     
-def get_cities(request):
+def get_municipalities(request):
     province_code = request.GET.get('province_code')
+ 
     if not province_code:
         return JsonResponse({'error': 'Province code required'}, status=400)
-    
-    response = requests.get(
-        f'https://psgc.gitlab.io/api/provinces/{province_code}/cities-municipalities'
-    )
-    if response.status_code == 200:
-        cities = response.json()
-        sorted_cities = sorted(cities, key=lambda x: x['name'])
-        cities_data = [{'code': city['code'], 'name': city['name']} for city in sorted_cities]
-        return JsonResponse({'cities': cities_data})
-    return JsonResponse({'error': 'Failed to fetch cities'}, status=500)
+
+    municipalities = Municipality.objects.filter(province__code=province_code).order_by('name')
+    municipalities_data = [{'code': m.code, 'name': m.name} for m in municipalities]
+
+    return JsonResponse({'municipalities': municipalities_data})
+

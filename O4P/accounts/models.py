@@ -4,6 +4,22 @@ from django.core.validators import RegexValidator
 from datetime import date
 from .nationalities import NATIONALITIES_duble_tuple_for as Nationalities
 
+#GEOGRAPHY MODELS FOR FORMS
+class Province(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Municipality(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name="municipalities")
+
+    def __str__(self):
+        return self.name
+    
 class BaseInformation(models.Model):
     account_id = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50) 
@@ -33,9 +49,9 @@ class BaseInformation(models.Model):
         ('M', 'Male'),
         ('F', 'Female')
     )
-    sex = models.CharField(max_length=1, choices=sex_choices, blank=True, null=True)
-    city = models.CharField(max_length=50)           
-    province = models.CharField(max_length=50)   
+    sex = models.CharField(max_length=1, choices=sex_choices, blank=True, null=True)    
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True, related_name="%(class)s_residents")
+    municipality = models.ForeignKey(Municipality, on_delete=models.SET_NULL, null=True, blank=True, related_name="%(class)s_residents")
     nationality = models.CharField(
         max_length=30,
         choices=Nationalities, 
@@ -74,3 +90,5 @@ class GuardianInformation(BaseInformation):
     class Meta:
         verbose_name = "Guardian Information"
         verbose_name_plural = "Guardian Information"
+
+
