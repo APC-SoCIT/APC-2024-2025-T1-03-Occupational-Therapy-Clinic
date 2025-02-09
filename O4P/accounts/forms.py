@@ -145,10 +145,8 @@ class BaseSignupForm(SignupForm):
                 **base_information_data
             )
         elif role == "Guardian":
-            relationship_to_patient = self.cleaned_data.get("relationship_to_patient")
             GuardianInformation.objects.create(
                 **base_information_data,
-                relationship_to_patient=relationship_to_patient  
             )
         else:
             raise ValueError(f"Unsupported role: {role}")
@@ -171,11 +169,6 @@ class AssistantSignupForm(BaseSignupForm):
         return user
 
 class GuardianSignupForm(BaseSignupForm):
-    relationship_to_patient = forms.CharField(
-                    max_length=50,
-                    widget=forms.TextInput(attrs={'placeholder': 'Relationship'}), 
-                    required=True)
-    
     def save(self, request):
         user = super().save(request, role="Guardian")
                 
