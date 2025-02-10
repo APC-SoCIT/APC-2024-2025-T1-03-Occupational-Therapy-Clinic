@@ -25,19 +25,22 @@
 <script>
     document.getElementById('id_province').addEventListener('change', function() {
         const provinceCode = this.value;
+        const municipalitySelect = document.getElementById('id_municipality');
+    
+        municipalitySelect.innerHTML = '<option value="">---------</option>'; // Reset municipalities
+    
         if (!provinceCode) return;
-        
-        fetch(`/get-cities/?province_code=${encodeURIComponent(provinceCode)}`)
+    
+        fetch(`/get-municipalities/?province_code=${encodeURIComponent(provinceCode)}`)
             .then(response => response.json())
             .then(data => {
-                const citySelect = document.getElementById('id_city');
-                citySelect.innerHTML = '<option value="">---------</option>'; // Reset options
-                data.cities.forEach(city => {
-                    const option = new Option(city.name, city.code);
-                    citySelect.appendChild(option);
+                console.log("Fetched municipalities:", data.municipalities);
+                data.municipalities.forEach(municipality => {
+                    const option = new Option(municipality.name, municipality.code);
+                    municipalitySelect.appendChild(option);
                 });
             })
             .catch(error => console.error('Error:', error));
     });
-    </script>
+</script>
 {% endblock %}

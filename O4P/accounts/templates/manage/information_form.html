@@ -73,7 +73,7 @@
                           <div class="col-lg-6">
                               <div class="mb-3">
                                   <label class="form-label">City</label>
-                                  {{ form.city }}
+                                  {{ form.municipality }}
                               </div>
                           </div>
                           <div class="col-lg-6">
@@ -107,4 +107,27 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+    document.getElementById('id_province').addEventListener('change', function() {
+        console.log("HELLO THERE");
+        const provinceCode = this.value;
+        const municipalitySelect = document.getElementById('id_municipality');
+    
+        municipalitySelect.innerHTML = '<option value="">---------</option>'; 
+    
+        if (!provinceCode) return;
+    
+        fetch(`/get-municipalities/?province_code=${encodeURIComponent(provinceCode)}`)
+            .then(response => response.json())
+            .then(data => {
+                data.municipalities.forEach(municipality => {
+                    const option = new Option(municipality.name, municipality.code);
+                    municipalitySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
 {% endblock %}
