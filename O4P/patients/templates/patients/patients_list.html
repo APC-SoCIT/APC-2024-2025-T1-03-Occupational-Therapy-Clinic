@@ -48,5 +48,9 @@
 
   <div class="my-3">
     <a href="{% url 'welcome' %}" class="btn">Back</a>
+
+    {% if is_guardian%}
+    <a href="{% url 'patients.create' %}" class="btn">Create Patient</a>
+    {% endif %}
   </div>
 {% endblock %}
