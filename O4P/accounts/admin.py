@@ -4,26 +4,17 @@ from .models import TherapistInformation, AssistantInformation, GuardianInformat
 
 @admin.register(TherapistInformation)
 class TherapistInformationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'specialization')
+    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'specialization', 'province', 'municipality')
     search_fields = ('first_name', 'last_name', 'specialization')
 
 @admin.register(AssistantInformation)
 class AssistantInformationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'contact_number')
+    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'contact_number', 'province', 'municipality')
     search_fields = ('first_name', 'last_name')
 
 @admin.register(GuardianInformation)
 class GuardianInformationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id')
+    list_display = ('id', 'account_id', 'first_name', 'last_name', 'account_id', 'province', 'municipality')
     search_fields = ('first_name', 'last_name')
 
-@admin.register(Province)
-class ProvinceAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name')
-    search_fields = ('code', 'name')
-
-@admin.register(Municipality)
-class MunicipalityAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'province')
-    search_fields = ('code', 'name', 'province__name')
     

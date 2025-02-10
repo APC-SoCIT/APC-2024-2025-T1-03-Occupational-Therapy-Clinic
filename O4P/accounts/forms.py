@@ -65,23 +65,12 @@ class BaseSignupForm(SignupForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Default: empty queryset
         self.fields['municipality'].queryset = Municipality.objects.none()
 
         if 'province' in self.data:
-            province_code = self.data.get('province')  # Get province from form data
+            province_code = self.data.get('province')  
             if province_code:
-                self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_code).order_by('name')
-
-    def clean_municipality(self):
-        """Ensure selected municipality is valid within the province."""
-        municipality = self.cleaned_data.get('municipality')
-        province = self.cleaned_data.get('province')
-
-        if municipality and province:
-            # Check if the municipality belongs to the selected province
-            if not Municipality.objects.filter(code=municipality.code, province=province).exists():
-                raise forms.ValidationError("Invalid municipality selected for the given province.")        
+                self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_code).order_by('name') 
             
     def clean(self):
         cleaned_data = super().clean()  
