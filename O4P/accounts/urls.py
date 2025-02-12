@@ -13,7 +13,7 @@ urlpatterns = [
     
     path('auth/signup/therapist/', TherapistSignupView.as_view(), name='therapist_signup'),
     path('auth/signup/assistant/', AssistantSignupView.as_view(), name='assistant_signup'),
-    path('auth/signup/guardian/', GuardianSignupView.as_view(), name='guardian_signup'),
+    path('auth/signup/', GuardianSignupView.as_view(), name='guardian_signup'),
     
     path('get-municipalities/', get_municipalities, name='get_municipalities'),
      
