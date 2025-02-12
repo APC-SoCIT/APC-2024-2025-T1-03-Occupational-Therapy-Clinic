@@ -1,13 +1,29 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Game
+from .models import Game, AssignedGame
 from .forms import GameForm  # Import the form for handling games
+from patients.models import PatientInformation  # Import PatientInformation for patient data
 
 # General view for displaying the game library
 def game_library(request):
     games = Game.objects.all().order_by('id')  # Fetch all games from the database
-    return render(request, 'games/game_library.html', {'games': games})
+    assigned_games_by_patient = {}
+
+    # Check if the user is a guardian
+    if request.user.groups.filter(name='Guardian').exists():
+        # Get all patients linked to this guardian
+        patients = PatientInformation.objects.filter(account_id=request.user)
+        for patient in patients:
+            assigned_games = AssignedGame.objects.filter(patient=patient)
+            if assigned_games.exists():
+                assigned_games_by_patient[patient] = assigned_games
+
+    context = {
+        'games': games,
+        'assigned_games_by_patient': assigned_games_by_patient,
+    }
+    return render(request, 'games/game_library.html', context)
 
 @login_required
 def admin_game_library(request):

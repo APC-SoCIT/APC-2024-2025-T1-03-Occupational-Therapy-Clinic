@@ -6,19 +6,50 @@
     <!-- Admin Mode Button -->
     {% if request.user.is_superuser %}
     <div class="d-flex justify-content-end">
-        <a href="{% url 'admin_game_library' %}" class="btn btn-secondary">Admin Mode</a>
-    </div>  
+        <a href="{% url 'admin_game_library' %}" class="btn btn-secondary mb-3">Admin Mode</a>
+    </div>
     {% endif %}
 
     <!-- Title Section -->
     <div class="text-start mb-4">
         <h2 class="fw-bold">Game Library</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Explore educational games for entertainment and learning.</p>
     </div>
 
-    <!-- Game Cards Section -->
+    <!-- Assigned Games Section -->
+    {% for patient, assigned_games in assigned_games_by_patient.items %}
+    <h3 class="mt-4">{{ patient.first_name }}'s Games</h3>
     <div class="position-relative">
-        <button class="scroll-btn left-btn" onclick="scrollToCard('left')">&#8249;</button>
+        <button class="scroll-btn left-btn" id="left-btn-{{ patient.id }}" onclick="scrollToCard('assigned-games-{{ patient.id }}', 'left')">&#8249;</button>
+        <div class="d-flex overflow-hidden align-items-center" id="assigned-games-{{ patient.id }}">
+            {% for assigned_game in assigned_games %}
+            <div class="card mx-2 bg-light">
+                <a href="{{ assigned_game.game.game_link }}" class="text-decoration-none" target="_blank">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            {% if assigned_game.game.thumbnail %}
+                            <img src="{{ assigned_game.game.thumbnail.url }}" alt="{{ assigned_game.game.title }}" class="img-fluid rounded" style="max-height: 120px; max-width: 100%;">
+                            {% else %}
+                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded">
+                                <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <h5 class="fw-bold text-dark">{{ assigned_game.game.title }}</h5>
+                        <p class="text-muted">{{ assigned_game.game.genre }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="scroll-btn right-btn" id="right-btn-{{ patient.id }}" onclick="scrollToCard('assigned-games-{{ patient.id }}', 'right')">&#8250;</button>
+    </div>
+    {% endfor %}
+
+    <!-- Discover Section -->
+    <h3 class="mt-4">Discover ABCya's Games</h3>
+    <div class="position-relative">
+        <button class="scroll-btn left-btn" id="left-btn-game-cards" onclick="scrollToCard('game-cards-container', 'left')">&#8249;</button>
         <div class="d-flex overflow-hidden align-items-center" id="game-cards-container">
             {% for game in games %}
             <div class="card mx-2 bg-light">
@@ -40,24 +71,14 @@
             </div>
             {% endfor %}
         </div>
-        <button class="scroll-btn right-btn" onclick="scrollToCard('right')">&#8250;</button>
+        <button class="scroll-btn right-btn" id="right-btn-game-cards" onclick="scrollToCard('game-cards-container', 'right')">&#8250;</button>
     </div>
 </div>
 
 <style>
-/* Updated styles for ask2.png appearance */
 body {
     background-color: #e9ecef;
 }
-
-h2 {
-    color: #212529;
-}
-
-p {
-    color: #495057;
-}
-
 .card {
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -67,11 +88,9 @@ p {
     background-color: #f8f9fa;
     transition: transform 0.3s ease-in-out;
 }
-
 .card:hover {
     transform: translateY(-5px);
 }
-
 .card .placeholder-img {
     width: 100%;
     height: 120px;
@@ -79,29 +98,12 @@ p {
     align-items: center;
     justify-content: center;
 }
-
-.card h5 {
-    margin-top: 10px;
-    color: #212529;
-}
-
-.card p {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.text-decoration-none {
-    text-decoration: none;
-    color: inherit;
-}
-
 .d-flex {
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
     padding: 10px 0;
 }
-
 .scroll-btn {
     position: absolute;
     top: 50%;
@@ -115,22 +117,37 @@ p {
     cursor: pointer;
     z-index: 10;
 }
-
 .left-btn {
     left: -20px;
 }
-
 .right-btn {
     right: -20px;
 }
 </style>
 
 <script>
-function scrollToCard(direction) {
-    const container = document.getElementById('game-cards-container');
+function scrollToCard(containerId, direction) {
+    const container = document.getElementById(containerId);
     const cardWidth = document.querySelector('.card').offsetWidth + 16; // Card width + margin
     const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 }
+
+function checkScrollButtons() {
+    const sections = document.querySelectorAll('.position-relative');
+    sections.forEach(section => {
+        const container = section.querySelector('.d-flex');
+        const leftBtn = section.querySelector('.left-btn');
+        const rightBtn = section.querySelector('.right-btn');
+
+        if (container.scrollWidth <= container.clientWidth) {
+            leftBtn.style.display = 'none';
+            rightBtn.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', checkScrollButtons);
 </script>
+
 {% endblock %}

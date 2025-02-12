@@ -5,7 +5,7 @@
 <div class="header-1 my-2">
     <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
     <div>
-        {% if is_therapist or is_administrator%}
+        {% if is_therapist or is_administrator %}
             <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary">Edit</a>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 Delete
@@ -14,83 +14,54 @@
     </div>
 </div>
 
+<!-- Patient Information Section -->
 <div class="row gutters-sm">
     <div class="col-md-12">
         <div class="card mb-3">
             <div class="card-body">
+                <!-- Patient Details -->
                 <div class="row">
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">First Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ patient.first_name }}
-                    </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Middle Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                    <!--Middle Name-->
-                    </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Last Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ patient.last_name }}
-                    </div>
+                    <div class="col-sm-2"><h6 class="mb-0">First Name:</h6></div>
+                    <div class="col-sm-2 text-secondary">{{ patient.first_name }}</div>
+                    <div class="col-sm-2"><h6 class="mb-0">Middle Name:</h6></div>
+                    <div class="col-sm-2 text-secondary">-</div>
+                    <div class="col-sm-2"><h6 class="mb-0">Last Name:</h6></div>
+                    <div class="col-sm-2 text-secondary">{{ patient.last_name }}</div>
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Diagnosis:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.condition }}
-                    </div>
+                    <div class="col-sm-3"><h6 class="mb-0">Diagnosis:</h6></div>
+                    <div class="col-sm-9 text-secondary">{{ patient.condition }}</div>
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Date of Birth:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ patient.date_of_birth }}
-                    </div>
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Contact Number:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ patient.contact_number }}
-                    </div>
+                    <div class="col-sm-3"><h6 class="mb-0">Date of Birth:</h6></div>
+                    <div class="col-sm-3 text-secondary">{{ patient.date_of_birth }}</div>
+                    <div class="col-sm-3"><h6 class="mb-0">Contact Number:</h6></div>
+                    <div class="col-sm-3 text-secondary">{{ patient.contact_number }}</div>
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Address:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.city }} , {{ patient.province }}
-                    </div>
+                    <div class="col-sm-3"><h6 class="mb-0">Address:</h6></div>
+                    <div class="col-sm-9 text-secondary">{{ patient.city }}, {{ patient.province }}</div>
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Assigned Guardian:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.guardian }}
-                    </div>
+                    <div class="col-sm-3"><h6 class="mb-0">Assigned Guardian:</h6></div>
+                    <div class="col-sm-9 text-secondary">{{ patient.guardian }}</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row gutters-sm">
+<!-- Notes Section -->
+<div class="row gutters-sm mb-4">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body d-flex justify-content-between">
-                <h4 class="d-flex align-items-center mb-3">Notes</h4>
-                {%if is_therapist or is_administrator%}
+                <h4 class="mb-3">Notes</h4>
+                {% if is_therapist or is_administrator %}
                     <a href="{% url 'notes.create' pk=patient.id %}" class="btn">Add Note</a>
                 {% endif %}
             </div>
@@ -98,22 +69,22 @@
                 <table class="custom-table">
                     <thead>
                         <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Note By</th>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Note By</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for note in patient_notes %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
-                                    {{ note.title }}
-                                </a>
-                            </td>
-                            <td>{{ note.session_date }}</td>
-                            <td></td>
-                        </tr>
+                            <tr>
+                                <td><a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">{{ note.title }}</a></td>
+                                <td>{{ note.session_date }}</td>
+                                <td>-</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No notes available.</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -122,6 +93,85 @@
     </div>
 </div>
 
+<!-- Assigned Games Section -->
+<div class="row gutters-sm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between">
+                <h4 class="mb-3">Assigned Games</h4>
+                {% if is_therapist %}
+                    <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#assignGameModal">Assign Game</a>
+                {% endif %}
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Game Title</th>
+                            <th>Date Assigned</th>
+                            {% if is_therapist %}
+                                <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assigned_game in assigned_games %}
+                            <tr>
+                                <td>{{ assigned_game.game.title }}</td>  <!-- Corrected to use 'title' instead of 'name' -->
+                                <td>{{ assigned_game.assigned_date|date:"Y-m-d" }}</td>
+                                {% if is_therapist %}
+                                    <td>
+                                        <form method="post" action="{% url 'remove_assigned_game' patient.id assigned_game.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No games assigned yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Game Modal -->
+<div class="modal fade" id="assignGameModal" tabindex="-1" aria-labelledby="assignGameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignGameModalLabel">Assign Game</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'assign_game' patient.id %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="game">Select Game:</label>
+                        <select id="game" name="game_id" class="form-control">
+                            {% for game in available_games %}
+                                <option value="{{ game.id }}">{{ game.title }}</option>
+                            {% empty %}
+                                <option disabled>No available games.</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Assign Game</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -145,13 +195,7 @@
 </div>
 
 <div class="my-3">
-    <a href="
-    {% if is_patient %} 
-        {% url 'welcome' %}
-    {% else %} 
-        {% url 'patients.list' %}
-    {% endif %}" 
-    class="btn btn-secondary">Back</a>
+    <a href="{% url 'patients.list' %}" class="btn btn-secondary">Back</a>
 </div>
 
 {% endblock %}
