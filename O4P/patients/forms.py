@@ -7,10 +7,12 @@ from accounts.forms import BaseSignupForm, BaseInformationForm
 class PatientInformationForm(BaseInformationForm):
     class Meta(BaseInformationForm.Meta):
         model = PatientInformation
-        fields = BaseInformationForm.Meta.fields + [
-            'diagnosis', 'mother_name', 'mother_number', 
-            'father_name', 'father_number', 'referring_doctor', 
-            'school', 'relationship_to_guardian', 'initial_evaluation'
+        fields = [
+            field for field in BaseInformationForm.Meta.fields if field != "contact_number"
+        ] + [
+            "diagnosis", "mother_name", "mother_number", 
+            "father_name", "father_number", "referring_doctor", 
+            "school", "relationship_to_guardian", "initial_evaluation"
         ]
         labels = {
             **BaseInformationForm.Meta.labels,
