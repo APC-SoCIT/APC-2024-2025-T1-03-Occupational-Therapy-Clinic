@@ -38,6 +38,7 @@ class PatientInformation(BaseInformation):
     initial_evaluation = models.CharField(max_length=100)
     relationship_to_guardian = models.CharField(max_length=50)
     contact_number = None
+    religion = models.CharField(max_length=50, null=True)
     
     class Meta:
         verbose_name = "Patient Information"

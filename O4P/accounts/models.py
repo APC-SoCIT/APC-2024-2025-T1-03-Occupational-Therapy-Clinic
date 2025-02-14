@@ -57,8 +57,7 @@ class BaseInformation(models.Model):
         choices=Nationalities, 
         blank=True,
         null=True
-    )
-    religion = models.CharField(max_length=50, null=True)              
+    )              
 
     class Meta:
         abstract = True
