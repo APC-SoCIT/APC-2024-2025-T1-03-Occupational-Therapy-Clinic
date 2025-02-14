@@ -23,9 +23,13 @@
                 <tr>
                     <td>
                         {% if user.groups.first.name == 'Therapist' %}
-                            {{ appointment.patient.username }}
+                            {% if appointment.patient.account_id %}
+                                {{ appointment.patient.account_id.username }}  <!-- ✅ Show registered patient's username -->
+                            {% else %}
+                                {{ appointment.first_name }} {{ appointment.last_name }}  <!-- ✅ Show non-registered patient -->
+                            {% endif %}
                         {% else %}
-                            {{ appointment.therapist.username }}
+                            {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- ✅ Show therapist's full name -->
                         {% endif %}
                     </td>
                     <td>{{ appointment.date }}</td>
@@ -38,19 +42,15 @@
                     </td>
                 </tr>
             {% endfor %}
-            
-{% else %}
-                <tr>
-                    <td colspan="5">
-                        <p>No appointments available.</p>
-                    </td>
-                </tr>
-{% endif %}
         </tbody>
     </table>
     <div class="my-3">
         <a href="{% url 'calendar_view' %}" class="btn">Back</a>
     </div>
 </div>
+
+{% else %}
+    <p>No appointments available.</p>
+{% endif %}
 
 {% endblock %}
