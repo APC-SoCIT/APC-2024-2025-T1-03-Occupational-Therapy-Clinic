@@ -117,7 +117,7 @@
                     <tbody>
                         {% for assigned_game in assigned_games %}
                             <tr>
-                                <td>{{ assigned_game.game.title }}</td>  <!-- Corrected to use 'title' instead of 'name' -->
+                                <td>{{ assigned_game.game.title }}</td>
                                 <td>{{ assigned_game.assigned_date|date:"Y-m-d" }}</td>
                                 {% if is_therapist %}
                                     <td>
