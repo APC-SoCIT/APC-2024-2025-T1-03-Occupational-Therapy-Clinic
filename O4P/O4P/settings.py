@@ -177,6 +177,8 @@ LOGOUT_REDIRECT_URL = '/auth/login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
+
 MFA_ADAPTER = "allauth.mfa.adapter.DefaultMFAAdapter"
 
 MFA_SUPPORTED_TYPES = ["recovery_codes", "totp"]
