@@ -16,7 +16,7 @@ function toggleNav() {
 }
 
 document.getElementById('deleteForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
 
     const form = this;
     const url = form.action;
@@ -31,11 +31,9 @@ document.getElementById('deleteForm').addEventListener('submit', function(e) {
     })
     .then(response => {
         if (response.ok) {
-            // Close the modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
             modal.hide();
 
-            // Redirect to the patient's details page
             window.location.href = "{{ request.build_absolute_uri|get_host }}/patients/details/{{ patient.id }}";
         } else {
             return response.json();
@@ -43,7 +41,6 @@ document.getElementById('deleteForm').addEventListener('submit', function(e) {
     })
     .then(data => {
         if (data && data.error) {
-            // Display error message if needed
             alert('Error: ' + data.error);
         }
     })
@@ -51,3 +48,5 @@ document.getElementById('deleteForm').addEventListener('submit', function(e) {
         console.error('Error:', error);
     });
 });
+
+
