@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Game
+from .models import Game, AssignedGame
 from .forms import GameForm  # Import the form for handling games
+from patients.models import PatientInformation  # Import PatientInformation for patient data
 
 # General view for displaying the game library
 def game_library(request):
