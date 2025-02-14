@@ -3,12 +3,6 @@
 
 {% block content %}
 <div class="container my-5">
-    <!-- Admin Mode Button -->
-    {% if request.user.is_superuser %}
-    <div class="d-flex justify-content-end">
-        <a href="{% url 'admin_game_library' %}" class="btn btn-secondary mb-3">Admin Mode</a>
-    </div>
-    {% endif %}
 
     <!-- Title Section -->
     <div class="text-start mb-4">
@@ -16,21 +10,27 @@
         <p>Explore educational games for entertainment and learning.</p>
     </div>
 
-    <!-- Assigned Games Section -->
+    <!-- Search Bar -->
+    <form id="search-form" class="mb-4">
+        <div class="input-group">
+            <input type="text" id="search-input" class="form-control" name="q" placeholder="Search for a game...">
+        </div>
+    </form>
+
+    <!-- Patient's Games Section -->
     {% for patient, assigned_games in assigned_games_by_patient.items %}
     <h3 class="mt-4">{{ patient.first_name }}'s Games</h3>
-    <div class="position-relative">
-        <button class="scroll-btn left-btn" id="left-btn-{{ patient.id }}" onclick="scrollToCard('assigned-games-{{ patient.id }}', 'left')">&#8249;</button>
-        <div class="d-flex overflow-hidden align-items-center" id="assigned-games-{{ patient.id }}">
-            {% for assigned_game in assigned_games %}
-            <div class="card mx-2 bg-light">
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        {% for assigned_game in assigned_games %}
+        <div class="col game-card">
+            <div class="card h-100 bg-light">
                 <a href="{{ assigned_game.game.game_link }}" class="text-decoration-none" target="_blank">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             {% if assigned_game.game.thumbnail %}
-                            <img src="{{ assigned_game.game.thumbnail.url }}" alt="{{ assigned_game.game.title }}" class="img-fluid rounded" style="max-height: 120px; max-width: 100%;">
+                            <img src="{{ assigned_game.game.thumbnail.url }}" alt="{{ assigned_game.game.title }}" class="img-fluid rounded" style="max-height: 120px;">
                             {% else %}
-                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded">
+                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 120px;">
                                 <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
                             </div>
                             {% endif %}
@@ -40,26 +40,26 @@
                     </div>
                 </a>
             </div>
-            {% endfor %}
         </div>
-        <button class="scroll-btn right-btn" id="right-btn-{{ patient.id }}" onclick="scrollToCard('assigned-games-{{ patient.id }}', 'right')">&#8250;</button>
+        {% endfor %}
     </div>
     {% endfor %}
 
-    <!-- Discover Section -->
+    <!-- ABCya Games Section -->
     <h3 class="mt-4">Discover ABCya's Games</h3>
-    <div class="position-relative">
-        <button class="scroll-btn left-btn" id="left-btn-game-cards" onclick="scrollToCard('game-cards-container', 'left')">&#8249;</button>
-        <div class="d-flex overflow-hidden align-items-center" id="game-cards-container">
-            {% for game in games %}
-            <div class="card mx-2 bg-light">
+    <p>The games in this section are produced and developed by ABCya. Therapro Therapy Clinic does not hold any ownership of these games and is using them solely for the convenience of its users.</p>
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        {% for game in games %}
+        {% if game.developer == "ABCya" %}
+        <div class="col game-card">
+            <div class="card h-100 bg-light">
                 <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             {% if game.thumbnail %}
-                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px; max-width: 100%;">
+                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px;">
                             {% else %}
-                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded">
+                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 120px;">
                                 <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
                             </div>
                             {% endif %}
@@ -69,85 +69,91 @@
                     </div>
                 </a>
             </div>
-            {% endfor %}
         </div>
-        <button class="scroll-btn right-btn" id="right-btn-game-cards" onclick="scrollToCard('game-cards-container', 'right')">&#8250;</button>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Quartize Games Section -->
+    <h3 class="mt-4">Explore Quartize🐐's Games</h3>
+    <p>The games in this section are produced and developed by Quartize🐐.</p>
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        {% for game in games %}
+        {% if game.developer == "Quartize" %}
+        <div class="col game-card">
+            <div class="card h-100 bg-light">
+                <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            {% if game.thumbnail %}
+                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px;">
+                            {% else %}
+                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 120px;">
+                                <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <h5 class="fw-bold text-dark">{{ game.title }}</h5>
+                        <p class="text-muted">{{ game.genre }}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
     </div>
 </div>
 
+<!-- CSS -->
 <style>
-body {
-    background-color: #e9ecef;
-}
-.card {
+    body {
+        background-color: #e9ecef;
+    }
+    .card {
+    width: 100%;
+    height: 250px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    min-width: 200px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #f8f9fa;
     transition: transform 0.3s ease-in-out;
-}
-.card:hover {
-    transform: translateY(-5px);
-}
-.card .placeholder-img {
-    width: 100%;
+    background-color: #f8f9fa;
+    }
+    .card img {
     height: 120px;
+    object-fit: cover;
+    }
+    .card-body {
     display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.d-flex {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 10px 0;
-}
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    z-index: 10;
-}
-.left-btn {
-    left: -20px;
-}
-.right-btn {
-    right: -20px;
-}
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .placeholder-img {
+        width: 100%;
+    }
+    .game-card {
+        display: flex;
+    }
+    .row-cols-md-5 > .col {
+    flex: 0 0 20%;
+    max-width: 20%;
+    }
 </style>
 
+<!-- JavaScript for Search Filtering -->
 <script>
-function scrollToCard(containerId, direction) {
-    const container = document.getElementById(containerId);
-    const cardWidth = document.querySelector('.card').offsetWidth + 16; // Card width + margin
-    const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
-
-function checkScrollButtons() {
-    const sections = document.querySelectorAll('.position-relative');
-    sections.forEach(section => {
-        const container = section.querySelector('.d-flex');
-        const leftBtn = section.querySelector('.left-btn');
-        const rightBtn = section.querySelector('.right-btn');
-
-        if (container.scrollWidth <= container.clientWidth) {
-            leftBtn.style.display = 'none';
-            rightBtn.style.display = 'none';
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase();
+            const allGames = document.querySelectorAll('.game-card');
+            allGames.forEach(game => {
+                const title = game.querySelector('.fw-bold').textContent.toLowerCase();
+                game.style.display = title.includes(query) ? 'block' : 'none';
+            });
+        });
     });
-}
-
-document.addEventListener('DOMContentLoaded', checkScrollButtons);
 </script>
-
 {% endblock %}

@@ -7,12 +7,18 @@ from patients.models import PatientInformation  # Import PatientInformation for 
 
 # General view for displaying the game library
 def game_library(request):
-    games = Game.objects.all().order_by('id')  # Fetch all games from the database
-    assigned_games_by_patient = {}
+    query = request.GET.get('q')
+    games = Game.objects.all().order_by('id')
+    
+    if query:
+        games = games.filter(title__icontains=query)
+    
+    # Filter games by developer
+    abcya_games = Game.objects.filter(developer="ABCya").order_by('id')
+    quartize_games = Game.objects.filter(developer="Quartize").order_by('id')
 
-    # Check if the user is a guardian
+    assigned_games_by_patient = {}
     if request.user.groups.filter(name='Guardian').exists():
-        # Get all patients linked to this guardian
         patients = PatientInformation.objects.filter(account_id=request.user)
         for patient in patients:
             assigned_games = AssignedGame.objects.filter(patient=patient)
@@ -21,6 +27,8 @@ def game_library(request):
 
     context = {
         'games': games,
+        'abcya_games': abcya_games,
+        'quartize_games': quartize_games,
         'assigned_games_by_patient': assigned_games_by_patient,
     }
     return render(request, 'games/game_library.html', context)
