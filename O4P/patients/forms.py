@@ -61,6 +61,9 @@ class PatientInformationForm(BaseInformationForm):
                 'placeholder': 'Religion',
                 'class': 'form-control'
             }),
+            'relationship_to_guardian': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
             'initial_evaluation': forms.Textarea(attrs={
                 'placeholder': 'Initial Evaluation Notes',
                 'class': 'form-control',
