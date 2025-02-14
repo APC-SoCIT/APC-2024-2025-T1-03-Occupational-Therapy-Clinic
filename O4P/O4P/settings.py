@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
+    'accounts.middleware.AllUserRequire2FAMiddleware'
 ]
 
 ROOT_URLCONF = 'O4P.urls'
