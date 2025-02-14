@@ -2,123 +2,185 @@
 {% load static %}
 
 {% block content %}
-<div class="header-1 my-2">
-    <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
-    <div>
-        {% if is_therapist or is_administrator%}
-            <a href="{% url 'patients.update' pk=patient.id %}" class="btn btn-secondary">Edit</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Delete
-            </button>
-        {% endif %}
+<div class="container-fluid">
+    <div class="header-1 my-2">
+        <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+        <div>
+            {% if is_therapist %}
+                <a href="{% url 'patients.update' pk=patient.id %}" class="btn2 btn-success">Edit</a>
+                <button type="button" class="btn2 btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            {% endif %}
+        </div>
     </div>
-</div>
-
-<div class="row gutters-sm">
-    <div class="col-md-12">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">First Name:</h6>
+    <div class="row gutters-sm">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Personal Information</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">First Name</h6>
+                            <div class="info-box">{{ patient.first_name }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Middle Name</h6>
+                            <div class="info-box">{{ patient.middle_name }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Last Name</h6>
+                            <div class="info-box">{{ patient.last_name }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ patient.first_name }}
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h6 class="mb-2">Date of Birth</h6>
+                            <div class="info-box">{{ patient.date_of_birth }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Sex</h6>
+                            <div class="info-box">{{ patient.sex }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Middle Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                    <!--Middle Name-->
-                    </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Last Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ patient.last_name }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Diagnosis:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.condition }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Date of Birth:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ patient.date_of_birth }}
-                    </div>
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Contact Number:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ patient.contact_number }}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Nationality</h6>
+                            <div class="info-box">{{ patient.nationality }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Religion</h6>
+                            <div class="info-box">{{ patient.religion }}</div>
+                        </div>
                     </div>
                 </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Address:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.city }} , {{ patient.province }}
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Address</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Municipality</h6>
+                            <div class="info-box">{{ patient.municipality }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Province</h6>
+                            <div class="info-box">{{ patient.province }}</div>
+                        </div>
                     </div>
                 </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Assigned Guardian:</h6>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Medical Information</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h6 class="mb-2">Diagnosis</h6>
+                            <div class="info-box">{{ patient.diagnosis }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Referring Doctor</h6>
+                            <div class="info-box">{{ patient.referring_doctor }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ patient.guardian }}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Mother's Name</h6>
+                            <div class="info-box">{{ patient.mother_name }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Mother's Contact Number</h6>
+                            <div class="info-box">{{ patient.mother_number }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Father's Name</h6>
+                            <div class="info-box">{{ patient.father_name }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Father's Contact Number</h6>
+                            <div class="info-box">{{ patient.father_number }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">School</h6>
+                            <div class="info-box">{{ patient.school }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">Relationship to Guardian</h6>
+                            <div class="info-box">{{ patient.relationship_to_guardian }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">Initial Evaluation</h6>
+                            <div class="info-box">{{ patient.initial_evaluation }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body d-flex justify-content-between">
+                    <h4 class="align-items-center">Notes</h4>
+                    {%if is_therapist%}
+                        <a href="{% url 'notes.create' pk=patient.id %}" class="btn">Add Note</a>
+                    {% endif %}
+                </div>
+                <div class="table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for note in patient_notes %}
+                            <tr>
+                                <td>    
+                                    <a href="{% url 'notes.details' note.id %}" class="text-dark text-decoration-none">
+                                        {{ note.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'notes.details' pk=note.id %}" class="text-dark text-decoration-none">
+                                        {{ note.session_date }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
 
-<div class="row gutters-sm">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body d-flex justify-content-between">
-                <h4 class="d-flex align-items-center mb-3">Notes</h4>
-                {%if is_therapist or is_administrator%}
-                    <a href="{% url 'notes.create' pk=patient.id %}" class="btn">Add Note</a>
-                {% endif %}
+                            {% if not patient_notes %}
+                            <tr>
+                                <td colspan="4">
+                                <p>No notes available.</p>  
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="table-container">
-                <table class="custom-table">
-                    <thead>
-                        <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Note By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for note in patient_notes %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'notes.details' note.id %}" class="text-blue text-decoration-none">
-                                    {{ note.title }}
-                                </a>
-                            </td>
-                            <td>{{ note.session_date }}</td>
-                            <td></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        </div>     
+    </div>
+
+    <div class="my-2">
+        <a href="
+        {% if is_patient %} 
+            {% url 'welcome' %}
+        {% else %} 
+            {% url 'patients.list' %}
+        {% endif %}" 
+        class="btn btn-secondary">Back</a>
     </div>
 </div>
 
@@ -136,22 +198,12 @@
             <div class="modal-footer">
                 <form method="POST" action="{% url 'patients.delete' pk=patient.id %}">
                     {% csrf_token %}
-                    <input type="submit" class="btn btn-danger" value="Confirm">
+                    <input type="submit" class="btn2 btn-success" value="Confirm">
                 </form>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn2 btn-danger" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="my-3">
-    <a href="
-    {% if is_patient %} 
-        {% url 'welcome' %}
-    {% else %} 
-        {% url 'patients.list' %}
-    {% endif %}" 
-    class="btn btn-secondary">Back</a>
 </div>
 
 {% endblock %}

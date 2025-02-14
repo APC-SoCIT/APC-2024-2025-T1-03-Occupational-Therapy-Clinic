@@ -42,10 +42,22 @@ class PatientsListView(LoginRequiredMixin, UserRoleMixin, ListView):
     template_name = "patients/patients_list.html"
 
     def get_queryset(self):
-        return self.get_role_based_queryset(PatientInformation)
+        queryset = self.get_role_based_queryset(PatientInformation)
+        search_query = self.request.GET.get('q', '')
+
+        if search_query:
+            queryset = queryset.filter(
+                first_name__icontains=search_query
+            ) | queryset.filter(
+                last_name__icontains=search_query
+            ) | queryset.filter(
+                diagnosis__icontains=search_query
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
         return context
 
 class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
