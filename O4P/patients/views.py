@@ -16,6 +16,8 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from allauth.account.views import SignupView
 from django.http import HttpResponseForbidden
+from games.models import AssignedGame, Game
+from django.views import View
 
 #
 # PATIENTS
@@ -69,9 +71,17 @@ class PatientDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
         context = super().get_context_data(**kwargs)
         patient = self.get_object()
         user = self.request.user
-        
+
         context['patient_notes'] = PatientNotes.objects.filter(patient_id=patient)
 
+        # Retrieve assigned games
+        context['assigned_games'] = AssignedGame.objects.filter(patient=patient)
+        context['available_games'] = []
+
+        # Retrieve available games for therapists to assign
+        if user.groups.filter(name='Therapist').exists():
+            assigned_game_ids = AssignedGame.objects.filter(patient=patient).values_list('game_id', flat=True)
+            context['available_games'] = Game.objects.exclude(id__in=assigned_game_ids)  # Exclude assigned games
         
         context['is_patient'] = user.groups.filter(name='Patient').exists()
         context['is_guardian'] = user.groups.filter(name='Guardian').exists()
@@ -233,3 +243,23 @@ class NotesDeleteView(RolePermissionRequiredMixin, DeleteView):
     
     def get_success_url(self):
         return reverse('patients.details', kwargs={'pk': self.object.patient.pk})
+
+class AssignGameView(LoginRequiredMixin, View):
+    def post(self, request, patient_id):
+        if not request.user.groups.filter(name='Therapist').exists():
+            return HttpResponseForbidden("Only therapists can assign games.")
+        
+        patient = get_object_or_404(PatientInformation, id=patient_id)
+        game = get_object_or_404(Game, id=request.POST.get('game_id'))
+        
+        AssignedGame.objects.create(patient=patient, game=game)
+        return redirect('patients.details', pk=patient.id)
+
+class RemoveAssignedGameView(LoginRequiredMixin, View):
+    def post(self, request, patient_id, assigned_game_id):
+        if not request.user.groups.filter(name='Therapist').exists():
+            return HttpResponseForbidden("Only therapists can remove assigned games.")
+        
+        assigned_game = get_object_or_404(AssignedGame, id=assigned_game_id, patient_id=patient_id)
+        assigned_game.delete()
+        return redirect('patients.details', pk=patient_id)

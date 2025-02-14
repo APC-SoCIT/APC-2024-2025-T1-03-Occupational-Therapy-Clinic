@@ -258,8 +258,7 @@ class AssistantSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin,
     template_name = "account/signup.html"
     extra_context = {'role_name': 'Assistant'}
 
-class GuardianSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
-    allowed_roles = ['Administrator']
+class GuardianSignupView(SignupView):
 
     form_class = GuardianSignupForm
     template_name = "account/signup.html"
