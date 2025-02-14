@@ -29,39 +29,30 @@ class PatientInformationForm(BaseInformationForm):
         widgets = {
             **BaseInformationForm.Meta.widgets,
             'diagnosis': forms.TextInput(attrs={
-                'placeholder': 'Diagnosis',
                 'class': 'form-control'
             }),
             'mother_name': forms.TextInput(attrs={
-                'placeholder': "Mother's Name",
                 'class': 'form-control'
             }),
             'mother_number': forms.TextInput(attrs={
-                'placeholder': "Mother's Contact Number",
                 'class': 'form-control'
             }),
             'father_name': forms.TextInput(attrs={
-                'placeholder': "Father's Name",
                 'class': 'form-control'
             }),
             'father_number': forms.TextInput(attrs={
-                'placeholder': "Father's Contact Number",
                 'class': 'form-control'
             }),
             'referring_doctor': forms.TextInput(attrs={
-                'placeholder': 'Referring Doctor',
                 'class': 'form-control'
             }),
             'school': forms.TextInput(attrs={
-                'placeholder': 'School (if applicable)',
                 'class': 'form-control'
             }),
-            'school': forms.TextInput(attrs={
-                'placeholder': 'School (if applicable)',
+            'relationship_to_guardian': forms.TextInput(attrs={
                 'class': 'form-control'
             }),
             'initial_evaluation': forms.Textarea(attrs={
-                'placeholder': 'Initial Evaluation Notes',
                 'class': 'form-control',
                 'rows': 3
             }),
@@ -78,14 +69,15 @@ class PatientNotesForm(forms.ModelForm):
         fields = ['title', 'session_date', 'content']
         widgets = {
             'title': forms.TextInput(attrs={
-                'style': 'width: 92%;',
+                'placeholder': "Session Title",
+                'class': 'form-control'
                 }),
             'session_date': forms.DateInput(attrs={
-                'type': 'date',
-                'style': 'width: 80%;',
+                'class': 'form-control', 'type': 'date'
                 }),
             'content': forms.Textarea(attrs={
                 'rows': 4,
-                'style': 'width: 100%;',
+                'placeholder': "Add Notes",
+                'class': 'form-control'
                 }),
         }

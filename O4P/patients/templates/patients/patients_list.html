@@ -1,56 +1,79 @@
 {% extends "dashboard_navbar.html" %}
 
 {% block content %}
-<div class="header-1">
-  <h1>Patient List</h1>
-</div>
-<div class="header-1">
-  <input class="search-bar" placeholder="Search..." type="text">
-</div>
+<div class="container-fluid">
+  <div class="header-1">
+    <h1>List of Patients</h1>
+  </div>
 
-<div class="table-container">
-  <table class="custom-table">
-    <thead>
-      <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Diagnosis</th>
-      <th>Date of Birth</th>
-      <th>Address</th>
-      <th>Contact Number</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for patient in patients %}
-        <tr>
-          <td>{{ patient.id }}</td>
-          <td>
-            <a href="{% url 'patients.details' pk=patient.id %}" class="text-blue text-decoration-none">
-              {{ patient.first_name }} {{ patient.last_name }}
-            </a>
-          </td>
-          <td>{{ patient.condition }}</td>
-          <td>{{ patient.date_of_birth }}</td>
-          <td>{{ patient.city }}</td>
-          <td>{{ patient.contact_number }}</td>
-        </tr>
-      {% endfor %}
-      
-      {% if not patients %}
-        <tr>
-          <td colspan="3">
-            <p>No patients available.</p>  
-          </td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
+  <div class="header-search">
+      <form method="GET" action="{% url 'patients.list' %}" class="search-form">
+        <input class="search-bar" placeholder="Search Patient" type="text" name="q" value="{{ search_query }}">
+        <button type="submit" class="search-button">
+          🔍
+        </button>
+      </form>
+  </div>
 
+  <div class="table-container">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Diagnosis</th>
+          <th>Sex</th>
+          <th>Date of Birth</th>
+          <th>Contact Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for patient in patients %}
+          <tr>
+            <td>
+              <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
+                {{ patient.first_name }} {{patient.middle_name}} {{ patient.last_name }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
+                {{ patient.diagnosis }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
+                {{ patient.sex }} 
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
+                {{ patient.date_of_birth }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
+                {{ patient.contact_number }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        
+        {% if not patients %}
+          <tr>
+            <td colspan="4">
+              <h6>No patients available.</h6>  
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  
   <div class="my-3">
     <a href="{% url 'welcome' %}" class="btn">Back</a>
 
     {% if is_guardian%}
-    <a href="{% url 'patients.create' %}" class="btn">Create Patient</a>
+    <a href="{% url 'patients.create' %}" class="btn">Add Patient</a>
     {% endif %}
   </div>
+</div>
 {% endblock %}
