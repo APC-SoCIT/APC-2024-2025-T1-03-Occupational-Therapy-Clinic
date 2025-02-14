@@ -6,8 +6,31 @@ from .forms import GameForm  # Import the form for handling games
 
 # General view for displaying the game library
 def game_library(request):
-    games = Game.objects.all().order_by('id')  # Fetch all games from the database
-    return render(request, 'games/game_library.html', {'games': games})
+    query = request.GET.get('q')
+    games = Game.objects.all().order_by('id')
+    
+    if query:
+        games = games.filter(title__icontains=query)
+    
+    # Filter games by developer
+    abcya_games = Game.objects.filter(developer="ABCya").order_by('id')
+    quartize_games = Game.objects.filter(developer="Quartize").order_by('id')
+
+    assigned_games_by_patient = {}
+    if request.user.groups.filter(name='Guardian').exists():
+        patients = PatientInformation.objects.filter(account_id=request.user)
+        for patient in patients:
+            assigned_games = AssignedGame.objects.filter(patient=patient)
+            if assigned_games.exists():
+                assigned_games_by_patient[patient] = assigned_games
+
+    context = {
+        'games': games,
+        'abcya_games': abcya_games,
+        'quartize_games': quartize_games,
+        'assigned_games_by_patient': assigned_games_by_patient,
+    }
+    return render(request, 'games/game_library.html', context)
 
 @login_required
 def admin_game_library(request):
