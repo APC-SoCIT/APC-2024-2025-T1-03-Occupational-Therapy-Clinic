@@ -47,7 +47,9 @@ INSTALLED_APPS = [
 
     'allauth',
     'allauth.account',
-    'allauth.socialaccount'
+    'allauth.socialaccount',
+    'allauth.mfa',
+    
 ]
 
 SITE_ID = 1
@@ -165,6 +167,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
+ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True
 
 ACCOUNT_USERNAME_REQUIRED = False
 
@@ -175,3 +178,9 @@ LOGOUT_REDIRECT_URL = '/auth/login'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
+
+MFA_ADAPTER = "allauth.mfa.adapter.DefaultMFAAdapter"
+
+MFA_SUPPORTED_TYPES = ["recovery_codes", "totp"]
+
+MFA_PASSKEY_LOGIN_ENABLED = True
