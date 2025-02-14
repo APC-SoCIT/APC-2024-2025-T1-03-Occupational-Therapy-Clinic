@@ -37,6 +37,7 @@ class PatientInformation(BaseInformation):
     school = models.CharField(max_length=50, blank=True, null=True)
     initial_evaluation = models.CharField(max_length=100)
     relationship_to_guardian = models.CharField(max_length=50)
+    contact_number = None
     
     class Meta:
         verbose_name = "Patient Information"
