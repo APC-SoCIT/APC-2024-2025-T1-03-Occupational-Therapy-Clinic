@@ -1,46 +1,75 @@
 {% extends "dashboard_navbar.html" %}
 
 {% block content %}
-<div class="header-1">
-  <h1>Guardian List</h1>
-</div>
+<div class="container-fluid">
+  <div class="header-1">
+    <h1>List of Guardians</h1>
+  </div>
 
-<div class="table-container">
-  <table class="custom-table">
-    <thead>
-      <tr>
-        <th>Full Name</th>
-        <th>Contact Number</th>
-        <th>City</th>
-        <th>Province</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for guardian in guardians %}
-        <tr>
-          <td>
-            <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-blue text-decoration-none">
-              {{ guardian.first_name }} {{guardian.middle_name}} {{ guardian.last_name }}
-            </a>
-          </td>
-          <td>{{ guardian.contact_number }}</td>
-          <td>{{ guardian.city }}</td>
-          <td>{{ guardian.province }}</td>
-        </tr>
-      {% endfor %}
-      
-      {% if not guardians %}
-        <tr>
-          <td colspan="4">
-            <p>No guardians available.</p>  
-          </td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
-</div>
+  <div class="header-search">
+    <form method="GET" action="{% url 'guardian_list' %}" class="search-form">
+      <input class="search-bar" placeholder="Search Guardian" type="text" name="q" value="{{ search_query }}">
+      <button type="submit" class="search-button">
+        🔍
+      </button>
+    </form>
+  </div>
 
+  <div class="table-container">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Patient</th>
+          <th>Sex</th>
+          <th>Date of Birth</th>
+          <th>Contact Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for guardian in guardians %}
+          <tr>
+            <td>
+              <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-dark text-decoration-none">
+                {{ guardian.first_name }} {{guardian.middle_name}} {{ guardian.last_name }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-dark text-decoration-none">
+                {{ guardian.specialization }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-dark text-decoration-none">
+                {{ guardian.sex }} 
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-dark text-decoration-none">
+                {{ guardian.date_of_birth }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'guardian_detail' pk=guardian.id %}" class="text-dark text-decoration-none">
+                {{ guardian.contact_number }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        
+        {% if not guardians %}
+          <tr>
+            <td colspan="4">
+              <p>No guardians available.</p>  
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  
   <div class="my-3">
     <a href="{% url 'welcome' %}" class="btn">Back</a>
   </div>
+</div>
 {% endblock %}
