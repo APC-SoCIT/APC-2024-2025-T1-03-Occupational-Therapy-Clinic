@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'home',
     'core',
     'games',
+    'therapists',
 
     'allauth',
     'allauth.account',
