@@ -173,3 +173,5 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 LOGOUT_REDIRECT_URL = '/auth/login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
