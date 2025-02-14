@@ -56,11 +56,6 @@ class BaseSignupForm(SignupForm):
         required=True,
         initial='Filipino'
     )
-    religion = forms.CharField(
-        max_length=50,
-        widget=forms.TextInput(attrs={'placeholder': 'Religion'}),
-        required=True
-    )
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -103,7 +98,6 @@ class BaseSignupForm(SignupForm):
             "municipality": self.cleaned_data.get("municipality"),
             "sex": self.cleaned_data.get("sex"),
             "nationality": self.cleaned_data.get("nationality"),
-            "religion": self.cleaned_data.get("religion"),
         }
 
         if role == "Therapist":           
@@ -152,7 +146,7 @@ class GuardianSignupForm(BaseSignupForm):
 class BaseInformationForm(forms.ModelForm):
     class Meta:
         fields = [
-            'first_name', 'middle_name', 'last_name', 'date_of_birth', 'sex', 'nationality', 'religion', 
+            'first_name', 'middle_name', 'last_name', 'date_of_birth', 'sex', 'nationality', 
             'contact_number', 'province', 'municipality'
         ]
         labels = {
@@ -162,7 +156,6 @@ class BaseInformationForm(forms.ModelForm):
             'date_of_birth': 'Date of Birth',
             'sex': 'Sex',
             'nationality': 'Nationality',
-            'religion': 'Religion',
             'contact_number': 'Contact Number',
             'province': 'Province',
             'municipality': 'Municipality',
@@ -174,7 +167,6 @@ class BaseInformationForm(forms.ModelForm):
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'sex': forms.Select(attrs={'class': 'form-control'}),
             'nationality': forms.Select(attrs={'class': 'form-control'}),
-            'religion': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
             'province': forms.Select(attrs={'class': 'form-control'}),
             'municipality': forms.Select(attrs={'class': 'form-control'}),
