@@ -51,6 +51,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
+        const therapistId = "{{ therapist_id }}";  // ✅ Fetch logged-in therapist's ID
+
+        console.log("👩‍⚕️ Therapist ID:", therapistId);
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {
                 left: 'prev,next today',
@@ -58,8 +62,8 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             initialView: 'dayGridMonth',
-            events: 'api', // Your API endpoint for events
         });
+
         calendar.render();
     });
 </script>
@@ -69,10 +73,11 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const appointmentListEl = document.getElementById('appointment-list');
+        const therapistId = "{{ request.user.therapist_profile.id }}";  // ✅ Use logged-in therapist's ID
         const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
         // Fetch today's appointments
-        fetchAppointments(today, today, appointmentListEl);
+        fetchAppointments(today, today, appointmentListEl, therapistId);
 
         // Example: Add filter button functionality
         document.querySelectorAll('.filter-btn').forEach(button => {
@@ -99,7 +104,7 @@
                 }
 
                 // Fetch appointments for the selected filter
-                fetchAppointments(start, end, appointmentListEl);
+                fetchAppointments(start, end, appointmentListEl, therapistId);
             });
         });
     });
