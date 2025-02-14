@@ -4,7 +4,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('appointment/list/', views.appointment_list, name='appointment_list'),
-    path('appointment/<int:pk>/', views.appointment_detail, name='appointment_detail'),
+    path('appointment/<int:appointment_id>/', views.appointment_detail, name='appointment_detail'),
     path('appointment/create/', views.create_appointment, name='create_appointment'),
     path('appointment/success/', views.appointment_success, name='appointment_success'),
     path('appointment/<int:pk>/update/', views.update_appointment, name='update_appointment'),
@@ -21,8 +21,8 @@ urlpatterns = [
     #path('calendar/api/create/', views.create_appointment_api, name='create_appointment_api'),
 
     path('appointment/calendar/', views.calendar_view, name='calendar_view'),
-    path('non-working-days/', views.get_non_working_days, name='non_working_days'),
-    path('available-slots/', views.get_available_slots, name='available_slots'),
+
+    path('get_slots/<int:therapist_id>/', views.get_available_slots, name='get_available_slots'),
 
 ]
 
