@@ -177,7 +177,7 @@ class BaseInformationForm(forms.ModelForm):
         empty_label="Select Province",
         to_field_name="code",
         widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        required=True,
     )
     municipality = forms.ModelChoiceField(
         queryset=Municipality.objects.none(),  
@@ -195,13 +195,14 @@ class BaseInformationForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # If editing an existing instance, set municipality queryset
-        if self.instance and self.instance.pk and self.instance.province:
+        if self.instance and self.instance.pk and self.instance.province and self.instance.municipality:
             self.fields['municipality'].queryset = Municipality.objects.filter(province=self.instance.province).order_by('name')
-
+            self.initial['province'] = self.instance.province
+            self.initial['municipality'] = self.instance.municipality
+            
         # If it's a new form submission, dynamically update queryset
-        elif 'province' in self.data:
+        if 'province' in self.data:
             try:
                 province_id = self.data.get('province')
                 self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_id).order_by('name')
