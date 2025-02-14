@@ -12,7 +12,7 @@ class PatientInformationForm(BaseInformationForm):
         ] + [
             "diagnosis", "mother_name", "mother_number", 
             "father_name", "father_number", "referring_doctor", 
-            "school", "relationship_to_guardian", "initial_evaluation"
+            "school", "relationship_to_guardian", "initial_evaluation", "religion"
         ]
         labels = {
             **BaseInformationForm.Meta.labels,
@@ -25,6 +25,7 @@ class PatientInformationForm(BaseInformationForm):
             'school': 'School (if applicable)',
             'relationship_to_guardian': 'Relationship to guardian',
             'initial_evaluation': 'Initial Evaluation Notes',
+            'religion': 'Religion',
         }
         widgets = {
             **BaseInformationForm.Meta.widgets,
@@ -55,6 +56,9 @@ class PatientInformationForm(BaseInformationForm):
             'initial_evaluation': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3
+            }),
+            'religion': forms.TextInput(attrs={
+                'class': 'form-control'
             }),
         }
 
