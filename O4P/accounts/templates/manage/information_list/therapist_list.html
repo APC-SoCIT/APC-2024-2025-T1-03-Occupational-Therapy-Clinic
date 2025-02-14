@@ -1,46 +1,75 @@
 {% extends "dashboard_navbar.html" %}
 
 {% block content %}
-<div class="header-1">
-  <h1>Therapist List</h1>
-</div>
+<div class="container-fluid">
+  <div class="header-1">
+    <h1>List of Therapists</h1>
+  </div>
 
-<div class="table-container">
-  <table class="custom-table">
-    <thead>
-      <tr>
-        <th>Full Name</th>
-        <th>Contact Number</th>
-        <th>City</th>
-        <th>Province</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for therapist in therapists %}
+  <div class="header-search">
+    <form method="GET" action="{% url 'therapist_list' %}" class="search-form">
+      <input class="search-bar" placeholder="Search Therapist" type="text" name="q" value="{{ search_query }}">
+      <button type="submit" class="search-button">
+        🔍
+      </button>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="custom-table">
+      <thead>
         <tr>
-          <td>
-            <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-blue text-decoration-none">
-              {{ therapist.first_name }} {{therapist.middle_name}} {{ therapist.last_name }}
-            </a>
-          </td>
-          <td>{{ therapist.contact_number }}</td>
-          <td>{{ therapist.city }}</td>
-          <td>{{ therapist.province }}</td>
+          <th>Name</th>
+          <th>Specialization</th>
+          <th>Sex</th>
+          <th>Date of Birth</th>
+          <th>Contact Number</th>
         </tr>
-      {% endfor %}
-      
-      {% if not therapists %}
-        <tr>
-          <td colspan="4">
-            <p>No therapists available.</p>  
-          </td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        {% for therapist in therapists %}
+          <tr>
+            <td>
+              <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
+                {{ therapist.first_name }} {{therapist.middle_name}} {{ therapist.last_name }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
+                {{ therapist.specialization }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
+                {{ therapist.sex }} 
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
+                {{ therapist.date_of_birth }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
+                {{ therapist.contact_number }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        
+        {% if not therapists %}
+          <tr>
+            <td colspan="4">
+              <p>No therapists available.</p>  
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
   
   <div class="my-3">
     <a href="{% url 'welcome' %}" class="btn">Back</a>
   </div>
+</div>
 {% endblock %}

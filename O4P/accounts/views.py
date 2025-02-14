@@ -33,11 +33,21 @@ class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRole
     context_object_name = "guardians"
     template_name = "manage/information_list/guardian_list.html"
 
-    def get_queryset(self):        
-        return self.get_role_based_queryset(GuardianInformation)
+    def get_queryset(self):
+        queryset = self.get_role_based_queryset(GuardianInformation)
+        search_query = self.request.GET.get('q', '')
+
+        if search_query:
+            queryset = queryset.filter(
+                first_name__icontains=search_query
+            ) | queryset.filter(
+                last_name__icontains=search_query
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
         return context
     
 class GuardianDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
@@ -52,7 +62,7 @@ class GuardianUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
     allowed_roles = ['Therapist']
     model = GuardianInformation
     form_class = GuardianInformationForm
-    template_name = "manage/information_form.html"
+    template_name = "manage/guardian_form.html"
     
     def get_queryset(self):
         return self.get_role_based_queryset(GuardianInformation)
@@ -104,11 +114,21 @@ class AssistantListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRol
     context_object_name = "assistants"
     template_name = "manage/information_list/assistant_list.html"
 
-    def get_queryset(self):        
-        return self.get_role_based_queryset(AssistantInformation)
+    def get_queryset(self):
+        queryset = self.get_role_based_queryset(AssistantInformation)
+        search_query = self.request.GET.get('q', '')
+
+        if search_query:
+            queryset = queryset.filter(
+                first_name__icontains=search_query
+            ) | queryset.filter(
+                last_name__icontains=search_query
+            ) 
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
         return context
     
 class AssistantDetailView(CustomLoginRequiredMixin, UserRoleMixin, DetailView,):
@@ -123,7 +143,7 @@ class AssistantUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
     allowed_roles = ['Therapist']
     model = AssistantInformation
     form_class = AssistantInformationForm
-    template_name = "manage/information_form.html"
+    template_name = "manage/assistant_form.html"
     
     def get_queryset(self):
         return self.get_role_based_queryset(AssistantInformation)
@@ -161,11 +181,23 @@ class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRol
     context_object_name = "therapists"
     template_name = "manage/information_list/therapist_list.html"
 
-    def get_queryset(self):        
-        return self.get_role_based_queryset(TherapistInformation)
+    def get_queryset(self):
+        queryset = self.get_role_based_queryset(TherapistInformation)
+        search_query = self.request.GET.get('q', '')
+
+        if search_query:
+            queryset = queryset.filter(
+                first_name__icontains=search_query
+            ) | queryset.filter(
+                last_name__icontains=search_query
+            ) | queryset.filter(
+                specialization__icontains=search_query
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
         return context
 
 class TherapistDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
@@ -183,7 +215,7 @@ class TherapistUpdateView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
     model = TherapistInformation
     success_url = reverse_lazy('therapist_list')
     form_class = TherapistInformationForm
-    template_name = "manage/information_form.html"
+    template_name = "manage/therapist_form.html"
     
     def get_queryset(self):
         return self.get_role_based_queryset(TherapistInformation)

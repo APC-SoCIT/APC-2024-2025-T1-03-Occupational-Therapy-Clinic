@@ -2,67 +2,89 @@
 {% load static %}
 
 {% block content %}
-<div class="header-1 my-2">
-    <h1>{{ assistant.first_name }} {{ assistant.last_name }}</h1>
-    <div>
-        {% if is_therapist or is_administrator%}
-            <a href="{% url 'assistant_edit' pk=assistant.id %}" class="btn btn-secondary">Edit</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Delete
-            </button>
-        {% endif %}
+<div class="container-fluid">
+    <div class="header-1 my-2">
+        <h1>{{ assistant.first_name }} {{ assistant.last_name }}</h1>
+        <div>
+            {% if is_therapist %}
+                <a href="{% url 'assistant_edit' pk=assistant.id %}" class="btn2 btn-success">Edit</a>
+                <button type="button" class="btn2 btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            {% endif %}
+        </div>
     </div>
-</div>
-<div class="row gutters-sm">
-    <div class="col-md-12">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">First Name:</h6>
+    <div class="row gutters-sm">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Personal Information</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">First Name</h6>
+                            <div class="info-box">{{ assistant.first_name }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Middle Name</h6>
+                            <div class="info-box">{{ assistant.middle_name }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Last Name</h6>
+                            <div class="info-box">{{ assistant.last_name }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ assistant.first_name }}
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h6 class="mb-2">Date of Birth</h6>
+                            <div class="info-box">{{ assistant.date_of_birth }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Sex</h6>
+                            <div class="info-box">{{ assistant.sex }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Middle Name:</h6>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Nationality</h6>
+                            <div class="info-box">{{ assistant.nationality }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Religion</h6>
+                            <div class="info-box">{{ assistant.religion }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2 text-secondary">
-                        {% if assistant.middle_name %}{{ assistant.middle_name }} {% endif %}
-                    </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Last Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ assistant.last_name }}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">Contact Number</h6>
+                            <div class="info-box">{{ assistant.contact_number }}</div>
+                        </div>
                     </div>
                 </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Date of Birth:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ patient.date_of_birth }}
-                    </div>
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Contact Number:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ assistant.contact_number }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Address:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ assistant.city }} , {{ assistant.province }}
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Address</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Municipality</h6>
+                            <div class="info-box">{{ assistant.municipality }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Province</h6>
+                            <div class="info-box">{{ assistant.province }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="my-2">
+        <a href=" {% url 'assistant_list' %}" 
+        class="btn">
+        Back
+        </a>
     </div>
 </div>
 
@@ -80,19 +102,12 @@
             <div class="modal-footer">
                 <form method="POST" action="{% url 'assistant_delete' pk=assistant.id %}">
                     {% csrf_token %}
-                    <input type="submit" class="btn btn-danger" value="Confirm">
+                    <input type="submit" class="btn2 btn-success" value="Confirm">
                 </form>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn2 btn-danger" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="my-3">
-    <a href=" {% url 'assistant_list' %}" 
-    class="btn btn-secondary">
-    Back
-    </a>
 </div>
 
 {% endblock %}

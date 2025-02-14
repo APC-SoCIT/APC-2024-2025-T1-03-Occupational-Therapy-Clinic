@@ -197,7 +197,8 @@ class BaseInformationForm(forms.ModelForm):
     nationality = forms.ChoiceField(
         choices=NATIONALITIES,
         required=True,
-        initial='Filipino'
+        initial='Filipino',
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     
     def __init__(self, *args, **kwargs):
