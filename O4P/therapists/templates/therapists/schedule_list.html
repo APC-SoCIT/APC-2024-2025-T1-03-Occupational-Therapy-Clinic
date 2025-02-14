@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Your Schedule</h2>
+  <a href="{% url 'create_schedule' %}">Add New Slot</a>
+  <ul>
+    {% for day, times in schedule_summary.items %}
+      <li>
+        {{ day|capfirst }}: {{ times.start_time }} - {{ times.end_time }}
+        <a href="{% url 'update_schedule' times.slot_id %}">Edit</a> |
+        <a href="{% url 'delete_schedule' times.slot_id %}">Delete</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

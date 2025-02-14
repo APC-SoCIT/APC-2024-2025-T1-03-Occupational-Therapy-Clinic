@@ -1,19 +1,31 @@
 from django.db import models
 from django.contrib.auth.models import User
+from patients.models import PatientInformation 
 from datetime import timedelta, datetime
+from accounts.models import TherapistInformation as Therapist
 
 class Appointment(models.Model):
-    patient = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="appointments",
-        limit_choices_to={'groups__name': 'Patient'},
-    )
-    therapist = models.ForeignKey(
+    guardian = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
+        related_name="appointments",
+        blank=True,
+        null=True
+        )  # Guardians manage appointments
+    
+    patient = models.ForeignKey(
+        PatientInformation, 
+        on_delete=models.CASCADE, 
+        related_name="appointments",
+        blank=True,
+        null=True  # ✅ Allow patient to be NULL for non-user requests
+        )  # Reference PatientInformation
+    
+    therapist = models.ForeignKey(
+        Therapist, 
+        on_delete=models.CASCADE, 
         related_name="therapist_appointments", 
-        limit_choices_to={'groups__name': 'Therapist'}
+        limit_choices_to={'account_id__groups__name': 'Therapist'}  # ✅ Fixing reference to groups
     )
     date = models.DateField()
     start_time = models.TimeField()
@@ -29,38 +41,30 @@ class Appointment(models.Model):
 
 
     def __str__(self):
-        return f"{self.patient.username} with {self.therapist.username} on {self.date}"
-
-    @property
-    def end_time(self):
-        """Calculate end time dynamically (1 hour after start_time)."""
-        return (datetime.combine(self.date, self.start_time) + timedelta(hours=1)).time()
+        if self.patient:
+            return f"{self.patient} with {self.therapist} on {self.date}"
+        return f"Non-User Appointment with {self.therapist} on {self.date}"  # ✅ Handle non-user appointments
 
 
 class AppointmentRequest(models.Model):
-    # For non-account patients
+    # Non-registered user details
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
 
-    # Optional reference to a user account
-    patient = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        related_name='appointment_requests',
-        limit_choices_to={'groups__name': 'Patient'},
-        blank=True,
-        null=True,
-    )
+
     therapist = models.ForeignKey(
-        User,
+        Therapist,  # ✅ Use TherapistInformation instead of User
         on_delete=models.CASCADE,
-        related_name="therapist_requests",
-        limit_choices_to={'groups__name': 'Therapist'}
+        related_name="appointment_requests"
     )
+
+    # Appointment details
     requested_date = models.DateField()
     requested_time = models.TimeField()
     notes = models.TextField(blank=True, null=True)
+
+    # Request status
     status = models.CharField(
         max_length=50,
         choices=[
@@ -71,22 +75,27 @@ class AppointmentRequest(models.Model):
         default='pending'
     )
 
+    
+
+    def __str__(self):
+        return f"Request from {self.first_name} {self.last_name} with {self.therapist} on {self.requested_date}"
+
 
 
 
 class RecurringAppointment(models.Model):
     patient = models.ForeignKey(
-        User,
+        PatientInformation,
         on_delete=models.CASCADE,
-        related_name="recurring_appointments",
-        limit_choices_to={'groups__name': 'Patient'}
+        related_name="recurring_appointments"
     )
+
     therapist = models.ForeignKey(
-        User,
+        Therapist,  # ✅ Use TherapistInformation instead of User
         on_delete=models.CASCADE,
-        related_name="therapist_recurring_appointments",
-        limit_choices_to={'groups__name': 'Therapist'}
+        related_name="therapist_recurring_appointments"
     )
+
     start_date = models.DateField()
     start_time = models.TimeField()
     recurrence_pattern = models.CharField(
@@ -102,20 +111,4 @@ class RecurringAppointment(models.Model):
     number_of_occurrences = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.patient.username} - Recurring {self.recurrence_pattern} with {self.therapist.username}"
-
-class NonWorkingDay(models.Model):
-    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='non_working_days')
-    date = models.DateField()
-
-    def __str__(self):
-        return f"{self.therapist.username} - {self.date}"
-    
-class AppointmentSlot(models.Model):
-    therapist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointment_slots')
-    date = models.DateField()
-    start_time = models.TimeField()
-    is_booked = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.date} - {self.start_time} ({'Booked' if self.is_booked else 'Available'})"
+        return f"{self.patient} - Recurring {self.recurrence_pattern} with {self.therapist.first_name} {self.therapist.last_name}"

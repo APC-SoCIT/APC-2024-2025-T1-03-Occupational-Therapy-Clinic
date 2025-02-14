@@ -18,6 +18,7 @@
     <div class="col-md-12">
         <div class="card mb-3">
             <div class="card-body">
+                <!-- Date -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Date:</h6>
@@ -27,21 +28,29 @@
                     </div>
                 </div>
                 <hr>
+
+                <!-- Patient and Therapist -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Patient:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.patient.username }}
+                        {% if appointment.patient.account_id %}
+                            {{ appointment.patient.account_id.username }}  <!-- ✅ Registered user -->
+                        {% else %}
+                            {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}  <!-- ✅ Non-registered user -->
+                        {% endif %}
                     </div>
                     <div class="col-sm-3">
                         <h6 class="mb-0">Therapist:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.therapist.username }}
+                        {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- ✅ Therapist full name -->
                     </div>
                 </div>
                 <hr>
+
+                <!-- Start Time and End Time -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Start Time:</h6>
@@ -53,23 +62,16 @@
                         <h6 class="mb-0">End Time:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.end_time }}
+                            {{ appointment.status }}
                     </div>
                 </div>
                 <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Status:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ appointment.status }}
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -92,6 +94,7 @@
     </div>
 </div>
 
+<!-- Back Button -->
 <div class="my-3">
     <a href="{% url 'calendar_view' %}" class="btn btn-secondary">Back to Calendar</a>
 </div>

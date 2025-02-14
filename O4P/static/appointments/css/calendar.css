@@ -151,3 +151,31 @@ body {
 #appointment-list::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Right Column Scroll Fix */
+.right-column {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Available Slot Grid */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* ✅ Default slot button */
+.slot-btn {
+    background-color: white;
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+/* ✅ Highlighted slot when selected */
+.selected-slot {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-weight: bold;
+}
