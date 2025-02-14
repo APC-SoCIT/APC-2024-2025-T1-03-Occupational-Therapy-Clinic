@@ -1,66 +1,83 @@
-{% extends "form_navbar.html" %}
+{% extends "calendar_base.html" %}
+{% load static %}
 
-{% block content %}
-<div class="container-fluid">
+{% block title %}Reschedule Appointment{% endblock %}
 
-    <div class="container">
-        <div class="header-1">
-            <h2>Create Appointment</h2>
-            <div>
-                <a href="{% url 'calendar_view' %}">Cancel</a>
-                <button type="submit" form="upapptForm" class="btn btn-primary">Save</button>
+{% block body %}
+<div class="container">
+    <div class="row">
+        <!-- ✅ Left: Calendar Section -->
+        <div class="col-md-8">
+            <div class="form-section">
+                <h4 class="text-center mb-3">Select a New Date</h4>
+                <div id="calendar"></div>
             </div>
         </div>
 
-        <form id="upapptForm" method="POST"> 
-            {% csrf_token %}
+        <!-- ✅ Right: Appointment Form -->
+        <div class="col-md-4">
+            <div class="form-section">
+                <form id="apptForm" method="POST" action="{% url 'update_appointment' appointment.id %}">
+                    {% csrf_token %}
 
-            <div class="row">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h3 class="h6 mb-3 text-secondary">Appointment Details</h3>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Date</label>
-                                        {{ form.date }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Patient</label>
-                                        {{ form.patient }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Therapist</label>
-                                        {{ form.therapist }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Start Time</label>
-                                        {{ form.start_time }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Status</label>
-                                        {{ form.status }}
-                                    </div>
-                                </div>
-                            </div>
+                    <h4 class="text-center mb-3">Appointment Details</h4>
+
+                    <!-- Date Selection (Hidden) -->
+                    <input type="hidden" name="date" id="selected_date" value="{{ appointment.date }}">
+
+                    <!-- Available Slots -->
+                    <div class="mb-3">
+                        <label class="form-label">Available Slots</label>
+                        <div id="available-slots" class="slot-grid">
+                            <p class="text-muted text-center">Select a date to see available slots.</p>
                         </div>
                     </div>
+
+                    <!-- Start Time Selection (Hidden) -->
+                    <input type="hidden" name="start_time" id="selected_time" value="{{ appointment.start_time }}">
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<!-- ✅ JavaScript for Calendar and Slot Selection -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<!-- ✅ Import fetchAvailableSlots -->
+<script type="module">
+    import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const calendarEl = document.getElementById("calendar");
+        const selectedDateField = document.getElementById("selected_date");
+        const selectedTimeField = document.getElementById("selected_time");
+        const createButton = document.getElementById("create-appointment-btn");
+        const slotContainer = document.getElementById("available-slots");
+
+        let therapistId = "{{ therapist_id }}";
+
+        console.log("👩‍⚕️ Therapist ID:", therapistId);
+
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',
+            selectable: true,
+            dateClick: function(info) {
+                selectedDateField.value = info.dateStr;
+                console.log("📅 Selected date:", info.dateStr);
+
+                // ✅ Fetch available slots for the selected date using logged-in therapist ID
+                fetchAvailableSlots(therapistId, info.dateStr, slotContainer);
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
 {% endblock %}
