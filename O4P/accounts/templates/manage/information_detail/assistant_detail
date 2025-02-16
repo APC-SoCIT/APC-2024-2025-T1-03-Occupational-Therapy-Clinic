@@ -68,12 +68,12 @@
                     <hr>
                     <div class="row">
                         <div class="col-sm-6">
-                            <h6 class="mb-2">Municipality</h6>
-                            <div class="info-box">{{ assistant.municipality }}</div>
-                        </div>
-                        <div class="col-sm-6">
                             <h6 class="mb-2">Province</h6>
                             <div class="info-box">{{ assistant.province }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Municipality</h6>
+                            <div class="info-box">{{ assistant.municipality }}</div>
                         </div>
                     </div>
                 </div>
