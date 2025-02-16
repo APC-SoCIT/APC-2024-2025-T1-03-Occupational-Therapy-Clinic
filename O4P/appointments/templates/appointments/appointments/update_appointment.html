@@ -17,24 +17,27 @@
         <!-- ✅ Right: Appointment Form -->
         <div class="col-md-4">
             <div class="form-section">
-                <form id="apptForm" method="POST" action="{% url 'update_appointment' appointment.id %}">
+                <form id="apptForm" method="POST" action="{% url 'update_appointment' appointment_id=appointment.id %}">
                     {% csrf_token %}
 
                     <h4 class="text-center mb-3">Appointment Details</h4>
 
-                    <!-- Date Selection (Hidden) -->
+                    <!-- ✅ Hidden input for selected date -->
                     <input type="hidden" name="date" id="selected_date" value="{{ appointment.date }}">
-
-                    <!-- Available Slots -->
+                
+                    <!-- ✅ Available Slots -->
                     <div class="mb-3">
                         <label class="form-label">Available Slots</label>
                         <div id="available-slots" class="slot-grid">
                             <p class="text-muted text-center">Select a date to see available slots.</p>
                         </div>
                     </div>
-
-                    <!-- Start Time Selection (Hidden) -->
+                
+                    <!-- ✅ Hidden input for selected time (Important for form submission) -->
                     <input type="hidden" name="start_time" id="selected_time" value="{{ appointment.start_time }}">
+                
+                    <!-- ✅ Submit Button -->
+                    <button type="submit" id="save-appointment-btn" class="btn btn-primary">Save Appointment</button>
                 </form>
             </div>
         </div>
@@ -77,6 +80,32 @@
         });
 
         calendar.render();
+
+                // ✅ Event listener to select a slot and update hidden fields
+        document.getElementById("available-slots").addEventListener("click", function (event) {
+            if (event.target.classList.contains("slot-btn")) {
+                event.preventDefault();
+                document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
+                event.target.classList.add("selected-slot");
+
+                // ✅ Set values & update debugging display
+                selectedDateField.value = event.target.dataset.date;
+                selectedTimeField.value = event.target.dataset.start_time;
+                debugDate.innerText = event.target.dataset.date;
+                debugTime.innerText = event.target.dataset.start_time;
+
+                // ✅ Enable submit button
+                submitButton.disabled = false;
+            }
+        });
+
+        // ✅ Ensure form does not submit if no date or time is selected
+        document.getElementById("apptForm").addEventListener("submit", function (event) {
+            if (!selectedDateField.value || !selectedTimeField.value) {
+                event.preventDefault();
+                alert("⚠️ Please select a date and time before submitting.");
+            }
+        });
     });
 </script>
 
