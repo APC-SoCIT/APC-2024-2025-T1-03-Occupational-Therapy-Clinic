@@ -17,11 +17,17 @@
                         <div class="list-group">
                             {% if is_assistant or is_guardian %}
                                 <a href="{% url 'patients.list' %}" class="btn btn-primary my-1">Patient List</a>
+                                {% if is_assistant %}
+                                    <a href="{% url 'assistant_detail' pk=user.assistantinformation_set.first.id %}" class="btn btn-primary my-1">My Profile</a>
+                                {% elif is_guardian %}
+                                    <a href="{% url 'guardian_detail' pk=user.guardianinformation_set.first.id %}" class="btn btn-primary my-1">My Profile</a>
+                                {% endif %}
                             {% elif is_therapist %}
                                 <a href="{% url 'patients.list' %}" class="btn btn-primary my-1">Patient List</a>
                                 <a href="{% url 'guardian_list' %}" class="btn btn-primary my-1">Guardian List</a>
                                 <a href="{% url 'assistant_list' %}" class="btn btn-primary my-1">Assistant List</a>
                                 <a href="{% url 'therapist_list' %}" class="btn btn-primary my-1">Therapist List</a>
+                                <a href="{% url 'therapist_detail' pk=user.therapistinformation_set.first.id %}" class="btn btn-primary my-1"> My Profile</a>
                                 <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary my-1">Appointment Requests</a>
                             {% elif is_administrator %}
                                 <a href="{% url 'therapist_signup' %}" class="btn btn-primary d-block my-2">Create Therapist Account</a>            

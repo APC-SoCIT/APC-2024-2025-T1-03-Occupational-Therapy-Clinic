@@ -81,9 +81,8 @@
         </div>
     </div>
     <div class="my-2">
-        <a href=" {% url 'assistant_list' %}" 
-        class="btn">
-        Back
+        <a href="{% if is_assistant %}{% url 'welcome' %}{% else %}{% url 'assistant_list' %}{% endif %}" class="btn">
+            Back
         </a>
     </div>
 </div>

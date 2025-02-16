@@ -81,9 +81,8 @@
         </div>     
     </div>
     <div class="my-2">
-        <a href=" {% url 'guardian_list' %}" 
-        class="btn">
-        Back
+        <a href="{% if is_guardian %}{% url 'welcome' %}{% else %}{% url 'guardian_list' %}{% endif %}" class="btn">
+            Back
         </a>
     </div>
 </div>
