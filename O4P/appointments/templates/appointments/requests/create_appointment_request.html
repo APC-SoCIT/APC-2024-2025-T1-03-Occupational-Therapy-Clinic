@@ -122,6 +122,9 @@
     // ✅ Handle clicking an available slot
     slotContainer.addEventListener("click", function (event) {
         if (event.target.classList.contains("slot-btn")) {
+
+            event.preventDefault();  // ✅ Prevents any default form submission behavior
+
             let selectedSlot = event.target.dataset;
 
             console.log("✅ Selected Slot:", selectedSlot.date, selectedSlot.start_time);
