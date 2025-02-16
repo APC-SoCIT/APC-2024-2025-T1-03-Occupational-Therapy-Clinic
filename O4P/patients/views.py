@@ -36,8 +36,8 @@ class PatientInformationCreateView(RolePermissionRequiredMixin, CreateView):
         # Count existing patients for this guardian
         patient_count = PatientInformation.objects.filter(account_id=guardian).count()
 
-        if patient_count >= 3:  # Set your patient limit
-            messages.error(self.request, "A guardian can have a maximum of 3 patients. Current patient count: " + str(patient_count))
+        if patient_count >= 10:  # Set your patient limit
+            messages.error(self.request, "A guardian can have a maximum of 10 patients. Current patient count: " + str(patient_count))
             return redirect(self.request.path)  # Reload the form with an error message
 
         # Assign the guardian before saving
