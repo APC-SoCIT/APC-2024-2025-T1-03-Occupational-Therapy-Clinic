@@ -18,6 +18,7 @@ from allauth.account.views import SignupView
 from django.http import HttpResponseForbidden
 from games.models import AssignedGame, Game
 from django.views import View
+from django.contrib import messages
 
 #
 # PATIENTS
@@ -30,7 +31,17 @@ class PatientInformationCreateView(RolePermissionRequiredMixin, CreateView):
     success_url = reverse_lazy('patients.list')
 
     def form_valid(self, form):
-        form.instance.account_id = self.request.user
+        guardian = self.request.user  # The logged-in guardian
+        
+        # Count existing patients for this guardian
+        patient_count = PatientInformation.objects.filter(account_id=guardian).count()
+
+        if patient_count >= 10:  # Set your patient limit
+            messages.error(self.request, "A guardian can have a maximum of 10 patients. Current patient count: " + str(patient_count))
+            return redirect(self.request.path)  # Reload the form with an error message
+
+        # Assign the guardian before saving
+        form.instance.account_id = guardian
         return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
