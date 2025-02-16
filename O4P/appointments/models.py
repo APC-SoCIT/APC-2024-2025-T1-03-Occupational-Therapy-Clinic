@@ -1,32 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
-from patients.models import PatientInformation 
+from patients.models import PatientInformation as Patient
 from datetime import timedelta, datetime
 from accounts.models import TherapistInformation as Therapist
+from accounts.models import GuardianInformation as Guardian
 
 class Appointment(models.Model):
-    guardian = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name="appointments",
-        blank=True,
-        null=True
-        )  # Guardians manage appointments
-    
-    patient = models.ForeignKey(
-        PatientInformation, 
-        on_delete=models.CASCADE, 
-        related_name="appointments",
-        blank=True,
-        null=True  # ✅ Allow patient to be NULL for non-user requests
-        )  # Reference PatientInformation
-    
-    therapist = models.ForeignKey(
-        Therapist, 
-        on_delete=models.CASCADE, 
-        related_name="therapist_appointments", 
-        limit_choices_to={'account_id__groups__name': 'Therapist'}  # ✅ Fixing reference to groups
-    )
+    therapist = models.ForeignKey(Therapist, on_delete=models.CASCADE, related_name="therapist_appointments")
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments", blank=True, null=True)  # ✅ Allow null for non-registered users
+    first_name = models.CharField(max_length=50, blank=True, null=True)  # ✅ Store first name for non-registered users
+    last_name = models.CharField(max_length=50, blank=True, null=True)  # ✅ Store last name for non-registered users
     date = models.DateField()
     start_time = models.TimeField()
     status = models.CharField(
@@ -39,11 +22,9 @@ class Appointment(models.Model):
         default='scheduled'
     )
 
-
     def __str__(self):
-        if self.patient:
-            return f"{self.patient} with {self.therapist} on {self.date}"
-        return f"Non-User Appointment with {self.therapist} on {self.date}"  # ✅ Handle non-user appointments
+        return f"Appointment with {self.therapist.first_name} on {self.date}"
+
 
 
 class AppointmentRequest(models.Model):
@@ -85,7 +66,7 @@ class AppointmentRequest(models.Model):
 
 class RecurringAppointment(models.Model):
     patient = models.ForeignKey(
-        PatientInformation,
+        Patient,
         on_delete=models.CASCADE,
         related_name="recurring_appointments"
     )
