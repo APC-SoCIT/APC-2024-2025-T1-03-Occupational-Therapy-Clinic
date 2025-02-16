@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 class AppointmentForm(forms.ModelForm):
-    therapist = forms.ModelChoiceField(queryset=Therapist.objects.all(), required=True)
-    patient = forms.ModelChoiceField(queryset=Patient.objects.all(), required=False)
+    therapist = forms.ModelChoiceField(queryset=Therapist.objects.only("id", "first_name", "last_name"), required=True)
+    patient = forms.ModelChoiceField(queryset=Patient.objects.values("id", "first_name", "last_name"), required=False)
 
     class Meta:
         model = Appointment
@@ -36,7 +36,7 @@ class RecurringAppointmentForm(forms.ModelForm):
 
 class AppointmentRequestForm(forms.ModelForm):
     therapist = forms.ModelChoiceField(
-        queryset=Therapist.objects.all(),
+        queryset=Therapist.objects.only("id", "first_name", "last_name"),
         required=True,
         label="Select Therapist"
     )
