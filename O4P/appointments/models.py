@@ -7,9 +7,9 @@ from accounts.models import GuardianInformation as Guardian
 
 class Appointment(models.Model):
     therapist = models.ForeignKey(Therapist, on_delete=models.CASCADE, related_name="therapist_appointments")
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments", blank=True, null=True)  # ✅ Allow null for non-registered users
-    first_name = models.CharField(max_length=50, blank=True, null=True)  # ✅ Store first name for non-registered users
-    last_name = models.CharField(max_length=50, blank=True, null=True)  # ✅ Store last name for non-registered users
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments", blank=True, null=True)  #Allow null for non-registered users
+    first_name = models.CharField(max_length=50, blank=True, null=True)  #Store first name for non-registered users
+    last_name = models.CharField(max_length=50, blank=True, null=True)  #Store last name for non-registered users
     date = models.DateField()
     start_time = models.TimeField()
     status = models.CharField(
@@ -33,16 +33,20 @@ class AppointmentRequest(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
 
-
     therapist = models.ForeignKey(
-        Therapist,  # ✅ Use TherapistInformation instead of User
+        Therapist,
         on_delete=models.CASCADE,
         related_name="appointment_requests"
     )
 
-    # Appointment details
+    # Requested new appointment details
     requested_date = models.DateField()
     requested_time = models.TimeField()
+
+    # ✅ Store the original appointment details before rescheduling
+    original_date = models.DateField(blank=True, null=True)
+    original_time = models.TimeField(blank=True, null=True)
+
     notes = models.TextField(blank=True, null=True)
 
     # Request status
@@ -55,8 +59,6 @@ class AppointmentRequest(models.Model):
         ],
         default='pending'
     )
-
-    
 
     def __str__(self):
         return f"Request from {self.first_name} {self.last_name} with {self.therapist} on {self.requested_date}"
@@ -72,7 +74,7 @@ class RecurringAppointment(models.Model):
     )
 
     therapist = models.ForeignKey(
-        Therapist,  # ✅ Use TherapistInformation instead of User
+        Therapist,  #Use TherapistInformation instead of User
         on_delete=models.CASCADE,
         related_name="therapist_recurring_appointments"
     )
