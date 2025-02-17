@@ -17,6 +17,7 @@ from django.http import JsonResponse
 import requests
 
 
+
 class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
     template_name = 'account/welcome.html'
     extra_context = {'today': datetime.today()}
@@ -248,20 +249,20 @@ class TherapistSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin,
     allowed_roles = ['Administrator']
 
     form_class = TherapistSignupForm
-    template_name = "account/signup.html"
+    template_name = "account/therapist_signup.html"
     extra_context = {'role_name': 'Therapist'}
 
 class AssistantSignupView(CustomLoginRequiredMixin, RolePermissionRequiredMixin, SignupView):
     allowed_roles = ['Administrator']
 
     form_class = AssistantSignupForm
-    template_name = "account/signup.html"
+    template_name = "account/assistant_signup.html"
     extra_context = {'role_name': 'Assistant'}
 
 class GuardianSignupView(SignupView):
 
     form_class = GuardianSignupForm
-    template_name = "account/signup.html"
+    template_name = "account/guardian_signup.html"
     extra_context = {'role_name': 'Guardian'}
     
 def get_municipalities(request):

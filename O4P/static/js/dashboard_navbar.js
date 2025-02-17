@@ -48,5 +48,3 @@ document.getElementById('deleteForm').addEventListener('submit', function(e) {
         console.error('Error:', error);
     });
 });
-
-
