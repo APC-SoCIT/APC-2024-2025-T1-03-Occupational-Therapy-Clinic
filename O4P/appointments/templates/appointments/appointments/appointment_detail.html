@@ -14,6 +14,9 @@
 
         {% if user.groups.first.name == 'Guardian' %}
             <a href="{% url 'update_appointment' appointment.id %}" class="btn btn-secondary">Reschedule</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Cancel
+            </button>
         {% endif %}
     </div>
 </div>
@@ -63,7 +66,7 @@
                         {{ appointment.start_time }}
                     </div>
                     <div class="col-sm-3">
-                        <h6 class="mb-0">End Time:</h6>
+                        <h6 class="mb-0">Status:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
                             {{ appointment.status }}
