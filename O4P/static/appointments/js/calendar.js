@@ -8,14 +8,25 @@ function initializeCalendar(config) {
     calendar.render();
 }
 
-export function fetchAppointments(start, end, appointmentListEl, therapistId) {
-    if (!therapistId) {
-        console.error("❌ No therapist ID provided for fetching appointments");
-        return;
-    }
+export function fetchAppointments(start, end, appointmentListEl, therapistId, userRole, guardianPatientIds) {
+    
+    let apiUrl;
 
-    let apiUrl = `/appointment/calendar/api/?start=${start}&end=${end}&therapist_id=${therapistId}`;
-    console.log("Fetching appointments from:", apiUrl);
+    if (userRole === "Guardian" && guardianPatientIds.length > 0) {
+        apiUrl = `/appointment/calendar/api/?start=${start}&end=${end}&guardian_patient_ids=${guardianPatientIds.map(id => encodeURIComponent(id)).join(",")}&filter=scheduled`;
+        console.log("✅ Fetching Appointments for Guardian's Patients:", guardianPatientIds);
+    } else if (userRole === "Therapist" && therapistId) {
+        apiUrl = `/appointment/calendar/api/?start=${start}&end=${end}&therapist_id=${therapistId}&filter=scheduled`;
+        console.log("✅ Fetching Appointments for Therapist:", therapistId);
+    } else {
+        apiUrl = `/appointment/calendar/api/?start=${start}&end=${end}&filter=scheduled`;
+        console.log("✅ Fetching All Scheduled Appointments");
+    }
+    
+    console.log("📡 Fetching Appointments from:", apiUrl);
+    
+    
+
 
     fetch(apiUrl)
         .then(response => response.json())
@@ -32,7 +43,7 @@ export function fetchAppointments(start, end, appointmentListEl, therapistId) {
             data.forEach(appt => {
                 let listItem = document.createElement('li');
                 listItem.classList.add("list-group-item");
-                listItem.textContent = `📅 ${appt.start.split('T')[0]} | 🕒 ${appt.start.split('T')[1].substring(0,5)}`;
+                listItem.textContent = `📅 ${appt.start.split('T')[0]} | 🕒 ${appt.start.split('T')[1].substring(0,5)} | 👤 ${appt.extendedProps.patient_name || "Unknown"}`;
                 appointmentListEl.appendChild(listItem);
             });
         })
@@ -80,20 +91,21 @@ export function fetchAvailableSlots(therapist_id, date, slotContainer) {
                     let formattedEndTime = slot.end_time.slice(0, 5);
 
                     let slotBtn = document.createElement('button');
-                    slotBtn.classList.add("btn", "btn-outline-success", "w-100", "my-1");
+                    slotBtn.classList.add("btn", "btn-outline-success", "w-100", "my-1", "slot-btn");  // ✅ Ensures the click event works
                     slotBtn.textContent = `${formattedStartTime} - ${formattedEndTime}`;
                     slotBtn.dataset.start_time = formattedStartTime;  // Ensure correct data attribute
                     slotBtn.dataset.date = formattedDate; // Store the correct date
 
                     console.log("Generated Slot Button:", slotBtn);  // ✅ Debugging log
 
-                    slotBtn.onclick = function() {
-                        console.log("Selected Slot:", formattedDate, formattedStartTime);
+                    slotBtn.addEventListener("click", function(event) {
+                        event.preventDefault(); // ✅ Prevents form submission when clicking a time slot
                         document.getElementById("selected_date").value = formattedDate;
                         document.getElementById("selected_time").value = formattedStartTime;
+                        console.log("Selected Slot:", formattedDate, formattedStartTime);  // ✅ Debugging log
                         document.getElementById("selected_therapist").value = therapistId;
                         document.getElementById("request-appointment-btn").removeAttribute("disabled");
-                    };
+                    });
                     slotContainer.appendChild(slotBtn);
                 });
                 attachSlotClickListener();  // Attach click event after buttons are added
