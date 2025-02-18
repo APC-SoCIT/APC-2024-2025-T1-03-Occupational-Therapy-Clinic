@@ -1,6 +1,5 @@
 from django.views import View
 from django.http import Http404
-from patients.models import Guardian
 from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied

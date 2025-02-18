@@ -1,8 +1,6 @@
 from django.contrib.auth.models import Group
 from allauth.account.forms import SignupForm
 from django import forms
-from patients.models import PatientInformation
-from patients.models import Guardian
 from .models import TherapistInformation, AssistantInformation, GuardianInformation, Province, Municipality
 import datetime, re, requests
 from .nationalities import NATIONALITIES_duble_tuple_for as NATIONALITIES

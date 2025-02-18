@@ -5,7 +5,6 @@ from .models import PatientInformation
 from .models import PatientNotes
 from .forms import PatientInformationForm
 from .forms import PatientNotesForm
-from .models import Guardian
 from core.mixins import UserRoleMixin
 from core.mixins import RolePermissionRequiredMixin
 from django.core.exceptions import PermissionDenied

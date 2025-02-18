@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import PatientInformation
 from .models import PatientNotes
-from .models import Guardian
 # Register your models here.
 
 @admin.register(PatientInformation)
@@ -10,11 +9,6 @@ class PatientInformationAdmin(admin.ModelAdmin):
     search_fields = ('first_name', 'last_name', 'contact_number')
     list_filter = ('municipality', 'province',)
     ordering = ('last_name', 'first_name')
-
-@admin.register(Guardian)
-class GuardianAdmin(admin.ModelAdmin):
-    list_display = ('user',)
-    search_fields = ('user__username',)
 
 @admin.register(PatientNotes)
 class PatientNotesAdmin(admin.ModelAdmin):

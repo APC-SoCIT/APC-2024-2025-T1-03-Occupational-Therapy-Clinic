@@ -2,7 +2,7 @@ from datetime import datetime
 from django.views.generic import TemplateView, ListView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from allauth.account.views import SignupView
-from patients.models import PatientInformation, Guardian
+from patients.models import PatientInformation
 from .forms import TherapistSignupForm, AssistantSignupForm, GuardianSignupForm, TherapistInformationForm, AssistantInformationForm, GuardianInformationForm
 from allauth.account.views import SignupView
 from core.mixins import RolePermissionRequiredMixin, CustomLoginRequiredMixin, UserRoleMixin
