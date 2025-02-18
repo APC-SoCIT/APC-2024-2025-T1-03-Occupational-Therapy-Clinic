@@ -130,6 +130,8 @@ def update_appointment(request, appointment_id):
                 therapist=therapist,
                 requested_date=new_date,
                 requested_time=new_time,
+                original_date=appointment["date"],  # ✅ Store original date
+                original_time=appointment["start_time"],  # ✅ Store original start time
                 status="pending"
             )
             print("✅ Reschedule Request Created!")  # Debugging
@@ -327,8 +329,28 @@ def update_request_status(request, request_id):
                 last_name=appointment_request.last_name
             ).first()
 
+            # ✅ Ensure we delete the exact previous scheduled appointment
+            old_appointment_query = Appointment.objects.filter(
+                therapist=appointment_request.therapist,
+                patient=existing_patient if existing_patient else None,
+                date=appointment_request.original_date,  # ✅ Match the original date before rescheduling
+                start_time=appointment_request.original_time,  # ✅ Match the exact time before rescheduling
+                status="scheduled"
+            )
+
+            print(f"🔍 Querying for old appointment: {old_appointment_query.query}")
+
+            old_appointment = old_appointment_query.first()
+
+            if old_appointment:
+                print(f"🗑️ Deleting previous appointment: {old_appointment.id} on {old_appointment.date} at {old_appointment.start_time}")
+                old_appointment.delete()
+            else:
+                print("⚠️ No exact match for previous appointment found. Skipping deletion.")
+
+            # ✅ Create the new rescheduled appointment
             Appointment.objects.create(
-                therapist=therapist,
+                therapist=appointment_request.therapist,
                 patient=existing_patient if existing_patient else None,
                 first_name=appointment_request.first_name,
                 last_name=appointment_request.last_name,
@@ -336,6 +358,8 @@ def update_request_status(request, request_id):
                 start_time=appointment_request.requested_time,
                 status='scheduled',
             )
+
+            messages.success(request, "Appointment rescheduled successfully. The previous appointment has been removed.")
 
         return redirect('manage_appointment_requests')
 
