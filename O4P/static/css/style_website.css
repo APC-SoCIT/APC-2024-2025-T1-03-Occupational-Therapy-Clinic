@@ -4,6 +4,11 @@ html, body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
 
+  p {
+    font-size: 1.2rem; /* Adjust as needed */
+}
+
+
 .header-1 {
   display: flex; /* Enables Flexbox */
   justify-content: space-between; /* Positions items at opposite ends */
@@ -56,7 +61,7 @@ html, body {
 
 .home-1 {
   position: relative;
-  background-image: url("/static/images/clinic-bg.jpg");
+  background-image: url("/static/images/clinic-bg.png");
   background-size: cover;
   background-position: center;
   color: white;
@@ -80,13 +85,13 @@ html, body {
   
 .home-1-cont {
   position: relative;
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
   z-index: 2; /* Ensure content is above the overlay */
   }
 
 .home-1-header {
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: bold;
   }
 
@@ -109,6 +114,7 @@ html, body {
   bottom: 0;
   max-width: 50%;
   z-index: 2;
+  height: 90%;
   }
 
 .goals-section {
@@ -138,7 +144,7 @@ html, body {
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
-  padding-right: 280px;
+  padding-right: 380px;
   }
   
 .home-2-cont {
@@ -149,7 +155,6 @@ html, body {
   
 .home-2-goal {
   list-style-type: none;
-  padding-left: 50px;
   }
   
 .home-2-goal li {
@@ -163,17 +168,17 @@ html, body {
   color: #385E81;
   font-size: 60px;
   font-weight: bold;
-  padding: 0px;
   border-radius: 50%;
   display: inline-block;
   width: 90px;
   text-align: center;
+  margin: 6px 0;
   }
   
 .goal-text {
   margin-left: 20px;
-  font-size: 1.2rem;
-  color: #2f4e6e;
+  font-size: 1.8rem;
+  color: white;
   }
 
 
@@ -234,10 +239,6 @@ html, body {
   margin-right: 15px;
 }
 
-.about-2-cont {
-  font-size: 1rem;
-}
-
 .mission-box {
   border-radius: 15px;
 }
@@ -252,7 +253,7 @@ html, body {
   justify-content: center;
   align-items: center;
   background-color: #EBF2FA;
-  height: 80vh;
+  height: 90vh;
   text-align: center;
 }
 
@@ -302,7 +303,6 @@ html, body {
 }
 .contact-1-cont img {
   width: 100%;
-  height: auto;
   border-radius: 8px 8px 0 0;
 }
 .contact-1-text {
@@ -311,11 +311,12 @@ html, body {
   color: white;
   border-radius: 0 0 8px 8px;
   align-items: center;
+  font-style: italic;
 }
 .contact-1-card {
   background-color: #CFE0F0;
   color: #385E81;
-  padding: 20px;
+  padding: 20px 20px 20px 130px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-bottom: 15px;
