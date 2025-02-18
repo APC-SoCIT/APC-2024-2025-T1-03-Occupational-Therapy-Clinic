@@ -4,12 +4,6 @@ from django.contrib.auth.models import Group
 from accounts.models import BaseInformation
 from django.core.validators import RegexValidator
 # Create your models here.
-
-class Guardian(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
     
 class PatientInformation(BaseInformation):              
     diagnosis = models.CharField(max_length=50)    
