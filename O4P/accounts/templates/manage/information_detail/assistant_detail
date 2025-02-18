@@ -45,13 +45,9 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <h6 class="mb-2">Nationality</h6>
                             <div class="info-box">{{ assistant.nationality }}</div>
-                        </div>
-                        <div class="col-sm-6">
-                            <h6 class="mb-2">Religion</h6>
-                            <div class="info-box">{{ assistant.religion }}</div>
                         </div>
                     </div>
                     <div class="row">

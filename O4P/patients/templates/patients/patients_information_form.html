@@ -146,6 +146,28 @@
     {% endif %}
 </div>
 
+<div class="modal fade" id="consentModal" tabindex="-1" aria-labelledby="consentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-start">
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h5 class="modal-title" id="consentModalLabel">Data Privacy Notice</h5>
+                    <p class="text-secondary mt-2 mb-0">
+                        In compliance with the Data Privacy Act of 2012 (Republic Act No. 10173), by submitting any information in this system, you acknowledge and consent to the collection, storage, and processing of your data.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>By using this website, you agree to our terms and conditions. Do you agree?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn2 btn-danger" id="disagreeBtn">Cancel</button>
+                <button type="button" class="btn2 btn-success" id="agreeBtn">Agree</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     document.getElementById('id_province').addEventListener('change', function() {
@@ -167,5 +189,18 @@
             })
             .catch(error => console.error('Error:', error));
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    var consentModal = new bootstrap.Modal(document.getElementById('consentModal'));
+    consentModal.show();
+
+    document.getElementById("agreeBtn").addEventListener("click", function () {
+        consentModal.hide();
+    });
+
+    document.getElementById("disagreeBtn").addEventListener("click", function () {
+        window.location.href = "{% url 'patients.list' %}";
+    });
+});
 </script>
 {% endblock %}
