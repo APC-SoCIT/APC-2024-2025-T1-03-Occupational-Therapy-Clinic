@@ -31,3 +31,4 @@ urllib3==2.3.0
 dj-database-url==2.3.0
 gunicorn==23.0.0
 fido2==1.2.0
+whitenoise==6.9.0
