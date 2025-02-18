@@ -185,9 +185,4 @@ MFA_ADAPTER = "allauth.mfa.adapter.DefaultMFAAdapter"
 MFA_SUPPORTED_TYPES = ["recovery_codes", "totp"]
 
 MFA_PASSKEY_LOGIN_ENABLED = True
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
