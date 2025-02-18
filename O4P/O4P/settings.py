@@ -188,6 +188,6 @@ MFA_PASSKEY_LOGIN_ENABLED = True
 STORAGES = {
     # ...
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
