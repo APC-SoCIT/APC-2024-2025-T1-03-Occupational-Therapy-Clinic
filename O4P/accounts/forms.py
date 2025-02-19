@@ -16,7 +16,7 @@ class BaseSignupForm(SignupForm):
     middle_name = forms.CharField(
         max_length=50,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        required=True
+        required=False
     )
     last_name = forms.CharField(
         max_length=50,
