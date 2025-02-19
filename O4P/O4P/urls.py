@@ -28,7 +28,6 @@ urlpatterns = [
     path('auth/', include('allauth.urls')),
     path('', include('appointments.urls')),
     path('', include('therapists.urls')),
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_ROOT}),
 ]
 
 if settings.DEBUG:
