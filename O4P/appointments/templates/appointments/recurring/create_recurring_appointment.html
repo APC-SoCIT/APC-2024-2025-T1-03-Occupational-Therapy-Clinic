@@ -1,73 +1,158 @@
-{% extends "form_navbar.html" %}
+{% extends 'calendar_base.html' %}
+{% load static %}
 
-{% block content %}
-<div class="container-fluid">
+{% block customCSS %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+<link rel="stylesheet" href="{% static 'appointments/css/calendar.css' %}">
+{% endblock %}
 
-    <div class="container">
-        <div class="header-1">
-            <h2>Schedule Recurring Appointment</h2>
-            <div>
-                <a href="{% url 'calendar_view' %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" form="recurringAppointmentForm" class="btn btn-primary">Schedule</button>
+{% block title %}Create Recurring Appointment{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <!-- ✅ Left: Calendar Section -->
+        <div class="col-md-8">
+            <div class="calendar-section">
+                <h4 class="text-center">Select a Start Date</h4>
+                <div id="calendar"></div>
             </div>
         </div>
 
-        <form id="recurringAppointmentForm" method="POST"> 
-            {% csrf_token %}
+        <!-- ✅ Right: Appointment Form -->
+        <div class="col-md-4">
+            <div class="form-section">
+                <form id="recurringApptForm" method="POST" action="{% url 'create_recurring_appointment' %}">
+                    {% csrf_token %}
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h3 class="h6 mb-3 text-secondary">Recurring Appointment Details</h3>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Patient</label>
-                                        {{ form.patient }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Therapist</label>
-                                        {{ form.therapist }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Start Date</label>
-                                        {{ form.start_date }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Start Time</label>
-                                        {{ form.start_time }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Recurrence Pattern</label>
-                                        {{ form.recurrence_pattern }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Number of Occurrences</label>
-                                        {{ form.number_of_occurrences }}
-                                    </div>
-                                </div>
-                            </div>
+                    <h4 class="text-center mb-3">Recurring Appointment Details</h4>
+
+                    <!-- ✅ Patient Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Patient</label>
+                        <select id="patientSelection" name="patient" class="form-select" required>
+                            <option value="">-- Select a Patient --</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">
+                                {% if patient.first_name and patient.last_name %}
+                                    {{ patient.first_name }} {{ patient.last_name }}
+                                {% else %}
+                                    Unnamed Patient (ID: {{ patient.id }})
+                                {% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- ✅ Hidden input for selected start date -->
+                    <input type="hidden" name="start_date" id="selected_date" required>
+
+                    <!-- ✅ Available Slots -->
+                    <div class="mb-3">
+                        <label class="form-label">Available Slots</label>
+                        <div id="available-slots" class="slot-grid">
+                            <p class="text-muted text-center">Select a date to see available slots.</p>
                         </div>
                     </div>
-                </div>
+
+                    <!-- ✅ Hidden input for selected start time -->
+                    <input type="hidden" name="start_time" id="selected_time" required>
+
+                    <!-- ✅ Recurrence Pattern -->
+                    <div class="mb-3">
+                        <label class="form-label">Recurrence Pattern</label>
+                        <select name="recurrence_pattern" class="form-select" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly" selected>Weekly</option>
+                            <option value="bi-weekly">Bi-Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ Number of Occurrences -->
+                    <div class="mb-3">
+                        <label class="form-label">Number of Occurrences</label>
+                        <input type="number" name="number_of_occurrences" class="form-control" min="1" max="12" value="6" required>
+                    </div>
+
+                    <!-- ✅ Hidden input for therapist (auto-assigned) -->
+                    <input type="hidden" name="therapist" value="{{ therapist_id }}">
+
+                    <!-- ✅ Submit Button -->
+                    <button type="submit" id="create-recurring-btn" class="btn btn-primary w-100" disabled>Create Recurring Appointment</button>
+                </form>
             </div>
-        </form>
+            <div class="my-3">
+                <a href="{% url 'calendar_view' %}" class="btn">Back</a>
+            </div>
+        </div>
+
     </div>
 </div>
-{% endblock %}
 
+<!-- ✅ FullCalendar JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<!-- ✅ JavaScript for Calendar and Slot Selection -->
+<script type="module">
+    import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const calendarEl = document.getElementById("calendar");
+        const selectedDateField = document.getElementById("selected_date");
+        const selectedTimeField = document.getElementById("selected_time");
+        const submitButton = document.getElementById("create-recurring-btn");
+        const slotContainer = document.getElementById("available-slots");
+
+        let therapistId = "{{ therapist_id }}";
+        console.log("👩‍⚕️ Therapist ID:", therapistId);
+
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',
+            selectable: true,
+            dateClick: function(info) {
+                selectedDateField.value = info.dateStr;
+                console.log("📅 Selected date:", info.dateStr);
+
+                // ✅ Fetch available slots for the selected date using logged-in therapist ID
+                fetchAvailableSlots(therapistId, info.dateStr, slotContainer);
+            }
+        });
+
+        calendar.render();
+
+        // ✅ Event listener to select a slot and update hidden fields
+        slotContainer.addEventListener("click", function (event) {
+            if (event.target.classList.contains("slot-btn")) {
+                event.preventDefault();
+                document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
+                event.target.classList.add("selected-slot");
+
+                // ✅ Set values
+                selectedDateField.value = event.target.dataset.date;
+                selectedTimeField.value = event.target.dataset.start_time;
+
+                console.log("📅 Selected Slot Date:", selectedDateField.value);
+                console.log("🕒 Selected Slot Time:", selectedTimeField.value);
+
+                // ✅ Enable submit button
+                submitButton.disabled = false;
+            }
+        });
+
+        // ✅ Ensure form does not submit if no date or time is selected
+        document.getElementById("recurringApptForm").addEventListener("submit", function (event) {
+            if (!selectedDateField.value || !selectedTimeField.value) {
+                event.preventDefault();
+                alert("⚠️ Please select a date and time before submitting.");
+            }
+        });
+    });
+</script>
+
+{% endblock %}
