@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if messages %}
+{% if 'patient_limit' in message.extra_tags %}
   <div class="alert alert-danger">
     {% for message in messages %}
       <p>{{ message }}</p>
