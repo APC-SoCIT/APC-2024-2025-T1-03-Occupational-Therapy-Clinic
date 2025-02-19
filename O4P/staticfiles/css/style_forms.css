@@ -1,0 +1,129 @@
+.navbar {
+    padding: 15px 20px 5px 20px;
+    background-color: white;
+  }
+  
+  .navbar-nav .nav-link {
+    color: grey;
+    background-color: white;
+  }
+  
+  .nav-item .nav-link:hover {
+    color: #004E64;
+    background-color: white;
+  }
+  
+  .navbar-brand {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+  }
+  
+  .sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #00A5CF;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 20px;
+  }
+  
+  .sidenav a {
+    padding: 6px 8px 6px 20px;
+    text-decoration: none;
+    font-size: 20px;
+    color: white;
+    display: block;
+  }
+  
+  .sidenav a:hover {
+    color: #004E64;
+  }
+  
+  .main {
+    margin-left: 0;
+    padding: 0px 20px;
+    transition: margin-left 0.3s;
+  }
+  
+  #toggleNavBtn {
+    font-size: 20px;
+    cursor: pointer;
+    color: black;
+    background-color: white;
+    border: none;
+    padding: 10px;
+    outline: none;
+    box-shadow: none;
+  }
+  
+  .hr1 {
+    border: none;
+    height: 4px;
+    background-color: #64CA6C;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  
+  .hr2 {
+    border: none;
+    padding: 60px 20px;
+    height: 4px;
+    background-color: #00A5CF;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+
+  .header-1 {
+    display: flex; /* Enables Flexbox */
+    justify-content: space-between; /* Positions items at opposite ends */
+    align-items: center; /* Vertically aligns items */
+    padding: 5px 0px;
+  
+  }
+  
+  h1 {
+    margin: 0; /* Removes default margin */
+  }
+  
+  .btn {
+    padding: 10px 20px; /* Adjusts button size */
+    border-radius: 4px;
+    cursor: pointer; /* Pointer for better UX */
+    text-decoration: none; /* Removes underline from links */
+    background-color: #007bff; /* Optional: Add background color */
+    color: #fff; /* Optional: Text color */
+    border: none; /* Remove default border */
+    display: inline-block; /* Makes it behave like a button */
+    text-align: center; /* Centers text */
+  }
+  
+  .btn:hover {
+    background-color: #0056b3; /* Optional: Add hover effect */
+    color: #fff;
+    text-decoration: none;
+  }
+
+.card {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #eff3fc;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.75);
+    border-radius: 1rem;
+}
+
+.card-body {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 1.5rem 1.5rem;
+}
