@@ -33,3 +33,5 @@ tqdm==4.67.1
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.3.0
+django-admincharts==0.4.1
+django-adminplus==0.6
