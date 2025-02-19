@@ -1,0 +1,218 @@
+{% extends "admin/base_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="dashboard-header">
+        <h1 class="fw-bold">Admin Dashboard</h1>
+        <button id="exportPdfBtn" class="btn btn-success">Export</button>
+    </div>
+
+    <div id="dashboard-content">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card p-3 shadow-sm h-100">
+                    <h2>Total Patients</h2>
+                    <canvas id="patientChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 shadow-sm h-100">
+                    <h2>Staff Volume</h2>
+                    <canvas id="userGroupChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h2>Patient Age Distribution</h2>
+                    <canvas id="patientAgeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h2>Most Assigned Games</h2>
+                    <canvas id="gameAssignmentChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h2>Patient Diagnosis Distribution</h2>
+                    <canvas id="patientDiagnosisChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+    function renderVBarChart(ctx, chartData) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                plugins: {
+                    legend: { 
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    function renderPPieChart(ctx, chartData) {
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: 'white',
+                        font: {
+                            weight: 'bold',
+                            size: 20
+                        },
+                        formatter: (value, context) => {
+                            let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            let percentage = ((value / total) * 100).toFixed(1) + '%';
+                            return percentage;
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.raw;
+                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = ((value / total) * 100).toFixed(2) + '%';
+                                return `${context.label}: ${value} (${percentage})`;
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
+
+    function renderCPieChart(ctx, chartData, legendPosition = 'left') {
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: legendPosition, // Move legend to 'left', 'right', 'top', or 'bottom'
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: 'white', // Label text color
+                        font: {
+                            weight: 'bold',
+                            size: 20
+                        },
+                        formatter: (value) => {
+                            return value;
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels] // Enable datalabels plugin
+        });
+    }
+        
+    function renderNLCPieChart(ctx, chartData) {
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false 
+                    },
+                    datalabels: {
+                        color: 'white', // Label text color
+                        font: {
+                            weight: 'bold',
+                            size: 20
+                        },
+                        formatter: (value) => {
+                            return value; // Show raw count
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels] // Enable datalabels plugin
+        });
+    }
+
+    function renderHBarChart(ctx, chartData) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: { 
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    renderCPieChart(document.getElementById("userGroupChart"), {{ user_group_chart|safe }});
+    renderNLCPieChart(document.getElementById("patientChart"), {{ patient_chart|safe }});
+    renderVBarChart(document.getElementById("gameAssignmentChart"), {{ game_assignment_chart|safe }});
+    renderVBarChart(document.getElementById("patientAgeChart"), {{ patient_age_chart|safe }});
+    renderHBarChart(document.getElementById("patientDiagnosisChart"), {{ patient_diagnosis_chart|safe }});
+
+</script>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("exportPdfBtn").addEventListener("click", function () {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+    
+            const content = document.getElementById("dashboard-content");
+            if (!content) {
+                alert("Dashboard content not found!");
+                return;
+            }
+    
+            html2canvas(content, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+                pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+                pdf.save("dashboard.pdf");
+            }).catch(error => {
+                console.error("Error generating PDF:", error);
+            });
+        });
+    });
+    </script>
+{% endblock %}

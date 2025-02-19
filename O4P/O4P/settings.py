@@ -32,6 +32,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_tools_stats',
+    'django_nvd3',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +54,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.mfa',
+
+    'admincharts',
     
 ]
 
@@ -66,7 +71,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
-    'accounts.middleware.AllUserRequire2FAMiddleware'
+    'accounts.middleware.AllUserRequire2FAMiddleware',
+
 ]
 
 ROOT_URLCONF = 'O4P.urls'
@@ -187,3 +193,4 @@ MFA_ADAPTER = "allauth.mfa.adapter.DefaultMFAAdapter"
 MFA_SUPPORTED_TYPES = ["recovery_codes", "totp"]
 
 MFA_PASSKEY_LOGIN_ENABLED = True
+
