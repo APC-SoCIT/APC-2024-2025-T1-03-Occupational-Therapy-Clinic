@@ -23,7 +23,7 @@
           <th>Diagnosis</th>
           <th>Sex</th>
           <th>Date of Birth</th>
-          <th>Contact Number</th>
+          <th>Assigned Guardian</th>
         </tr>
       </thead>
       <tbody>
@@ -51,7 +51,11 @@
             </td>
             <td>
               <a href="{% url 'patients.details' pk=patient.id %}" class="text-dark text-decoration-none">
-                {{ patient.contact_number }}
+                {{ patient.account_id.guardianinformation_set.first.first_name}} 
+                {% if patient.account_id.guardianinformation_set.first.middle_name %}
+                {{ patient.account_id.guardianinformation_set.first.middle_name}} 
+                {% endif %}
+                {{ patient.account_id.guardianinformation_set.first.last_name}}  
               </a>
             </td>
           </tr>
