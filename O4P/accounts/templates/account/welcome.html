@@ -2,44 +2,137 @@
 
 {% block content %}
 
-        <div class="container">
-            <div class="container-fluid">
-                <h1 class="header 1 my-3">Welcome to TheraPro, {% for group in request.user.groups.all %}
-                    {{ group.name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    No roles assigned.
-                {% endfor %}!</h1>
-                <p>Today is {{ today }}</p>
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="text-secondary">Quick Links</h6>
-                        <p></p>
-                        <div class="list-group">
-                            {% if is_assistant or is_guardian %}
-                                <a href="{% url 'patients.list' %}" class="btn btn-primary my-1">Patient List</a>
-                                {% if is_assistant %}
-                                    <a href="{% url 'assistant_detail' pk=user.assistantinformation_set.first.id %}" class="btn btn-primary my-1">My Profile</a>
-                                {% elif is_guardian %}
-                                    <a href="{% url 'guardian_detail' pk=user.guardianinformation_set.first.id %}" class="btn btn-primary my-1">My Profile</a>
-                                {% endif %}
-                            {% elif is_therapist %}
-                                <a href="{% url 'patients.list' %}" class="btn btn-primary my-1">Patient List</a>
-                                <a href="{% url 'guardian_list' %}" class="btn btn-primary my-1">Guardian List</a>
-                                <a href="{% url 'assistant_list' %}" class="btn btn-primary my-1">Assistant List</a>
-                                <a href="{% url 'therapist_list' %}" class="btn btn-primary my-1">Therapist List</a>
-                                <a href="{% url 'therapist_detail' pk=user.therapistinformation_set.first.id %}" class="btn btn-primary my-1"> My Profile</a>
-                                <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary my-1">Appointment Requests</a>
-                            {% elif is_administrator %}
-                                <a href="{% url 'therapist_signup' %}" class="btn btn-primary d-block my-2">Create Therapist Account</a>            
-                                <a href="{% url 'guardian_signup' %}" class="btn btn-primary d-block my-2">Create Guardian Account</a>
-                                <a href="{% url 'assistant_signup' %}" class="btn btn-primary d-block my-2">Create Assistant Account</a>
-                            {% else %}
-                                <p>Unknown role</p>
-                            {% endif %}
-                        </div>
+
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between">
+        <h1 class="display-5 fw-bold mb-2">Welcome to TheraPro</h1>
+        <h4 class="text-muted">
+            {% for group in request.user.groups.all %}
+                {{ group.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                No roles assigned.
+            {% endfor %}
+        </h4>
+    </div>
+    <p class="text-muted">Today is {{ today }}</p>
+    <div class="row g-4">
+        {% if is_guardian %}
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0">
+                    <div class="m-2">
+                        <h5 class="card-title">Patients</h5>
+                        <p class="card-text text-muted">Manage and view patient information.</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'patients.list' %}" class="btn btn-primary d-block my-1">View Patients</a>
+                        <a href="{% url 'patients.create' %}" class="btn btn-primary d-block my-1">Add Patient</a>
+                    </div>
+                </div>
+            </div>
+        {% elif is_therapist %}
+        <div class="row mt-4">
+            <div class="col-md-6 d-flex flex-column">
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="m-2">
+                        <h5 class="card-title">Patient Management</h5>
+                        <p class="card-text text-muted">Access and manage patient records.</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'patients.list' %}" class="btn btn-primary d-block my-1">View Patients</a>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="m-2">
+                        <h5 class="card-title">Guardians</h5>
+                        <p class="card-text text-muted">Manage and communicate with guardians.</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'guardian_list' %}" class="btn btn-primary d-block my-1">View Guardians</a>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="m-2">
+                        <h5 class="card-title">Assistants</h5>
+                        <p class="card-text text-muted">Manage clinic assistants.</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'assistant_list' %}" class="btn btn-primary d-block my-1">View Assistants</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="m-2">
+                        <h5 class="card-title">Appointments</h5>
+                        <p class="card-text text-muted">Manage appointment requests.</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary d-block my-1">View Requests</a>
                     </div>
                 </div>
             </div>
         </div>
+        {% elif is_assistant %}
+        
+        <div class="col-md-4 d-flex flex-column">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="m-2">
+                    <h5 class="card-title">Patient Management</h5>
+                    <p class="card-text text-muted">Access and manage patient records.</p>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{% url 'patients.list' %}" class="btn btn-primary d-block my-1">View Patients</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex flex-column">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="m-2">
+                    <h5 class="card-title">Guardians</h5>
+                    <p class="card-text text-muted">Manage and communicate with guardians.</p>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{% url 'guardian_list' %}" class="btn btn-primary d-block my-1">View Guardians</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex flex-column">
+            <div class="card shadow-sm border-0">
+                <div class="m-2">
+                    <h5 class="card-title">Assistants</h5>
+                    <p class="card-text text-muted">Manage clinic assistants.</p>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{% url 'assistant_list' %}" class="btn btn-primary d-block my-1">View Assistants</a>
+                </div>
+            </div>
+        </div>
+        
+        {% elif is_administrator %}
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0">
+                <div class="m-2">
+                    <h5 class="card-title">User Management</h5>
+                    <p class="card-text text-muted">Create new accounts for users.</p>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{% url 'therapist_signup' %}" class="btn btn-primary d-block my-1">Add Therapist</a>
+                    <a href="{% url 'guardian_signup' %}" class="btn btn-primary d-block my-1">Add Guardian</a>
+                    <a href="{% url 'assistant_signup' %}" class="btn btn-primary d-block my-1">Add Assistant</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Unknown role</p>
+            </div>
+        {% endif %}
+    </div>
+    
+</div>
+
+
+
         
 {% endblock %}
