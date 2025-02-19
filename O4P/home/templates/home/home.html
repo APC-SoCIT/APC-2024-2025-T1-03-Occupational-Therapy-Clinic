@@ -5,149 +5,146 @@
 <div class="home-1">
         <div class="container">
           <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-8">
               <div class="home-1-cont">
-                <h1 class="home-1-header">SLOGAN</h1>
-                <p class="body-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                <button class="btn btn-appointment">Book an Appointment</button>
+                <h1 class="home-1-header mb-3"><em>“Helping you live independently, one step at a time.”</em></h1>
+                <p>- Zoraida D. Francisco, OTRP</p>
+                <a class="btn btn-appointment" href="{% url 'appointment' %}">Book an Appointment</a>
               </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-4">
               <img src="{% static 'images/kid.png' %}" class="child-image" alt="Child Image">
             </div>
           </div>
         </div>
 </div>
 
-<div class="home-2">
-        <div class="container">
-                <div class="row">
-                <!-- Left side content -->
-                <h2 class="home-2-header">GOALS</h2>
-                <div class="col-md-6 d-flex align-items-center justify-content-center">
-                <div class="text-box">
-                <p class="home-2-cont">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                </div>
-                </div>
-                <!-- Right side content with goals -->
-                <div class="col-md-6">
-                <ul class="home-2-goal">
-                <li>
-                        <div class="goal-number">1</div>
-                        <span class="goal-text">Goal?</span>
-                </li>
-                <li>
-                        <div class="goal-number">2</div>
-                        <span class="goal-text">Goal?</span>
-                </li>
-                <li>
-                        <div class="goal-number">3</div>
-                        <span class="goal-text">Goal?</span>
-                </li>
-                </ul>
-                </div>
-                </div>
-        </div>
-</div>
 
 <div class="about-2">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h1 class="about-2-header">Lorem Ipsum Dolor sit Amet</h1>
+                <div class="col-lg-7">
                     <div class="mt-4">
                         <!-- Vision -->
                         <div class="d-flex align-items-start my-3">
-                            <span class="icon">🔍</span>
                             <div>
-                                <h4 class="fw-bold">OUR VISION</h4>
-                                <p class="about-2-cont">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                <h2 class="fw-bold mb-3">OUR VISION AND MISSION</h2>
+                                <p>
+                                    To promote health and welfare by allowing individuals to engage in<br>
+                                    meaningful daily activities (<em>"occupations"</em>) through intervention that<br>
+                                    direct their specific needs and potential, eventually allowing them to<br>
+                                    live independent and fulfilled lives.
                                 </p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-start my-3">
-                            <span class="icon">🎯</span>
-                            <div>
-                                <h4 class="fw-bold">OUR MISSION</h4>
-                                <p class="about-2-cont">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </p>
+                                <ul class="home-2-goal">
+                                    <li>
+                                            <div class="goal-number">1</div>
+                                            <span class="goal-text fw-bold">Enhance Health and Well-Being</span>
+                                    </li>
+                                    <li>
+                                            <div class="goal-number">2</div>
+                                            <span class="goal-text fw-bold">Promote Independence</span>
+                                    </li>
+                                    </ul>
                             </div>
                         </div>
                     </div>
                 </div>
       
-                <div class="col-lg-4">
-                    <img src="images/clinic-bg.jpg" alt="Our Vision and Mission" class="abour-2-img mission-box img-fluid">
+                <div class="col-lg-5">
+                    <img src="{% static 'images/clinic-vm.png' %}" alt="Our Vision and Mission" class="about-2-img img-fluid">
                 </div>
             </div>
         </div>
 </div>
 
 <div class="about-3">
-        <div class="container">
-            <div class="row">
-              <div>
-                <h2 class="fw-bold">Our Core Values</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-              </div>
-                <!-- First Row -->
-                <div class="col-md-4">
-                    <div class="about-3-card">
-                        <div class="icon-circle">
-                        </div>
-                        <h4>Value 1</h4>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.</p>
-                    </div>
+    <div class="container">
+        <div class="row">
+            <div>
+                <h2 class="fw-bold mb-4">OUR CORE VALUES</h2>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <!-- First Row -->
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Altruism</h4>
+                    <p class="card-text">We are committed to selfless service, always prioritizing the well-being and needs of others.</p>
                 </div>
-                <div class="col-md-4">
-                    <div class="about-3-card">
-                        <div class="icon-circle">
-                        </div>
-                        <h4>Value 2</h4>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.</p>
-                    </div>
+            </div>
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Equality</h4>
+                    <p class="card-text">We believe that every individual deserves fair and equal access to care, respect, and opportunities.</p>
                 </div>
-                <div class="col-md-4">
-                    <div class="about-3-card">
-                        <div class="icon-circle">
-                        </div>
-                        <h4>Value 3</h4>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.</p>
-                    </div>
+            </div>
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Freedom</h4>
+                    <p class="card-text">We empower individuals to make their own choices and live lives filled with independence and dignity.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Justice</h4>
+                    <p class="card-text">We advocate for fairness and ethical principles to ensure everyone is treated with integrity and respect.</p>
                 </div>
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Dignity</h4>
+                    <p class="card-text">We honor the inherent worth of every individual, fostering an environment of respect and compassion.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Truth</h4>
+                    <p class="card-text">We value honesty and transparency, ensuring trust in every interaction and decision we make.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="about-3-card">
+                    <div class="icon-circle"></div>
+                    <h4>Prudence</h4>
+                    <p class="card-text">We exercise sound judgment and wisdom in decision-making to provide the best possible care.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <div class="contact-1">
         <div class="container">
           <div class="row">
             <div class="col-md-6">
                 <div class="contact-1-cont">
-                    <img src="{% static 'images/clinic-bg.jpg' %}" alt="Location Image">
+                    <img src="{% static 'images/clinic-map.png' %}" alt="Location Image" class="img-fluid">
                     <div class="contact-1-text">
-                        <p>Address here</p>
+                        <h4>288B Oseas Street, Reveal Subdivision<br>Real 1, Bacoor, Cavite</h4>
                     </div>
                 </div>
             </div>
     
-            <div class="col-md-6 d-flex flex-column align-items-center">
-                <h2 class="contact-1-header mb-4">Where to Find Us</h2>
-                <p class="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et</p>
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <h2 class="contact-1-header">Have Questions?</h2>
+                <p class="text-center mb-4">Give us a call or send us an email—we’d love to hear from you!</p>
                 
-                <div class="contact-1-card">
+                <div class="contact-1-card text-start">
                     <i class="bi bi-telephone-fill"></i>
-                    <span>Number</span>
+                    <span>484-9343</span>
                 </div>
-                <div class="contact-1-card">
+                <div class="contact-1-card text-start">
                     <i class="bi bi-envelope-fill"></i>
-                    <span>Email</span>
-                </div>
-                <div class="contact-1-card">
-                    <i class="bi bi-facebook"></i>
-                    <span>Facebook</span>
+                    <span>zoraidadejesus@yahoo.com</span>
                 </div>
             </div>
           </div>
