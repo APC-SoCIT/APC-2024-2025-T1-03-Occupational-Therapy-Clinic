@@ -15,4 +15,4 @@ class ServicesView(TemplateView):
     template_name='home/services.html'
     
 class AppointmentView(TemplateView):
-    template_name='home/appointment.html'
+    template_name='appointments/requests/create_appointment_request.html'
