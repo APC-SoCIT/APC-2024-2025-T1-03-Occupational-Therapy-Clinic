@@ -28,6 +28,7 @@
                                 <a href="{% url 'assistant_list' %}" class="btn btn-primary my-1">Assistant List</a>
                                 <a href="{% url 'therapist_list' %}" class="btn btn-primary my-1">Therapist List</a>
                                 <a href="{% url 'therapist_detail' pk=user.therapistinformation_set.first.id %}" class="btn btn-primary my-1"> My Profile</a>
+                                <a href="{% url 'list_schedule' %}" class="btn btn-primary my-1">Schedule</a>
                                 <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary my-1">Appointment Requests</a>
                             {% elif is_administrator %}
                                 <a href="{% url 'therapist_signup' %}" class="btn btn-primary d-block my-2">Create Therapist Account</a>            
