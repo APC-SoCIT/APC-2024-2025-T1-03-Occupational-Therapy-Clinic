@@ -36,10 +36,6 @@
                                 {% if change_password_url_ %}
                                     <li><a class="dropdown-item" href="{{ change_password_url_ }}">{% trans "Change Password" %}</a></li>
                                 {% endif %}
-                                {% url 'socialaccount_connections' as connections_url_ %}
-                                {% if connections_url_ %}
-                                    <li><a class="dropdown-item" href="{{ connections_url_ }}">{% trans "Account Connections" %}</a></li>
-                                {% endif %}
                                 {% url 'mfa_index' as mfa_url_ %}
                                 {% if mfa_url_ %}
                                     <li><a class="dropdown-item" href="{{ mfa_url_ }}">{% trans "Two-Factor Authentication" %}</a></li>
