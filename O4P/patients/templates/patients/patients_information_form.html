@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include "blobs.html" %}
+
 {% if 'patient_limit' in message.extra_tags %}
   <div class="alert alert-danger">
     {% for message in messages %}
