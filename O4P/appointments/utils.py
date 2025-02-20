@@ -25,7 +25,7 @@ def generate_recurring_appointments(recurring_appointment):
     appointments = []
 
     for _ in range(recurring_appointment.number_of_occurrences):
-        # ✅ Ensure therapist slot is available for this date
+        # Ensure therapist slot is available for this date
         day_name = current_date.strftime("%A").lower()
         available_slot = AvailableSlot.objects.filter(
             therapist=recurring_appointment.therapist,
@@ -34,11 +34,10 @@ def generate_recurring_appointments(recurring_appointment):
         ).exists()
 
         if not available_slot:
-            print(f"⚠️ Skipping {current_date} - No available slot")
             current_date += interval
             continue
 
-        # ✅ Prevent conflicts with existing appointments
+        # Prevent conflicts with existing appointments
         conflict = Appointment.objects.filter(
             therapist=recurring_appointment.therapist,
             date=current_date,
@@ -46,11 +45,10 @@ def generate_recurring_appointments(recurring_appointment):
         ).exists()
 
         if conflict:
-            print(f"⚠️ Conflict on {current_date} - Appointment already exists")
             current_date += interval
             continue
 
-        # ✅ Create the appointment if no conflicts
+        # Create the appointment if no conflicts
         appointments.append(Appointment(
             patient=recurring_appointment.patient,
             therapist=recurring_appointment.therapist,
@@ -59,17 +57,14 @@ def generate_recurring_appointments(recurring_appointment):
             status='scheduled',
         ))
 
-        print(f"✅ Scheduled appointment on {current_date} at {recurring_appointment.start_time}")
-
-        # ✅ Move to the next occurrence
+        # Move to the next occurrence
         current_date += interval
 
-    # ✅ Bulk create appointments
+    # Bulk create appointments
     if appointments:
         Appointment.objects.bulk_create(appointments)
-        print(f"✅ Created {len(appointments)} recurring appointments")
     else:
-        print("⚠️ No valid appointments could be scheduled")
+        print("No valid appointments could be scheduled")
 
 
 def send_sms_notification(contact_number, recipient_name, requester_name, requested_date=None, requested_time=None, is_therapist=False, status=None, reason="No reason provided"):
@@ -110,7 +105,7 @@ def send_sms_notification(contact_number, recipient_name, requester_name, reques
             f"on {requested_date} at {requested_time} has been submitted and is pending approval."
         )
 
-    # ✅ Check if message_body is set; if not, print a debug message instead of sending an SMS
+    # Check if message_body is set; if not, print a debug message instead of sending an SMS
     if message_body:
         try:
             client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
@@ -121,9 +116,9 @@ def send_sms_notification(contact_number, recipient_name, requester_name, reques
                 to=contact_number
             )
 
-            print(f"✅ SMS sent successfully to {contact_number}. Message SID: {message.sid}")
+            print(f"SMS sent successfully to {contact_number}. Message SID: {message.sid}")
 
         except Exception as e:
-            print(f"❌ Failed to send SMS to {contact_number}: {e}")
+            print(f"Failed to send SMS to {contact_number}: {e}")
     else:
-        print(f"⚠️ No valid status provided. No SMS sent for {recipient_name} with status: {status}")
+        print(f"No valid status provided. No SMS sent for {recipient_name} with status: {status}")

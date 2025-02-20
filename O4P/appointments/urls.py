@@ -18,7 +18,6 @@ urlpatterns = [
     path('appointment/recurring/create/', views.create_recurring_appointment, name='create_recurring_appointment'),
 
     path('appointment/calendar/api/', views.appointments_calendar_api, name='appointments_calendar_api'),
-    #path('calendar/api/create/', views.create_appointment_api, name='create_appointment_api'),
 
     path('appointment/calendar/', views.calendar_view, name='calendar_view'),
 

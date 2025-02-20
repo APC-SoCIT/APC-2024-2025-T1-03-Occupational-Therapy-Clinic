@@ -120,36 +120,36 @@
             fetchAvailableSlots(therapistField.value, slotContainer);
         });
 
-    // ✅ Handle clicking an available slot
+    // Handle clicking an available slot
     slotContainer.addEventListener("click", function (event) {
         if (event.target.classList.contains("slot-btn")) {
 
-            event.preventDefault();  // ✅ Prevents any default form submission behavior
+            event.preventDefault();  // Prevents any default form submission behavior
 
             let selectedSlot = event.target.dataset;
 
-            console.log("✅ Selected Slot:", selectedSlot.date, selectedSlot.start_time);
+            console.log("Selected Slot:", selectedSlot.date, selectedSlot.start_time);
 
-            // ✅ Remove highlight from previously selected slot
+            // Remove highlight from previously selected slot
             document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
 
-            // ✅ Highlight the selected slot
+            // Highlight the selected slot
             event.target.classList.add("selected-slot");
 
-            // ✅ Set hidden fields
+            // Set hidden fields
             selectedDateField.value = selectedSlot.date;
             selectedTimeField.value = selectedSlot.start_time;
 
-            // ✅ Enable the submit button
+            // Enable the submit button
             requestButton.disabled = false;
         }
     });
 
-    // ✅ Ensure form does NOT auto-submit when clicking a slot
+    // Ensure form does NOT auto-submit when clicking a slot
     document.getElementById("appointmentRequestForm").addEventListener("submit", function (event) {
         if (!selectedDateField.value || !selectedTimeField.value) {
             event.preventDefault();
-            alert("⚠️ Please select a date and time before submitting.");
+            alert("Please select a date and time before submitting.");
             }
         });
         calendar.render();

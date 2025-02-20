@@ -19,10 +19,10 @@ class AppointmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AppointmentForm, self).__init__(*args, **kwargs)
 
-        # ✅ Ensure therapists are correctly referenced
+        # Ensure therapists are correctly referenced
         self.fields['therapist'].queryset = Therapist.objects.all()
         
-        # ✅ Ensure patients are correctly referenced
+        # Ensure patients are correctly referenced
         self.fields['patient'].queryset = Patient.objects.all()
 
 class RecurringAppointmentForm(forms.ModelForm):
@@ -59,17 +59,14 @@ class AppointmentRequestForm(forms.ModelForm):
                 therapist_id = int(self.data.get('therapist'))
                 requested_date = self.data.get('requested_date')
 
-                # ✅ Convert requested_date into the weekday name
+                # Convert requested_date into the weekday name
                 day_name = datetime.strptime(requested_date, "%Y-%m-%d").strftime("%A").lower()
 
-                # ✅ Fetch available slots for the selected therapist on that day
+                # Fetch available slots for the selected therapist on that day
                 therapist_slots = AvailableSlot.objects.filter(therapist_id=therapist_id, day=day_name)
-
-                # ✅ Debugging: Print available slots
                 available_choices = [(slot.start_time.strftime('%H:%M'), slot.start_time.strftime('%H:%M')) for slot in therapist_slots]
-                print(f"Available slots for therapist {therapist_id} on {day_name}:", available_choices)
 
-                # ✅ Set valid requested_time choices
+                # Set valid requested_time choices
                 self.fields['requested_time'].choices = available_choices
 
             except (ValueError, TypeError) as e:

@@ -50,7 +50,7 @@ class AppointmentRequest(models.Model):
     requested_date = models.DateField()
     requested_time = models.TimeField()
 
-    # ✅ Store the original appointment details before rescheduling
+    # Store the original appointment details before rescheduling
     original_date = models.DateField(blank=True, null=True)
     original_time = models.TimeField(blank=True, null=True)
 

@@ -44,16 +44,16 @@
                     </div>
                     <div class="col-sm-3 text-secondary">
                         {% if appointment.patient_id %}
-                            {{ appointment.patient__first_name }} {{ appointment.patient__last_name }}  <!-- ✅ Registered user -->
+                            {{ appointment.patient__first_name }} {{ appointment.patient__last_name }}  <!-- Registered user -->
                         {% else %}
-                            {{ appointment.first_name }} {{ appointment.last_name }} <!-- ✅ Non-registered user -->
+                            {{ appointment.first_name }} {{ appointment.last_name }} <!-- Non-registered user -->
                         {% endif %}
                     </div>
                     <div class="col-sm-3">
                         <h6 class="mb-0">Therapist:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.therapist__first_name }} {{ appointment.therapist__last_name }}  <!-- ✅ Therapist full name -->
+                        {{ appointment.therapist__first_name }} {{ appointment.therapist__last_name }}  <!-- Therapist full name -->
                     </div>
                 </div>
                 <hr>
@@ -91,14 +91,14 @@
                 <p>Are you sure you want to cancel this appointment?</p>
                 <p>This action cannot be undone.</p>
                 
-                <!-- ✅ Reason for Cancellation Input -->
+                <!-- Reason for Cancellation Input -->
                 <label for="reason">Reason for cancellation (required):</label>
                 <textarea name="reason" id="cancelReason" rows="3" class="form-control" required></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 
-                <!-- ✅ Form to Submit Cancellation -->
+                <!-- Form to Submit Cancellation -->
                 <form id="deleteForm" method="POST" action="{% url 'delete_appointment' appointment.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="reason" id="reasonInput">
@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<!-- ✅ JavaScript to Pass the Reason to the Form -->
+<!-- JavaScript to Pass the Reason to the Form -->
 <script>
     document.getElementById('deleteForm').addEventListener('submit', function(event) {
         document.getElementById('reasonInput').value = document.getElementById('cancelReason').value;
