@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
+from accounts.models import AssistantInformation, TherapistInformation
+from django.urls import resolve
 
 class AllUserRequire2FAMiddleware(MiddlewareMixin):
     """
@@ -90,3 +92,47 @@ class AllUserRequire2FAMiddleware(MiddlewareMixin):
 
         # The request required 2FA but it isn't configured!
         return self.on_require_2fa(request)
+
+class ProfileCompletionMiddleware(MiddlewareMixin):
+
+    def process_request(self, request):
+        if request.user.is_authenticated:
+            current_url = resolve(request.path_info).url_name  # Get the current view name
+            
+            # Exclude profile completion views to prevent infinite loop
+            excluded_views = [
+                "account_login",
+                "account_logout",
+                "account_reauthenticate",
+                "account_reset_password_done",
+                "account_reset_password_from_key",
+                "account_reset_password_from_key_done",
+                "account_reset_password",
+                "account_email",
+                "account_email_verification_sent",
+                "account_confirm_email",
+                "mfa_activate_totp",
+                
+                # portion of the site that doesn't need logging in
+                "about_us",
+                "appointment",
+                "contact_us",
+                "home",
+                "services",
+                "assistants.create", 
+                "therapists.create"
+                ]
+            if current_url in excluded_views:
+                return None  
+
+            if request.user.groups.filter(name="Assistant").exists():
+                profile_exists = AssistantInformation.objects.filter(account_id=request.user).exists()
+                if not profile_exists:
+                    return redirect("assistants.create")
+
+            elif request.user.groups.filter(name="Therapist").exists():
+                profile_exists = TherapistInformation.objects.filter(account_id=request.user).exists()
+                if not profile_exists:
+                    return redirect("complete_therapist_info")
+
+        return None  
