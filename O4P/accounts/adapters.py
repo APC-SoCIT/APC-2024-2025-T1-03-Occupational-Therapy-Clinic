@@ -14,9 +14,11 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
         user = email_address.user
         
-        if user.groups.filter(name="Guardian").exists():  
-            user.is_active = True  # Auto-activate Guardians
+        if user.groups.filter(name="Assistant").exists():  
+            user.is_active = False  # Auto-activate Guardians
+        elif user.groups.filter(name="Therapist").exists():
+            user.is_active = False
         else:
-            user.is_active = False  # Keep staff accounts inactive
+            user.is_active = True  # Keep staff accounts inactive
 
         user.save()
