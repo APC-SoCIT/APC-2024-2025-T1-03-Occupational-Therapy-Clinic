@@ -1,0 +1,136 @@
+{% extends 'dashboard_navbar.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="header-1 my-2">
+        <h1>Assistant Information Form</h1>
+    </div>
+
+    <form id="pForm" method="POST"> 
+        {% csrf_token %} 
+        <div class="row gutters-sm">
+            <div class="col-md-6">
+                <div class="edit-card h-100 d-flex flex-column mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Personal Information</h3>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Middle Name</label>
+                                {{ form.middle_name }}
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-8">
+                                <label class="form-label">Date of Birth</label>
+                                {{ form.date_of_birth }}
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Sex</label>
+                                {{ form.sex }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Nationality</label>
+                                {{ form.nationality }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <label class="form-label">Contact Number</label>
+                                {{ form.contact_number }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Province</label>
+                                {{ form.province }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Municipality</label>
+                                {{ form.municipality }}
+                            </div>                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="submit" form="pForm" class="btn2 btn-success">Create My Assistant Information</button>
+            </div>
+        </div>
+    </form>
+    {% if form.errors %}
+        <div class="alert alert-danger my-5">
+            {{ form.errors.as_text }}
+        </div>
+    {% endif %}
+</div>
+
+<div class="modal fade" id="consentModal" tabindex="-1" aria-labelledby="consentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-start">
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h5 class="modal-title" id="consentModalLabel">Data Privacy Notice</h5>
+                    <p class="text-secondary mt-2 mb-0">
+                        In compliance with the Data Privacy Act of 2012 (Republic Act No. 10173), by submitting any information in this system, you acknowledge and consent to the collection, storage, and processing of your data.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>By using this website, you agree to our terms and conditions. Do you agree?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn2 btn-danger" id="disagreeBtn">Cancel</button>
+                <button type="button" class="btn2 btn-success" id="agreeBtn">Agree</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('id_province').addEventListener('change', function() {
+        console.log("HELLO THERE");
+        const provinceCode = this.value;
+        const municipalitySelect = document.getElementById('id_municipality');
+    
+        municipalitySelect.innerHTML = '<option value="">---------</option>'; 
+    
+        if (!provinceCode) return;
+    
+        fetch(`/get-municipalities/?province_code=${encodeURIComponent(provinceCode)}`)
+            .then(response => response.json())
+            .then(data => {
+                data.municipalities.forEach(municipality => {
+                    const option = new Option(municipality.name, municipality.code);
+                    municipalitySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    var consentModal = new bootstrap.Modal(document.getElementById('consentModal'));
+    consentModal.show();
+
+    document.getElementById("agreeBtn").addEventListener("click", function () {
+        consentModal.hide();
+    });
+
+    document.getElementById("disagreeBtn").addEventListener("click", function () {
+        window.location.href = "{% url 'patients.list' %}";
+    });
+});
+</script>
+{% endblock %}

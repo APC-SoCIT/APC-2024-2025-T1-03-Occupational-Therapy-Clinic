@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.views.generic import TemplateView, ListView, UpdateView, DetailView, DeleteView
+from django.views.generic import TemplateView, ListView, UpdateView, DetailView, DeleteView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from allauth.account.views import SignupView
 from patients.models import PatientInformation, Guardian
@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.http import JsonResponse
 import requests
+from accounts.forms import AssistantInformationForm, TherapistInformationForm
 
 
 
@@ -264,6 +265,37 @@ class GuardianSignupView(SignupView):
     form_class = GuardianSignupForm
     template_name = "account/guardian_signup.html"
     extra_context = {'role_name': 'Guardian'}
+    
+# STAFF INFORMATION CREATION VIEW
+class AssistantInformationCreateView(RolePermissionRequiredMixin, CreateView):
+    model = AssistantInformation
+    form_class = AssistantInformationForm
+    template_name = "manage/creation/assistant_create_form.html"
+    allowed_roles = ['Assistant']
+    success_url = reverse_lazy('welcome')
+
+    def form_valid(self, form):
+        form.instance.account_id = self.request.user
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class TherapistInformationCreateView(RolePermissionRequiredMixin, CreateView):
+    model = TherapistInformation
+    form_class = TherapistInformationForm
+    template_name = "manage/creation/therapist_create_form.html"
+    allowed_roles = ['Therapist']
+    success_url = reverse_lazy('welcome')
+
+    def form_valid(self, form):
+        form.instance.account_id = self.request.user
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
     
 def get_municipalities(request):
     province_code = request.GET.get('province_code')
