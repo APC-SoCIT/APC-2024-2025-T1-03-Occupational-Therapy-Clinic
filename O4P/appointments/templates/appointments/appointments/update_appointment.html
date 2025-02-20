@@ -1,5 +1,9 @@
 {% extends "calendar_base.html" %}
 {% load static %}
+{% block customCSS %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+<link rel="stylesheet" href="{% static 'appointments/css/calendar.css' %}">
+{% endblock %}
 
 {% block title %}Reschedule Appointment{% endblock %}
 
@@ -8,19 +12,16 @@
     <div class="row">
         <!-- ✅ Left: Calendar Section -->
         <div class="col-md-8">
-            <div class="form-section">
-                <h4 class="text-center mb-3">Select a New Date</h4>
-                <div id="calendar"></div>
-            </div>
+            <div id="calendar"></div>
         </div>
 
         <!-- ✅ Right: Appointment Form -->
-        <div class="col-md-4">
+        <div class="col-md-4 right-column">
             <div class="form-section">
                 <form id="apptForm" method="POST" action="{% url 'update_appointment' appointment_id=appointment.id %}">
                     {% csrf_token %}
 
-                    <h4 class="text-center mb-3">Appointment Details</h4>
+                    <h4 class="text-center mb-3">Select a new Date</h4>
 
                     <!-- ✅ Hidden input for selected date -->
                     <input type="hidden" name="date" id="selected_date" value="{{ appointment.date }}">

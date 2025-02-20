@@ -1,15 +1,52 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_navbar.html' %}
+{% load static %}
+
+{% block title %}Your Schedule{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_portal.css' %}">
+{% endblock %}
 
 {% block content %}
-  <h2>Your Schedule</h2>
-  <a href="{% url 'create_schedule' %}">Add New Slot</a>
-  <ul>
-    {% for day, times in schedule_summary.items %}
-      <li>
-        {{ day|capfirst }}: {{ times.start_time }} - {{ times.end_time }}
-        <a href="{% url 'update_schedule' times.slot_id %}">Edit</a> |
-        <a href="{% url 'delete_schedule' times.slot_id %}">Delete</a>
-      </li>
-    {% endfor %}
-  </ul>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Your Schedule</h2>
+
+    <div class="schedule-card">
+        <h4>Manage Your Schedule</h4>
+        <a href="{% url 'create_schedule' %}" class="btn btn-primary mb-3">+ Add New Slot</a>
+
+        {% if schedule_summary %}
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day, details in schedule_summary.items %}
+                    <tr>
+                        <td>{{ day|capfirst }}</td>
+                        <td>{{ details.start_time }}</td>
+                        <td>{{ details.end_time }}</td>
+                        <td>
+                            <a href="{% url 'update_schedule' details.slot_id %}" class="btn-action btn-edit">Edit</a>
+                            <a href="{% url 'delete_schedule' details.slot_id %}" class="btn-action btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No schedules added yet.</p>
+        {% endif %}
+        <div class="my-3">
+          <a href="{% url 'welcome' %}" class="btn">Back</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
