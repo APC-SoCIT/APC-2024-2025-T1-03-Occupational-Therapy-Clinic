@@ -15,6 +15,7 @@ from .models import TherapistInformation, AssistantInformation, GuardianInformat
 from patients.models import PatientInformation, PatientNotes
 from games.models import Game, AssignedGame
 from appointments.models import Appointment, AppointmentRequest
+from allauth.account.models import EmailAddress
 
 # Register your models here.
 
@@ -256,5 +257,7 @@ custom_admin_site.register(PatientNotes)
 
 custom_admin_site.register(Appointment)
 custom_admin_site.register(AppointmentRequest)
+
+custom_admin_site.register(EmailAddress)
 
     
