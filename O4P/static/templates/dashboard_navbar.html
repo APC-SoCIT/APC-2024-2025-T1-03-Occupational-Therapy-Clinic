@@ -44,14 +44,21 @@
                                 {% if usersessions_list_url_ %}
                                     <li><a class="dropdown-item" href="{{ usersessions_list_url_ }}">{% trans "Sessions" %}</a></li>
                                 {% endif %}
-                                <li><hr class="dropdown-divider"></li>
+                                {% if is_guardian %}
+                                    <li><a class="dropdown-item" href="{% url 'guardian_detail' pk=user.guardianinformation_set.first.id %}"> My Profile</a></li>
+                                {% elif is_therapist %}
+                                    <li><a class="dropdown-item" href="{% url 'therapist_detail' pk=user.therapistinformation_set.first.id %}"> My Profile</a></li>
+                                {% elif is_assistant %}
+                                    <li><a class="dropdown-item" href="{% url 'assistant_detail' pk=user.assistantinformation_set.first.id %}"> My Profile</a></li>
+                                {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
             
-                        <li class="nav-item">
-                            <form id="logout-form" method="POST" action="{% url 'account_logout' %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="nav-link" style="border: none;">Logout</button>
-                            </form> 
-                        </li>
+                                    <li class="dropdown-item">
+                                        <form id="logout-form" method="POST" action="{% url 'account_logout' %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="nav-link" style="border: none;">Logout</button>
+                                        </form> 
+                                    </li>
                     </ul>
                 </div>
             </div>
