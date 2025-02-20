@@ -120,7 +120,8 @@ class ProfileCompletionMiddleware(MiddlewareMixin):
                 "home",
                 "services",
                 "assistants.create", 
-                "therapists.create"
+                "therapists.create",
+                "get_municipalities",
                 ]
             if current_url in excluded_views:
                 return None  

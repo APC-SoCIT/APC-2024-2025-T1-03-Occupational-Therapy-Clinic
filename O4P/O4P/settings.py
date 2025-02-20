@@ -68,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'accounts.middleware.ProfileCompletionMiddleware',  
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.AllUserRequire2FAMiddleware',
 
@@ -174,7 +175,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
-ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True
 
 ACCOUNT_USERNAME_REQUIRED = False
 
