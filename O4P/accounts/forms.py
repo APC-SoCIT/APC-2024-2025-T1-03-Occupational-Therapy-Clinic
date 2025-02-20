@@ -6,7 +6,8 @@ from patients.models import Guardian
 from .models import TherapistInformation, AssistantInformation, GuardianInformation, Province, Municipality
 import datetime, re, requests
 from .nationalities import NATIONALITIES_duble_tuple_for as NATIONALITIES
-
+from django.utils.crypto import get_random_string
+from django.contrib.auth.hashers import make_password
 class BaseSignupForm(SignupForm):
     first_name = forms.CharField(
         max_length=50,
@@ -100,41 +101,54 @@ class BaseSignupForm(SignupForm):
             "sex": self.cleaned_data.get("sex"),
             "nationality": self.cleaned_data.get("nationality"),
         }
-
-        if role == "Therapist":           
-            specialization = self.cleaned_data.get("specialization")
-            
-            TherapistInformation.objects.create(
-                **base_information_data,
-                specialization=specialization 
-            )
-        elif role == "Assistant":
-            AssistantInformation.objects.create(
-                **base_information_data
-            )
-        elif role == "Guardian":
+        
+        staff_roles = ['Therapist', 'Assistant']
+        
+        if role == "Guardian":
             GuardianInformation.objects.create(
                 **base_information_data,
             )
+        elif role in staff_roles:
+            pass
         else:
             raise ValueError(f"Unsupported role: {role}")
         return user
 
 class TherapistSignupForm(BaseSignupForm):
-    specialization = forms.CharField(
-                    max_length=50,
-                    widget=forms.TextInput(attrs={'placeholder': 'Specialty', 'class': 'form-control'}),
-                    required=True
-                                )
+    def __init__(self, *args, **kwargs):
+        super(TherapistSignupForm, self).__init__(*args, **kwargs)
+
+        # Keep only the email field
+        allowed_fields = ['email']
+        self.fields = {key: self.fields[key] for key in allowed_fields}
+
+    def signup(self, request, user):
+        temp_password = get_random_string(12)
+        user.password = make_password(temp_password) 
+        user.save()
+        
     def save(self, request):
         user = super().save(request, role="Therapist") 
         
         return user
 
 class AssistantSignupForm(BaseSignupForm):
+    def __init__(self, *args, **kwargs):
+        super(AssistantSignupForm, self).__init__(*args, **kwargs)
+
+        # Keep only the email field
+        allowed_fields = ['email']
+        self.fields = {key: self.fields[key] for key in allowed_fields}
+
+    def signup(self, request, user):
+        temp_password = get_random_string(12)
+        user.password = make_password(temp_password) 
+        user.save()
+
     def save(self, request):
         user = super().save(request, role="Assistant") 
         return user
+
 
 class GuardianSignupForm(BaseSignupForm):
     def save(self, request):

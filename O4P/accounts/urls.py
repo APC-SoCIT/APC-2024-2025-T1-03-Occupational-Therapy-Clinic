@@ -15,6 +15,9 @@ urlpatterns = [
     path('auth/signup/assistant/', AssistantSignupView.as_view(), name='assistant_signup'),
     path('auth/signup/', GuardianSignupView.as_view(), name='guardian_signup'),
     
+    path('roles/assistants/create/', views.AssistantInformationCreateView.as_view(), name="assistants.create"),
+    path('roles/therapists/create/', views.TherapistInformationCreateView.as_view(), name="therapists.create"),
+    
     path('get-municipalities/', get_municipalities, name='get_municipalities'),
      
     path('roles/guardian/list', GuardianListView.as_view(), name='guardian_list'),
