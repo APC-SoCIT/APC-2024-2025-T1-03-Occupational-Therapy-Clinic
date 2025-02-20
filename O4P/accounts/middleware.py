@@ -134,6 +134,6 @@ class ProfileCompletionMiddleware(MiddlewareMixin):
             elif request.user.groups.filter(name="Therapist").exists():
                 profile_exists = TherapistInformation.objects.filter(account_id=request.user).exists()
                 if not profile_exists:
-                    return redirect("complete_therapist_info")
+                    return redirect("therapists.create")
 
         return None  
