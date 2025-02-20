@@ -38,8 +38,8 @@
             </div>
             <div class="col-md-6">
                 <div class="card p-3 shadow-sm">
-                    <h2>Patient Diagnosis Distribution</h2>
-                    <canvas id="patientDiagnosisChart"></canvas>
+                    <h2>Appointments Over Time</h2>
+                    <canvas id="appointmentChart"></canvas>
                 </div>
             </div>
         </div>
@@ -48,7 +48,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 <script>
+    function renderLineChart(ctx, chartData) {
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Appointments'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
     function renderVBarChart(ctx, chartData) {
         new Chart(ctx, {
             type: 'bar',
@@ -100,14 +131,14 @@
 
     function renderCPieChart(ctx, chartData, legendPosition = 'left') {
         new Chart(ctx, {
-            type: 'pie',
+            type: 'doughnut',
             data: chartData,
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
                         display: true,
-                        position: legendPosition, // Move legend to 'left', 'right', 'top', or 'bottom'
+                        position: legendPosition,
                         labels: {
                             font: {
                                 size: 14
@@ -115,7 +146,7 @@
                         }
                     },
                     datalabels: {
-                        color: 'white', // Label text color
+                        color: 'white', 
                         font: {
                             weight: 'bold',
                             size: 20
@@ -126,34 +157,45 @@
                     }
                 }
             },
-            plugins: [ChartDataLabels] // Enable datalabels plugin
+            plugins: [ChartDataLabels]
         });
     }
         
     function renderNLCPieChart(ctx, chartData) {
-        new Chart(ctx, {
-            type: 'pie',
+        let myChart = new Chart(ctx, {
+            type: 'doughnut',
             data: chartData,
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: false 
-                    },
-                    datalabels: {
-                        color: 'white', // Label text color
-                        font: {
-                            weight: 'bold',
-                            size: 20
-                        },
-                        formatter: (value) => {
-                            return value; // Show raw count
-                        }
+                        display: false
                     }
-                }
+                },
+                cutout: '50%',
             },
-            plugins: [ChartDataLabels] // Enable datalabels plugin
+            plugins: [ChartDataLabels, {
+                id: 'centerText',
+                beforeDraw: (chart) => {
+                    const { width } = chart;
+                    const ctx = chart.ctx;
+                    ctx.restore();
+                    const fontSize = (width / 10).toFixed(2);
+                    ctx.font = `${fontSize}px Arial`;
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+
+                    const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+                    const textX = width / 2;
+                    const textY = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+
+                    ctx.fillText(total, textX, textY);
+                    ctx.save();
+                }
+            }]
         });
+
+        myChart.update();
     }
 
     function renderHBarChart(ctx, chartData) {
@@ -178,9 +220,11 @@
 
     renderCPieChart(document.getElementById("userGroupChart"), {{ user_group_chart|safe }});
     renderNLCPieChart(document.getElementById("patientChart"), {{ patient_chart|safe }});
-    renderVBarChart(document.getElementById("gameAssignmentChart"), {{ game_assignment_chart|safe }});
+    renderHBarChart(document.getElementById("gameAssignmentChart"), {{ game_assignment_chart|safe }});
     renderVBarChart(document.getElementById("patientAgeChart"), {{ patient_age_chart|safe }});
     renderHBarChart(document.getElementById("patientDiagnosisChart"), {{ patient_diagnosis_chart|safe }});
+    renderLineChart(document.getElementById("appointmentChart"), {{ appointment_chart|safe }});
+    
 
 </script>
 {% endblock %}
@@ -214,5 +258,6 @@
             });
         });
     });
+
     </script>
 {% endblock %}

@@ -5,12 +5,16 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.utils import timezone
-from datetime import date
+from django.utils.timezone import now
+from collections import Counter
+from django.db.models import Count  
+from datetime import date, timedelta, datetime
 from admincharts.admin import AdminChartMixin
 from admincharts.utils import months_between_dates
 from .models import TherapistInformation, AssistantInformation, GuardianInformation, Province, Municipality
 from patients.models import PatientInformation, PatientNotes
 from games.models import Game, AssignedGame
+from appointments.models import Appointment, AppointmentRequest
 
 # Register your models here.
 
@@ -176,6 +180,40 @@ class CustomAdminSite(admin.AdminSite):
             }],
         }
 
+    def generate_appointment_trend_chart(self):
+        """Generate a line chart showing the number of appointments per month."""
+        today = date.today()
+        start_date = today - timedelta(days=365)  # Show the past 12 months
+
+        # Query appointments and count per month
+        appointments = (
+            Appointment.objects
+            .filter(date__gte=start_date)
+            .annotate(month=models.functions.TruncMonth("date"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+
+        # Extract labels (months) and data (counts)
+        labels = [entry["month"].strftime("%b %Y") for entry in appointments]
+        data = [entry["count"] for entry in appointments]
+
+        return {
+            "labels": labels,
+            "datasets": [
+                {
+                    "label": "Appointments Per Month",
+                    "data": data,
+                    "borderColor": "#36A2EB",
+                    "fill": "false",
+                    "tension": 0.1,
+                }
+            ],
+        }
+        
+
+
     def get_charts_data(self):
         """Retrieve chart data for user groups."""
         return {
@@ -184,6 +222,7 @@ class CustomAdminSite(admin.AdminSite):
             "game_assignment_chart": self.generate_game_chart(),
             "patient_age_chart": self.generate_patient_age_chart(),
             "patient_diagnosis_chart": self.generate_patient_diagnosis_chart(),
+            "appointment_chart": self.generate_appointment_trend_chart(),
         }
 
     def dashboard_view(self, request):
@@ -215,6 +254,7 @@ custom_admin_site.register(GuardianInformation)
 custom_admin_site.register(PatientInformation)
 custom_admin_site.register(PatientNotes)
 
-
+custom_admin_site.register(Appointment)
+custom_admin_site.register(AppointmentRequest)
 
     
