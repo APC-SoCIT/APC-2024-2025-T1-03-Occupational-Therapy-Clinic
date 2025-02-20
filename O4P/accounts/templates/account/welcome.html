@@ -2,8 +2,6 @@
 
 {% block content %}
 
-
-
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between">
         <h1 class="display-5 fw-bold mb-2">Welcome to TheraPro</h1>
@@ -69,6 +67,7 @@
                     </div>
                     <div class="card-body text-center">
                         <a href="{% url 'manage_appointment_requests' %}" class="btn btn-primary d-block my-1">View Requests</a>
+                        <a href="{% url 'list_schedule' %}" class="btn btn-primary my-1">Schedule</a>
                     </div>
                 </div>
             </div>

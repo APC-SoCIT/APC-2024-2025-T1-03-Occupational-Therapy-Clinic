@@ -4,6 +4,7 @@ from patients.models import PatientInformation as Patient
 from datetime import timedelta, datetime
 from accounts.models import TherapistInformation as Therapist
 from accounts.models import GuardianInformation as Guardian
+from django.core.validators import RegexValidator
 
 class Appointment(models.Model):
     therapist = models.ForeignKey(Therapist, on_delete=models.CASCADE, related_name="therapist_appointments")
@@ -25,13 +26,19 @@ class Appointment(models.Model):
     def __str__(self):
         return f"Appointment with {self.therapist.first_name} on {self.date}"
 
-
-
 class AppointmentRequest(models.Model):
     # Non-registered user details
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    contact_number = models.CharField(max_length=15, blank=True, null=True)
+    contact_number = models.CharField(
+        max_length=13,  
+        validators=[
+            RegexValidator(
+                regex=r'^(\+63|0)9\d{9}$',  
+                message="Phone number must be entered in the format: '+639123456789' or '09123456789'."
+            )
+        ]
+    )
 
     therapist = models.ForeignKey(
         Therapist,
@@ -62,8 +69,6 @@ class AppointmentRequest(models.Model):
 
     def __str__(self):
         return f"Request from {self.first_name} {self.last_name} with {self.therapist} on {self.requested_date}"
-
-
 
 
 class RecurringAppointment(models.Model):
