@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'allauth.mfa',
 
     'admincharts',
+    'simple_history',
     
 ]
 
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'accounts.middleware.ProfileCompletionMiddleware',  
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.AllUserRequire2FAMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 
 ]
 
