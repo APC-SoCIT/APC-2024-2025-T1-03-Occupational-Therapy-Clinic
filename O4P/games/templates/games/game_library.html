@@ -47,61 +47,70 @@
     {% endfor %}
 
     <!-- ABCya Games Section -->
-    <h3 class="mt-4">Discover ABCya's Games</h3>
-    <p>The games in this section are produced and developed by ABCya. Therapro Therapy Clinic does not hold any ownership of these games and is using them solely for the convenience of its users.</p>
-    <div class="row row-cols-1 row-cols-md-5 g-4">
-        {% for game in games %}
-        {% if game.developer == "ABCya" %}
-        <div class="col game-card">
-            <div class="card h-100 bg-light">
-                <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            {% if game.thumbnail %}
-                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px;">
-                            {% else %}
-                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 120px;">
-                                <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+    <div id="abcya-section">
+        <h3 class="mt-4">Discover ABCya's Games</h3>
+        <p>The games in this section are produced and developed by ABCya. Therapro Therapy Clinic does not hold any
+            ownership of these games and is using them solely for the convenience of its users.</p>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in games %}
+            {% if game.developer == "ABCya" %}
+            <div class="col game-card">
+                <div class="card h-100 bg-light">
+                    <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                {% if game.thumbnail %}
+                                <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded"
+                                    style="max-height: 120px;">
+                                {% else %}
+                                <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded"
+                                    style="height: 120px;">
+                                    <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% endif %}
+                            <h5 class="fw-bold text-dark">{{ game.title }}</h5>
+                            <p class="text-muted">{{ game.genre }}</p>
                         </div>
-                        <h5 class="fw-bold text-dark">{{ game.title }}</h5>
-                        <p class="text-muted">{{ game.genre }}</p>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
+            {% endif %}
+            {% endfor %}
         </div>
-        {% endif %}
-        {% endfor %}
     </div>
 
     <!-- Quartize Games Section -->
-    <h3 class="mt-4">Explore Quartize🐐's Games</h3>
-    <p>The games in this section are produced and developed by Quartize🐐.</p>
-    <div class="row row-cols-1 row-cols-md-5 g-4">
-        {% for game in games %}
-        {% if game.developer == "Quartize" %}
-        <div class="col game-card">
-            <div class="card h-100 bg-light">
-                <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            {% if game.thumbnail %}
-                            <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded" style="max-height: 120px;">
-                            {% else %}
-                            <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 120px;">
-                                <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+    <div id="quartize-section">
+        <h3 class="mt-4">Explore Quartize🐐's Games</h3>
+        <p>The games in this section are produced and developed by Quartize🐐.</p>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in games %}
+            {% if game.developer == "Quartize" %}
+            <div class="col game-card">
+                <div class="card h-100 bg-light">
+                    <a href="{{ game.game_link }}" class="text-decoration-none" target="_blank">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                {% if game.thumbnail %}
+                                <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}" class="img-fluid rounded"
+                                    style="max-height: 120px;">
+                                {% else %}
+                                <div class="placeholder-img bg-secondary d-flex align-items-center justify-content-center rounded"
+                                    style="height: 120px;">
+                                    <i class="bi bi-image text-white" style="font-size: 2rem;"></i>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% endif %}
+                            <h5 class="fw-bold text-dark">{{ game.title }}</h5>
+                            <p class="text-muted">{{ game.genre }}</p>
                         </div>
-                        <h5 class="fw-bold text-dark">{{ game.title }}</h5>
-                        <p class="text-muted">{{ game.genre }}</p>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
+            {% endif %}
+            {% endfor %}
         </div>
-        {% endif %}
-        {% endfor %}
     </div>
 </div>
 
@@ -143,18 +152,44 @@
     }
 </style>
 
-<!-- JavaScript for Search Filtering -->
+<!-- JavaScript -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('input', function() {
+
+        function checkSectionVisibility(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const gameCards = section.querySelectorAll('.game-card');
+                const hasVisibleGames = Array.from(gameCards).some(card => card.style.display !== 'none');
+                section.style.display = hasVisibleGames ? 'block' : 'none';
+            }
+        }
+
+        function filterGames() {
             const query = searchInput.value.toLowerCase();
             const allGames = document.querySelectorAll('.game-card');
+
             allGames.forEach(game => {
                 const title = game.querySelector('.fw-bold').textContent.toLowerCase();
                 game.style.display = title.includes(query) ? 'block' : 'none';
             });
+
+            checkSectionVisibility('abcya-section');
+            checkSectionVisibility('quartize-section');
+        }
+
+        searchInput.addEventListener('input', function () {
+            if (searchInput.value === '') {
+                document.querySelectorAll('.game-card').forEach(game => {
+                    game.style.display = 'block';
+                });
+            }
+            filterGames();
         });
+
+        checkSectionVisibility('abcya-section');
+        checkSectionVisibility('quartize-section');
     });
 </script>
 {% endblock %}

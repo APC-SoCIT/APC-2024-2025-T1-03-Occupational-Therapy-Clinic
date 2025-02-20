@@ -25,12 +25,12 @@
                     <td>
                         {% if user.groups.first.name == 'Therapist' %}
                             {% if appointment.patient_id %}
-                                {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}   <!-- ✅ Show registered patient's username -->
+                                {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}   <!-- Show registered patient's username -->
                             {% else %}
-                                {{ appointment.first_name }} {{ appointment.last_name }}  <!-- ✅ Show non-registered patient -->
+                                {{ appointment.first_name }} {{ appointment.last_name }}  <!-- Show non-registered patient -->
                             {% endif %}
                         {% else %}
-                            {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- ✅ Show therapist's full name -->
+                            {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- Show therapist's full name -->
                         {% endif %}
                     </td>
                     <td>{{ appointment.date }}</td>

@@ -12,7 +12,7 @@
 {% include "blobs.html" %}
 <div class="container">
     <div class="row">
-        <!-- ✅ Left: Calendar Section -->
+        <!-- Left: Calendar Section -->
         <div class="col-md-8">
             <div class="calendar-section">
                 <h4 class="text-center">Select a Start Date</h4>
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <!-- ✅ Right: Appointment Form -->
+        <!-- Right: Appointment Form -->
         <div class="col-md-4">
             <div class="form-section">
                 <form id="recurringApptForm" method="POST" action="{% url 'create_recurring_appointment' %}">
@@ -28,7 +28,7 @@
 
                     <h4 class="text-center mb-3">Recurring Appointment Details</h4>
 
-                    <!-- ✅ Patient Selection -->
+                    <!-- Patient Selection -->
                     <div class="mb-3">
                         <label class="form-label">Select Patient</label>
                         <select id="patientSelection" name="patient" class="form-select" required>
@@ -45,10 +45,10 @@
                         </select>
                     </div>
 
-                    <!-- ✅ Hidden input for selected start date -->
+                    <!-- Hidden input for selected start date -->
                     <input type="hidden" name="start_date" id="selected_date" required>
 
-                    <!-- ✅ Available Slots -->
+                    <!-- Available Slots -->
                     <div class="mb-3">
                         <label class="form-label">Available Slots</label>
                         <div id="available-slots" class="slot-grid">
@@ -56,10 +56,10 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Hidden input for selected start time -->
+                    <!-- Hidden input for selected start time -->
                     <input type="hidden" name="start_time" id="selected_time" required>
 
-                    <!-- ✅ Recurrence Pattern -->
+                    <!-- Recurrence Pattern -->
                     <div class="mb-3">
                         <label class="form-label">Recurrence Pattern</label>
                         <select name="recurrence_pattern" class="form-select" required>
@@ -70,16 +70,16 @@
                         </select>
                     </div>
 
-                    <!-- ✅ Number of Occurrences -->
+                    <!-- Number of Occurrences -->
                     <div class="mb-3">
                         <label class="form-label">Number of Occurrences</label>
                         <input type="number" name="number_of_occurrences" class="form-control" min="1" max="12" value="6" required>
                     </div>
 
-                    <!-- ✅ Hidden input for therapist (auto-assigned) -->
+                    <!-- Hidden input for therapist (auto-assigned) -->
                     <input type="hidden" name="therapist" value="{{ therapist_id }}">
 
-                    <!-- ✅ Submit Button -->
+                    <!-- Submit Button -->
                     <button type="submit" id="create-recurring-btn" class="btn btn-primary w-100" disabled>Create Recurring Appointment</button>
                 </form>
             </div>
@@ -91,10 +91,10 @@
     </div>
 </div>
 
-<!-- ✅ FullCalendar JavaScript -->
+<!-- FullCalendar JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-<!-- ✅ JavaScript for Calendar and Slot Selection -->
+<!-- JavaScript for Calendar and Slot Selection -->
 <script type="module">
     import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
 
@@ -106,7 +106,6 @@
         const slotContainer = document.getElementById("available-slots");
 
         let therapistId = "{{ therapist_id }}";
-        console.log("👩‍⚕️ Therapist ID:", therapistId);
 
         let calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {
@@ -118,39 +117,35 @@
             selectable: true,
             dateClick: function(info) {
                 selectedDateField.value = info.dateStr;
-                console.log("📅 Selected date:", info.dateStr);
 
-                // ✅ Fetch available slots for the selected date using logged-in therapist ID
+                // Fetch available slots for the selected date using logged-in therapist ID
                 fetchAvailableSlots(therapistId, info.dateStr, slotContainer);
             }
         });
 
         calendar.render();
 
-        // ✅ Event listener to select a slot and update hidden fields
+        // Event listener to select a slot and update hidden fields
         slotContainer.addEventListener("click", function (event) {
             if (event.target.classList.contains("slot-btn")) {
                 event.preventDefault();
                 document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
                 event.target.classList.add("selected-slot");
 
-                // ✅ Set values
+                // Set values
                 selectedDateField.value = event.target.dataset.date;
                 selectedTimeField.value = event.target.dataset.start_time;
 
-                console.log("📅 Selected Slot Date:", selectedDateField.value);
-                console.log("🕒 Selected Slot Time:", selectedTimeField.value);
-
-                // ✅ Enable submit button
+                // Enable submit button
                 submitButton.disabled = false;
             }
         });
 
-        // ✅ Ensure form does not submit if no date or time is selected
+        // Ensure form does not submit if no date or time is selected
         document.getElementById("recurringApptForm").addEventListener("submit", function (event) {
             if (!selectedDateField.value || !selectedTimeField.value) {
                 event.preventDefault();
-                alert("⚠️ Please select a date and time before submitting.");
+                alert("Please select a date and time before submitting.");
             }
         });
     });

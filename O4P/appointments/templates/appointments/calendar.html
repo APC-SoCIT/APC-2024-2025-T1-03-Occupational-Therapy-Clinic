@@ -61,12 +61,7 @@
         const calendarEl = document.getElementById('calendar');
         const therapistId = "{{ therapist_id|default:'' }}";  
         const guardianPatientIds = "{{ guardian_patient_ids|default:'' }}".split(",").filter(id => id.trim() !== "").map(id => parseInt(id));
-        const userRole = "{{ user_role }}";
-        
-        console.log("👤 User Role:", userRole);
-        console.log("👩‍⚕️ Therapist ID:", therapistId);
-        console.log("👨‍👩‍👦 Guardian's Patient IDs:", guardianPatientIds);
-        
+        const userRole = "{{ user_role }}";     
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {

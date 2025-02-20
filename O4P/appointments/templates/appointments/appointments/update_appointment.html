@@ -11,12 +11,12 @@
 {% include "blobs.html" %}
 <div class="container">
     <div class="row">
-        <!-- ✅ Left: Calendar Section -->
+        <!-- Left: Calendar Section -->
         <div class="col-md-8">
             <div id="calendar"></div>
         </div>
 
-        <!-- ✅ Right: Appointment Form -->
+        <!-- Right: Appointment Form -->
         <div class="col-md-4 right-column">
             <div class="form-section">
                 <form id="apptForm" method="POST" action="{% url 'update_appointment' appointment_id=appointment.id %}">
@@ -24,10 +24,10 @@
 
                     <h4 class="text-center mb-3">Select a new Date</h4>
 
-                    <!-- ✅ Hidden input for selected date -->
+                    <!-- Hidden input for selected date -->
                     <input type="hidden" name="date" id="selected_date" value="{{ appointment.date }}">
                 
-                    <!-- ✅ Available Slots -->
+                    <!-- Available Slots -->
                     <div class="mb-3">
                         <label class="form-label">Available Slots</label>
                         <div id="available-slots" class="slot-grid">
@@ -35,10 +35,10 @@
                         </div>
                     </div>
                 
-                    <!-- ✅ Hidden input for selected time (Important for form submission) -->
+                    <!-- Hidden input for selected time (Important for form submission) -->
                     <input type="hidden" name="start_time" id="selected_time" value="{{ appointment.start_time }}">
                 
-                    <!-- ✅ Submit Button -->
+                    <!-- Submit Button -->
                     <button type="submit" id="save-appointment-btn" class="btn btn-primary">Save Appointment</button>
                 </form>
             </div>
@@ -46,10 +46,10 @@
     </div>
 </div>
 
-<!-- ✅ JavaScript for Calendar and Slot Selection -->
+<!-- JavaScript for Calendar and Slot Selection -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-<!-- ✅ Import fetchAvailableSlots -->
+<!-- Import fetchAvailableSlots -->
 <script type="module">
     import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
 
@@ -62,8 +62,6 @@
 
         let therapistId = "{{ therapist_id }}";
 
-        console.log("👩‍⚕️ Therapist ID:", therapistId);
-
         let calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {
                 left: 'prev,next today',
@@ -74,38 +72,37 @@
             selectable: true,
             dateClick: function(info) {
                 selectedDateField.value = info.dateStr;
-                console.log("📅 Selected date:", info.dateStr);
 
-                // ✅ Fetch available slots for the selected date using logged-in therapist ID
+                // Fetch available slots for the selected date using logged-in therapist ID
                 fetchAvailableSlots(therapistId, info.dateStr, slotContainer);
             }
         });
 
         calendar.render();
 
-                // ✅ Event listener to select a slot and update hidden fields
+                // Event listener to select a slot and update hidden fields
         document.getElementById("available-slots").addEventListener("click", function (event) {
             if (event.target.classList.contains("slot-btn")) {
                 event.preventDefault();
                 document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
                 event.target.classList.add("selected-slot");
 
-                // ✅ Set values & update debugging display
+                // Set values & update debugging display
                 selectedDateField.value = event.target.dataset.date;
                 selectedTimeField.value = event.target.dataset.start_time;
                 debugDate.innerText = event.target.dataset.date;
                 debugTime.innerText = event.target.dataset.start_time;
 
-                // ✅ Enable submit button
+                // Enable submit button
                 submitButton.disabled = false;
             }
         });
 
-        // ✅ Ensure form does not submit if no date or time is selected
+        // Ensure form does not submit if no date or time is selected
         document.getElementById("apptForm").addEventListener("submit", function (event) {
             if (!selectedDateField.value || !selectedTimeField.value) {
                 event.preventDefault();
-                alert("⚠️ Please select a date and time before submitting.");
+                alert("Please select a date and time before submitting.");
             }
         });
     });

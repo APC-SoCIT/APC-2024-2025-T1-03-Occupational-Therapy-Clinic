@@ -27,7 +27,7 @@
                         <tr>
                             <td>
                                 {% if request.patient %}
-                                    {{ request.patient.full_name }}  <!-- ✅ Correct way to display patient name -->
+                                    {{ request.patient.full_name }}
                                 {% else %}
                                     {{ request.first_name }} {{ request.last_name }}  <!-- Non-registered patients -->
                                 {% endif %}
