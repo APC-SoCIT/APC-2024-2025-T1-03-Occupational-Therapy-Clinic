@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from datetime import date
+from simple_history.models import HistoricalRecords
 from .nationalities import NATIONALITIES_duble_tuple_for as Nationalities
 
 #GEOGRAPHY MODELS FOR FORMS
@@ -57,8 +58,9 @@ class BaseInformation(models.Model):
         choices=Nationalities, 
         blank=True,
         null=True
-    )          
-
+    )
+    history = HistoricalRecords(inherit=True)          
+    
     class Meta:
         abstract = True
         verbose_name = "User Information"
@@ -83,6 +85,7 @@ class AssistantInformation(BaseInformation):
     class Meta:
         verbose_name = "Assistant Information"
         verbose_name_plural = "Assistant Information"
+        
 
 class GuardianInformation(BaseInformation):
 

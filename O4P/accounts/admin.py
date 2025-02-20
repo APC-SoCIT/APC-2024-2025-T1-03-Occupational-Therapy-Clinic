@@ -239,7 +239,7 @@ class CustomAdminSite(admin.AdminSite):
         ]
         return custom_urls + urls
 
-
+from simple_history.admin import SimpleHistoryAdmin
 # Instantiate the custom admin site
 custom_admin_site = CustomAdminSite(name="custom_admin")
 
@@ -248,9 +248,9 @@ custom_admin_site.register(User, UserAdmin)
 custom_admin_site.register(Group, GroupAdmin)
 
 # Register your models with the new admin site
-custom_admin_site.register(TherapistInformation)
-custom_admin_site.register(AssistantInformation)
-custom_admin_site.register(GuardianInformation)
+custom_admin_site.register(TherapistInformation, SimpleHistoryAdmin)
+custom_admin_site.register(AssistantInformation, SimpleHistoryAdmin)
+custom_admin_site.register(GuardianInformation, SimpleHistoryAdmin)
 
 custom_admin_site.register(PatientInformation)
 custom_admin_site.register(PatientNotes)
@@ -262,4 +262,3 @@ custom_admin_site.register(EmailAddress)
 
 custom_admin_site.register(Appointment)
 custom_admin_site.register(AppointmentRequest)
-
