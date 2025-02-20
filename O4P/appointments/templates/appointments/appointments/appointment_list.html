@@ -23,8 +23,8 @@
                 <tr>
                     <td>
                         {% if user.groups.first.name == 'Therapist' %}
-                            {% if appointment.patient.account_id %}
-                                {{ appointment.patient.account_id.username }}  <!-- ✅ Show registered patient's username -->
+                            {% if appointment.patient_id %}
+                                {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}   <!-- ✅ Show registered patient's username -->
                             {% else %}
                                 {{ appointment.first_name }} {{ appointment.last_name }}  <!-- ✅ Show non-registered patient -->
                             {% endif %}

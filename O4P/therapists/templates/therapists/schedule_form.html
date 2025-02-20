@@ -1,10 +1,145 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_navbar.html' %}
+{% load static %}
+
+{% block title %}Manage Schedule{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_portal.css' %}">
+{% endblock %}
 
 {% block content %}
-  <h2>Manage Schedule Slot</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-  </form>
+<div class="container mt-4">
+    <h2 class="text-center">Manage Your Schedule</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Left Side: Day Selection -->
+            <div class="col-md-4">
+                <div class="day-section card p-3">
+                    <h4 class="text-center">Select Available Days</h4>
+                    <div class="day-group">
+                        {% for day in form.available_days.field.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input day-checkbox" type="checkbox" name="available_days" value="{{ day.0 }}" id="day_{{ day.0 }}">
+                            <label class="form-check-label d-block" for="day_{{ day.0 }}">
+                                {{ day.1 }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Slot Selection -->
+            <div class="col-md-8">
+                <div class="slot-section card p-3">
+                    <h4 class="text-center">Select Available Slots</h4>
+                    <div id="slot-display" class="text-center">
+                        <p class="text-muted">Select days to see available slots.</p>
+                    </div>
+                    {% for day in form.available_days.field.choices %}
+                    <div id="slots_{{ day.0 }}" class="slots-container d-none">
+                        <h5>{{ day.1 }}</h5>
+                        <div class="slot-group">
+                            {% for slot in form.available_slots.field.choices %}
+                            <button type="button" class="slot-btn" data-day="{{ day.0 }}" data-slot="{{ slot.0 }}">
+                                {{ slot.1 }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <!-- Hidden input to store selected slots -->
+                        <input type="hidden" name="selected_slots_{{ day.0 }}" id="selected_slots_{{ day.0 }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-4">Save Schedule</button>
+    </form>
+</div>
+
+<!-- JavaScript to Handle Multiple Day Selections & Slot Selection -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const dayCheckboxes = document.querySelectorAll(".day-checkbox");
+      const slotDisplay = document.getElementById("slot-display");
+
+      function updateSlotDisplay() {
+          slotDisplay.innerHTML = "";
+
+          let selectedDays = [];
+          dayCheckboxes.forEach(checkbox => {
+              if (checkbox.checked) {
+                  selectedDays.push(checkbox.value);
+              }
+          });
+
+          if (selectedDays.length === 0) {
+              slotDisplay.innerHTML = '<p class="text-muted">Select days to see available slots.</p>';
+              return;
+          }
+
+          selectedDays.forEach(day => {
+              const slotsContainer = document.getElementById("slots_" + day);
+              if (slotsContainer) {
+                  let clonedSlots = slotsContainer.cloneNode(true);
+                  clonedSlots.classList.remove("d-none");
+                  slotDisplay.appendChild(clonedSlots);
+              }
+          });
+
+          updateHiddenInputs();
+      }
+
+      dayCheckboxes.forEach(checkbox => {
+          checkbox.addEventListener("change", function () {
+              updateSlotDisplay();
+          });
+      });
+
+      document.addEventListener("click", function (event) {
+          if (event.target.classList.contains("slot-btn")) {
+              let day = event.target.getAttribute("data-day");
+              event.target.classList.toggle("selected");
+
+              const slotValue = event.target.getAttribute("data-slot");
+              let hiddenInput = document.querySelector(`#selected_slots_${day}`);
+
+              if (!hiddenInput) return;
+
+              let selectedSlots = hiddenInput.value ? hiddenInput.value.split(",") : [];
+
+              if (event.target.classList.contains("selected")) {
+                  if (!selectedSlots.includes(slotValue)) {
+                      selectedSlots.push(slotValue);
+                  }
+              } else {
+                  selectedSlots = selectedSlots.filter(slot => slot !== slotValue);
+              }
+
+              hiddenInput.value = selectedSlots.join(",");
+          }
+      });
+
+      function updateHiddenInputs() {
+          let hiddenInputs = document.querySelectorAll("input[name^='selected_slots_']");
+          hiddenInputs.forEach(input => {
+              let day = input.id.replace("selected_slots_", "");
+              let selectedButtons = document.querySelectorAll(`.slot-btn[data-day="${day}"].selected`);
+              let selectedValues = Array.from(selectedButtons).map(btn => btn.getAttribute("data-slot"));
+              input.value = selectedValues.join(",");
+          });
+      }
+
+      document.querySelector("form").addEventListener("submit", function () {
+          updateHiddenInputs();
+          console.log("Final Submitted Slots:", document.querySelectorAll("input[name^='selected_slots_']"));
+      });
+  });
+</script>
+
+
+
 {% endblock %}

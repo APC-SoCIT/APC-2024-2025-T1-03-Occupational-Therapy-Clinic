@@ -35,12 +35,19 @@
                     <a href="{% url 'appointment_list' %}" class="btn btn-primary w-100 my-2">View All Appointments</a>
                 {% endif %}
 
-                {% if request.user.groups.first.name == 'Patient' %}
-                    <!-- Only patients see these buttons -->
+                {% if request.user.groups.first.name == 'Guardian' %}
+                    <!-- Only Guardians see these buttons -->
+                    <a href="{% url 'appointment_list' %}" class="btn btn-primary w-100 my-2">View All Appointments</a>
+                {% endif %}
+
+                {% if request.user.groups.first.name == 'Assistant' %}
+                    <!-- Only Guardians see these buttons -->
                     <a href="{% url 'appointment_list' %}" class="btn btn-primary w-100 my-2">View All Appointments</a>
                 {% endif %}
             </div>
-            
+            <div class="my-3">
+                <a href="{% url 'welcome' %}" class="btn">Back</a>
+            </div>
         </div>
     </div>
 </div>
@@ -51,9 +58,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
-        const therapistId = "{{ therapist_id }}";  // ✅ Fetch logged-in therapist's ID
-
+        const therapistId = "{{ therapist_id|default:'' }}";  
+        const guardianPatientIds = "{{ guardian_patient_ids|default:'' }}".split(",").filter(id => id.trim() !== "").map(id => parseInt(id));
+        const userRole = "{{ user_role }}";
+        
+        console.log("👤 User Role:", userRole);
         console.log("👩‍⚕️ Therapist ID:", therapistId);
+        console.log("👨‍👩‍👦 Guardian's Patient IDs:", guardianPatientIds);
+        
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {
@@ -73,11 +85,19 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const appointmentListEl = document.getElementById('appointment-list');
-        const therapistId = "{{ request.user.therapist_profile.id }}";  // ✅ Use logged-in therapist's ID
+        const therapistId = "{{ therapist_id|default:'' }}";  
+        const guardianPatientIds = "{{ guardian_patient_ids|default:'' }}".split(",").filter(id => id.trim() !== "").map(id => parseInt(id));
+        const userRole = "{{ user_role }}";
         const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
         // Fetch today's appointments
-        fetchAppointments(today, today, appointmentListEl, therapistId);
+        if (userRole === "Guardian" && guardianPatientIds.length > 0) {
+            fetchAppointments(today, today, appointmentListEl, "", userRole, guardianPatientIds);
+        } else {
+            fetchAppointments(today, today, appointmentListEl, therapistId, userRole, []);
+        }
+        
+        
 
         // Example: Add filter button functionality
         document.querySelectorAll('.filter-btn').forEach(button => {
@@ -104,7 +124,7 @@
                 }
 
                 // Fetch appointments for the selected filter
-                fetchAppointments(start, end, appointmentListEl, therapistId);
+                fetchAppointments(start, end, appointmentListEl, therapistId, userRole, guardianPatientIds);
             });
         });
     });

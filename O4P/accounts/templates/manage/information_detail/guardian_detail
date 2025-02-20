@@ -45,13 +45,9 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <h6 class="mb-2">Nationality</h6>
                             <div class="info-box">{{ guardian.nationality }}</div>
-                        </div>
-                        <div class="col-sm-6">
-                            <h6 class="mb-2">Religion</h6>
-                            <div class="info-box">{{ guardian.religion }}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -68,12 +64,12 @@
                     <hr>
                     <div class="row">
                         <div class="col-sm-6">
-                            <h6 class="mb-2">Municipality</h6>
-                            <div class="info-box">{{ guardian.municipality }}</div>
-                        </div>
-                        <div class="col-sm-6">
                             <h6 class="mb-2">Province</h6>
                             <div class="info-box">{{ guardian.province }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Municipality</h6>
+                            <div class="info-box">{{ guardian.municipality }}</div>
                         </div>
                     </div>
                 </div>
@@ -81,9 +77,8 @@
         </div>     
     </div>
     <div class="my-2">
-        <a href=" {% url 'guardian_list' %}" 
-        class="btn">
-        Back
+        <a href="{% if is_guardian %}{% url 'welcome' %}{% else %}{% url 'guardian_list' %}{% endif %}" class="btn">
+            Back
         </a>
     </div>
 </div>

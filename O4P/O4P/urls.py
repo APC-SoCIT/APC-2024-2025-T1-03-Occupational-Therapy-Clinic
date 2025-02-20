@@ -30,8 +30,6 @@ urlpatterns = [
     path('auth/', include('allauth.urls')),
     path('', include('appointments.urls')),
     path('', include('therapists.urls')),
-
-    path('admin_tools_stats/', include('admin_tools_stats.urls')),
 ]
 
 if settings.DEBUG:

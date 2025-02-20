@@ -10,27 +10,26 @@ from .nationalities import NATIONALITIES_duble_tuple_for as NATIONALITIES
 class BaseSignupForm(SignupForm):
     first_name = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={'placeholder': 'First Name'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         required=True
     )
     middle_name = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={'placeholder': 'First Name'}),
-        required=True
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=False
     )
     last_name = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={'placeholder': 'Last Name'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         required=True
     )
     date_of_birth = forms.DateField(
-        widget=forms.SelectDateWidget(
-            years=range(datetime.date.today().year - 100, datetime.date.today().year + 1),
-        ),required=True
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True,
     )
     contact_number = forms.CharField(
         max_length=13,
-        widget=forms.TextInput(attrs={'placeholder': '09123456789 / +639123456789'}),
+        widget=forms.TextInput(attrs={'placeholder': '09123456789 / +639123456789', 'class': 'form-control'}),
         required=True
     )
     province = forms.ModelChoiceField(
@@ -49,12 +48,14 @@ class BaseSignupForm(SignupForm):
     )
     sex = forms.ChoiceField(
         choices=(('M', 'Male'), ('F', 'Female')),
-        required=True
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     nationality = forms.ChoiceField(
         choices=NATIONALITIES,
         required=True,
-        initial='Filipino'
+        initial='Filipino',
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     
     def __init__(self, *args, **kwargs):
@@ -122,7 +123,7 @@ class BaseSignupForm(SignupForm):
 class TherapistSignupForm(BaseSignupForm):
     specialization = forms.CharField(
                     max_length=50,
-                    widget=forms.TextInput(attrs={'placeholder': 'Specialty'}),
+                    widget=forms.TextInput(attrs={'placeholder': 'Specialty', 'class': 'form-control'}),
                     required=True
                                 )
     def save(self, request):
@@ -177,7 +178,7 @@ class BaseInformationForm(forms.ModelForm):
         empty_label="Select Province",
         to_field_name="code",
         widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        required=True,
     )
     municipality = forms.ModelChoiceField(
         queryset=Municipality.objects.none(),  
@@ -195,13 +196,14 @@ class BaseInformationForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # If editing an existing instance, set municipality queryset
-        if self.instance and self.instance.pk and self.instance.province:
+        if self.instance and self.instance.pk and self.instance.province and self.instance.municipality:
             self.fields['municipality'].queryset = Municipality.objects.filter(province=self.instance.province).order_by('name')
-
+            self.initial['province'] = self.instance.province
+            self.initial['municipality'] = self.instance.municipality
+            
         # If it's a new form submission, dynamically update queryset
-        elif 'province' in self.data:
+        if 'province' in self.data:
             try:
                 province_id = self.data.get('province')
                 self.fields['municipality'].queryset = Municipality.objects.filter(province__code=province_id).order_by('name')

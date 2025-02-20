@@ -14,6 +14,7 @@
         <!-- ✅ Left: Calendar Section -->
         <div class="col-md-8">
             <div class="calendar-section">
+                <h4 class="text-center">Select a Date</h4>
                 <div id="calendar"></div>
             </div>
         </div>
@@ -26,10 +27,10 @@
 
                     <h4 class="text-center mb-3">Appointment Details</h4>
 
-                    <!-- Date Selection (Hidden) -->
+                    <!-- ✅ Hidden input for selected date -->
                     <input type="hidden" name="date" id="selected_date">
 
-                    <!-- Available Slots -->
+                    <!-- ✅ Available Slots -->
                     <div class="mb-3">
                         <label class="form-label">Available Slots</label>
                         <div id="available-slots" class="slot-grid">
@@ -37,20 +38,34 @@
                         </div>
                     </div>
 
-                    <!-- Start Time Selection (Hidden) -->
+                    <!-- ✅ Hidden input for selected time -->
                     <input type="hidden" name="start_time" id="selected_time">
 
-                    <!-- Patient Selection -->
+                    <!-- ✅ Patient Selection (Dropdown) -->
                     <div class="mb-3">
                         <label class="form-label">Select Patient</label>
-                        {{ form.patient }}
+                        <select name="patient" class="form-select">
+                            <option value="">-- Select a Patient --</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">
+                                {% if patient.first_name and patient.last_name %}
+                                    {{ patient.first_name }} {{ patient.last_name }}
+                                {% else %}
+                                    Unnamed Patient (ID: {{ patient.id }})
+                                {% endif %}
+                            </option>                            
+                            {% endfor %}
+                        </select>
                     </div>
 
-                    <!-- Auto-Assigned Therapist (Hidden) -->
-                    <input type="hidden" name="therapist" value="{{ request.user.id }}">
+                    <!-- ✅ Hidden input for therapist (auto-assigned) -->
+                    <input type="hidden" name="therapist" value="{{ therapist_id }}">
 
-                    <!-- Status (Pre-set to Scheduled) -->
+                    <!-- ✅ Hidden input for status -->
                     <input type="hidden" name="status" value="scheduled">
+
+                    <!-- ✅ Submit Button -->
+                    <button type="submit" id="create-appointment-btn" class="btn btn-primary w-100" disabled>Create Appointment</button>
                 </form>
             </div>
         </div>
@@ -60,7 +75,7 @@
 <!-- ✅ FullCalendar JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-<!-- ✅ Import fetchAvailableSlots -->
+<!-- ✅ JavaScript for Calendar and Slot Selection -->
 <script type="module">
     import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
 
@@ -68,11 +83,10 @@
         const calendarEl = document.getElementById("calendar");
         const selectedDateField = document.getElementById("selected_date");
         const selectedTimeField = document.getElementById("selected_time");
-        const createButton = document.getElementById("create-appointment-btn");
+        const submitButton = document.getElementById("create-appointment-btn");
         const slotContainer = document.getElementById("available-slots");
 
         let therapistId = "{{ therapist_id }}";
-
         console.log("👩‍⚕️ Therapist ID:", therapistId);
 
         let calendar = new FullCalendar.Calendar(calendarEl, {
@@ -93,6 +107,33 @@
         });
 
         calendar.render();
+
+        // ✅ Event listener to select a slot and update hidden fields
+        slotContainer.addEventListener("click", function (event) {
+            if (event.target.classList.contains("slot-btn")) {
+                event.preventDefault();
+                document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
+                event.target.classList.add("selected-slot");
+
+                // ✅ Set values
+                selectedDateField.value = event.target.dataset.date;
+                selectedTimeField.value = event.target.dataset.start_time;
+
+                console.log("📅 Selected Slot Date:", selectedDateField.value);
+                console.log("🕒 Selected Slot Time:", selectedTimeField.value);
+
+                // ✅ Enable submit button
+                submitButton.disabled = false;
+            }
+        });
+
+        // ✅ Ensure form does not submit if no date or time is selected
+        document.getElementById("apptForm").addEventListener("submit", function (event) {
+            if (!selectedDateField.value || !selectedTimeField.value) {
+                event.preventDefault();
+                alert("⚠️ Please select a date and time before submitting.");
+            }
+        });
     });
 </script>
 

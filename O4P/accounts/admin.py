@@ -255,9 +255,11 @@ custom_admin_site.register(GuardianInformation)
 custom_admin_site.register(PatientInformation)
 custom_admin_site.register(PatientNotes)
 
-custom_admin_site.register(Appointment)
-custom_admin_site.register(AppointmentRequest)
+custom_admin_site.register(Game)
+custom_admin_site.register(AssignedGame)
 
 custom_admin_site.register(EmailAddress)
 
-    
+custom_admin_site.register(Appointment)
+custom_admin_site.register(AppointmentRequest)
+

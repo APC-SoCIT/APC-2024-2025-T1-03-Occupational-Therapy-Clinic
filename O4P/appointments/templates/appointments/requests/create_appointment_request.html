@@ -1,4 +1,4 @@
-{% extends 'calendar_base.html' %}
+{% extends "web_calendar_base.html" %}
 {% load static %}
 
 {% block customCSS %}
@@ -18,7 +18,7 @@
 
         <!-- Right: Therapist Selection & Available Slots -->
         <div class="col-md-4 right-column">
-            <h3 class="text-center">Available Slots</h3>
+            <h3 class="text-center">Appointment Request Details</h3>
 
             <!-- User Information -->
             <form id="appointmentRequestForm" method="POST" action="{% url 'create_appointment_request' %}">
@@ -122,6 +122,9 @@
     // ✅ Handle clicking an available slot
     slotContainer.addEventListener("click", function (event) {
         if (event.target.classList.contains("slot-btn")) {
+
+            event.preventDefault();  // ✅ Prevents any default form submission behavior
+
             let selectedSlot = event.target.dataset;
 
             console.log("✅ Selected Slot:", selectedSlot.date, selectedSlot.start_time);
