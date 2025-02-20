@@ -30,7 +30,7 @@ class WelcomeView(LoginRequiredMixin, UserRoleMixin, TemplateView):
 
 # ACCOUNT MANAGEMENT
 class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Assistant']
     model = GuardianInformation
     context_object_name = "guardians"
     template_name = "manage/information_list/guardian_list.html"
@@ -52,7 +52,8 @@ class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRole
         context['search_query'] = self.request.GET.get('q', '')
         return context
     
-class GuardianDetailView(LoginRequiredMixin, UserRoleMixin, DetailView,):
+class GuardianDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
+    allowed_roles = ['Therapist', 'Assistant']
     model = GuardianInformation
     template_name = 'manage/information_detail/guardian_detail'
     context_object_name = "guardian"
@@ -111,7 +112,7 @@ class GuardianDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRo
         return context
 
 class AssistantListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Assistant']
     model = AssistantInformation
     context_object_name = "assistants"
     template_name = "manage/information_list/assistant_list.html"
@@ -133,7 +134,8 @@ class AssistantListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRol
         context['search_query'] = self.request.GET.get('q', '')
         return context
     
-class AssistantDetailView(CustomLoginRequiredMixin, UserRoleMixin, DetailView,):
+class AssistantDetailView(CustomLoginRequiredMixin,RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
+    allowed_roles = ['Therapist', 'Assistant']
     model = AssistantInformation
     template_name = 'manage/information_detail/assistant_detail'
     context_object_name = "assistant"
@@ -177,7 +179,7 @@ class AssistantDeleteView(LoginRequiredMixin, RolePermissionRequiredMixin, UserR
         return context
     
 class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, ListView):
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Assistant']
 
     model = AssistantInformation
     context_object_name = "therapists"
@@ -203,7 +205,7 @@ class TherapistListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRol
         return context
 
 class TherapistDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
-    allowed_roles = ['Therapist']
+    allowed_roles = ['Therapist', 'Assistant']
     
     model = TherapistInformation
     template_name = 'manage/information_detail/therapist_detail'
