@@ -60,7 +60,7 @@ html, body {
 
 .home-1 {
   position: relative;
-  background-image: url("/static/images/clinic-bg.png");
+  background-image: url("/static/images/clinic-bg.f6c478394cf2.png");
   background-size: cover;
   background-position: center;
   color: white;
@@ -184,7 +184,7 @@ html, body {
 /*about us*/
 .about-1 {
   position: relative;
-  background-image: url("/static/images/clinic-bg.jpg");
+  background-image: url("/static/images/clinic-bg.684a99d980b2.jpg");
   background-size: cover;
   background-position: center;
   color: white;
