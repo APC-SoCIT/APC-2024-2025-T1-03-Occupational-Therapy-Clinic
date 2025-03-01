@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-sm-4">
                             <h6 class="mb-2">Middle Name</h6>
-                            <div class="info-box">{{ patient.middle_name }}</div>
+                            <div class="info-box">{% if patient.middle_name %} {{patient.middle_name}} {% endif %}</div>
                         </div>
                         <div class="col-sm-4">
                             <h6 class="mb-2">Last Name</h6>
