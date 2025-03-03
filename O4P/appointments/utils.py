@@ -78,8 +78,18 @@ def send_sms_notification(contact_number, recipient_name, requester_name, reques
         )
     elif status == "declined":
         message_body = (
-            f"Hello {recipient_name}, unfortunately, your appointment request on {requested_date} at {requested_time} "
-            f"has been DENIED. Please book another time."
+            f"Hello {recipient_name},\n\n"
+            f"Unfortunately, your appointment request on {requested_date} at {requested_time} has been *DECLINED**. "
+            f"We apologize for any inconvenience.\n\n"
+            f"To book another appointment, please follow these steps:\n"
+            f"1. **Visit our appointment booking page**: [Appointment Request Page](https://o4p-deploy-test.onrender.com).\n"
+            f"2. **Select a therapist** from the available list.\n"
+            f"3. **Choose a new date and time** that fits your schedule.\n"
+            f"4. **Submit your request**, and you will receive a confirmation once it is reviewed.\n\n"
+            f"If you need any assistance, feel free to contact us.\n\n"
+            f"We appreciate your understanding and look forward to assisting you.\n\n"
+            f"Best regards,\n"
+            f"[Therapro Therapy Clinic]"
         )
 
     elif status == "reschedule_request":
