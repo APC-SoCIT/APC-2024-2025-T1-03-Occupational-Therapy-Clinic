@@ -53,7 +53,7 @@ class GuardianListView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRole
         return context
     
 class GuardianDetailView(LoginRequiredMixin, RolePermissionRequiredMixin, UserRoleMixin, DetailView,):
-    allowed_roles = ['Therapist', 'Assistant']
+    allowed_roles = ['Therapist', 'Assistant', 'Guardian']
     model = GuardianInformation
     template_name = 'manage/information_detail/guardian_detail'
     context_object_name = "guardian"
