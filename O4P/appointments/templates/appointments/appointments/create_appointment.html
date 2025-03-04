@@ -22,52 +22,54 @@
 
         <!-- Right: Appointment Form -->
         <div class="col-md-4">
-            <div class="form-section">
-                <form id="apptForm" method="POST" action="{% url 'create_appointment' %}">
-                    {% csrf_token %}
-
-                    <h4 class="text-center mb-3">Appointment Details</h4>
-
-                    <!-- Hidden input for selected date -->
-                    <input type="hidden" name="date" id="selected_date">
-
-                    <!-- Available Slots -->
-                    <div class="mb-3">
-                        <label class="form-label">Available Slots</label>
-                        <div id="available-slots" class="slot-grid">
-                            <p class="text-muted text-center">Select a date to see available slots.</p>
+            <div class="card p-3">
+                <div class="form-section">
+                    <form id="apptForm" method="POST" action="{% url 'create_appointment' %}">
+                        {% csrf_token %}
+    
+                        <h4 class="text-center mb-3">Appointment Details</h4>
+    
+                        <!-- Hidden input for selected date -->
+                        <input type="hidden" name="date" id="selected_date">
+    
+                        <!-- Available Slots -->
+                        <div class="mb-3">
+                            <label class="form-label">Available Slots</label>
+                            <div id="available-slots" class="slot-grid">
+                                <p class="text-muted text-center">Select a date to see available slots.</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Hidden input for selected time -->
-                    <input type="hidden" name="start_time" id="selected_time">
-
-                    <!-- Patient Selection (Dropdown) -->
-                    <div class="mb-3">
-                        <label class="form-label">Select Patient</label>
-                        <select name="patient" class="form-select">
-                            <option value="">-- Select a Patient --</option>
-                            {% for patient in patients %}
-                            <option value="{{ patient.id }}">
-                                {% if patient.first_name and patient.last_name %}
-                                    {{ patient.first_name }} {{ patient.last_name }}
-                                {% else %}
-                                    Unnamed Patient (ID: {{ patient.id }})
-                                {% endif %}
-                            </option>                            
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Hidden input for therapist (auto-assigned) -->
-                    <input type="hidden" name="therapist" value="{{ therapist_id }}">
-
-                    <!-- Hidden input for status -->
-                    <input type="hidden" name="status" value="scheduled">
-
-                    <!-- Submit Button -->
-                    <button type="submit" id="create-appointment-btn" class="btn btn-primary w-100" disabled>Create Appointment</button>
-                </form>
+    
+                        <!-- Hidden input for selected time -->
+                        <input type="hidden" name="start_time" id="selected_time">
+    
+                        <!-- Patient Selection (Dropdown) -->
+                        <div class="mb-3">
+                            <label class="form-label">Select Patient</label>
+                            <select name="patient" class="form-select">
+                                <option value="">-- Select a Patient --</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}">
+                                    {% if patient.first_name and patient.last_name %}
+                                        {{ patient.first_name }} {{ patient.last_name }}
+                                    {% else %}
+                                        Unnamed Patient (ID: {{ patient.id }})
+                                    {% endif %}
+                                </option>                            
+                                {% endfor %}
+                            </select>
+                        </div>
+    
+                        <!-- Hidden input for therapist (auto-assigned) -->
+                        <input type="hidden" name="therapist" value="{{ therapist_id }}">
+    
+                        <!-- Hidden input for status -->
+                        <input type="hidden" name="status" value="scheduled">
+    
+                        <!-- Submit Button -->
+                        <button type="submit" id="create-appointment-btn" class="btn btn-primary w-100" disabled>Create Appointment</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -10,72 +10,78 @@
 
 {% block body %}
 {% include "blobs.html" %}
-<div class="container">
-    <div class="row">
-        <!-- Left: Calendar -->
-        <div class="col-md-8">
-            <div id="calendar"></div>
-        </div>
-
-        <!-- Right: Therapist Selection & Available Slots -->
-        <div class="col-md-4 right-column">
-            <h3 class="text-center">Appointment Request Details</h3>
-
-            <!-- User Information -->
-            <form id="appointmentRequestForm" method="POST" action="{% url 'create_appointment_request' %}">
-                {% csrf_token %}
+<div>
+    <div class="container p-5">
+        <div class="row">
+            <!-- Left: Calendar -->
+            <div class="col-md-8">
                 
-                <!-- First Name -->
-                <div class="mb-3">
-                    <label for="first_name" class="form-label">First Name</label>
-                    <input type="text" name="first_name" id="first_name" class="form-control" required>
-                </div>
-            
-                <!-- Last Name -->
-                <div class="mb-3">
-                    <label for="last_name" class="form-label">Last Name</label>
-                    <input type="text" name="last_name" id="last_name" class="form-control" required>
-                </div>
-            
-                <!-- Contact Number -->
-                <div class="mb-3">
-                    <label for="contact_number" class="form-label">Contact Number</label>
-                    <input type="text" name="contact_number" id="contact_number" class="form-control" required>
-                </div>
-            
-                <!-- Therapist Selection -->
-                <div class="mb-3">
-                    <label for="therapist" class="form-label">Select Therapist</label>
-                    <select id="therapist" name="therapist" class="form-select" required>
-                        <option value="">-- Select a Therapist --</option>
-                        {% for therapist in therapists %}
-                        <option value="{{ therapist.id }}">{{ therapist.first_name }} {{ therapist.last_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            
-                <!-- Available Slots -->
-                <div id="available-slots" class="slot-grid">
-                    <p class="text-muted text-center">Select a therapist to see available slots.</p>
-                </div>
-            
-                <!-- Requested Date (Hidden Field) -->
-                <input type="hidden" name="requested_date" id="selected_date">
+                <div id="calendar"></div>
                 
-                <!-- Requested Time (Hidden Field) -->
-                <input type="hidden" name="requested_time" id="selected_time">
-            
-                <!-- Additional Notes -->
-                <div class="mb-3">
-                    <label for="notes" class="form-label">Additional Notes</label>
-                    <textarea name="notes" id="notes" class="form-control" rows="3"></textarea>
+            </div>
+    
+            <!-- Right: Therapist Selection & Available Slots -->
+            <div class="col-md-4 right-column">
+                <div class="card p-3">
+                    <h3 class="text-center">Appointment Request Details</h3>
+    
+                    <!-- User Information -->
+                    <form id="appointmentRequestForm" method="POST" action="{% url 'create_appointment_request' %}">
+                        {% csrf_token %}
+                        
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" name="first_name" id="first_name" class="form-control" required>
+                        </div>
+                    
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" name="last_name" id="last_name" class="form-control" required>
+                        </div>
+                    
+                        <!-- Contact Number -->
+                        <div class="mb-3">
+                            <label for="contact_number" class="form-label">Contact Number</label>
+                            <input type="text" name="contact_number" id="contact_number" class="form-control" required>
+                        </div>
+                    
+                        <!-- Therapist Selection -->
+                        <div class="mb-3">
+                            <label for="therapist" class="form-label">Select Therapist</label>
+                            <select id="therapist" name="therapist" class="form-select" required>
+                                <option value="">-- Select a Therapist --</option>
+                                {% for therapist in therapists %}
+                                <option value="{{ therapist.id }}">{{ therapist.first_name }} {{ therapist.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <!-- Available Slots -->
+                        <div id="available-slots" class="slot-grid">
+                            <p class="text-muted text-center">Select a therapist to see available slots.</p>
+                        </div>
+                    
+                        <!-- Requested Date (Hidden Field) -->
+                        <input type="hidden" name="requested_date" id="selected_date">
+                        
+                        <!-- Requested Time (Hidden Field) -->
+                        <input type="hidden" name="requested_time" id="selected_time">
+                    
+                        <!-- Additional Notes -->
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100 my-3" id="request-appointment-btn" disabled>
+                            Request Appointment
+                        </button>
+                    </form>
                 </div>
-            
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary w-100 my-3" id="request-appointment-btn" disabled>
-                    Request Appointment
-                </button>
-            </form>
+            </div>    
         </div>
     </div>
 </div>

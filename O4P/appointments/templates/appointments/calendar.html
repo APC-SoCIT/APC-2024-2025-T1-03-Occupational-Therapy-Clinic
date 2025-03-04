@@ -18,7 +18,8 @@
 
         <!-- Right: Appointments List and Buttons -->
         <div class="col-md-4">
-            <h3 class="text-center">Appointments</h3>
+            <div class="card p-3">
+                <h3 class="text-center">Appointments</h3>
             <div class="filter-buttons mb-3">
                 <button class="btn btn-primary btn-sm filter-btn" data-filter="day">Day</button>
                 <button class="btn btn-secondary btn-sm filter-btn" data-filter="week">Week</button>
@@ -45,6 +46,7 @@
                     <!-- Only Guardians see these buttons -->
                     <a href="{% url 'appointment_list' %}" class="btn btn-primary w-100 my-2">View All Appointments</a>
                 {% endif %}
+            </div>
             </div>
             <div class="my-3">
                 <a href="{% url 'welcome' %}" class="btn">Back</a>
