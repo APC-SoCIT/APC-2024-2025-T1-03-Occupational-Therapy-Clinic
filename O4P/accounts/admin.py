@@ -252,7 +252,7 @@ custom_admin_site.register(TherapistInformation, SimpleHistoryAdmin)
 custom_admin_site.register(AssistantInformation, SimpleHistoryAdmin)
 custom_admin_site.register(GuardianInformation, SimpleHistoryAdmin)
 
-custom_admin_site.register(PatientInformation)
+custom_admin_site.register(PatientInformation, SimpleHistoryAdmin)
 custom_admin_site.register(PatientNotes)
 
 custom_admin_site.register(Game)
