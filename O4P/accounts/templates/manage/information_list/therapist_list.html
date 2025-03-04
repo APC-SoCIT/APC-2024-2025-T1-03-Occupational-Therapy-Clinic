@@ -32,7 +32,7 @@
           <tr>
             <td>
               <a href="{% url 'therapist_detail' pk=therapist.id %}" class="text-dark text-decoration-none">
-                {{ therapist.first_name }} {{therapist.middle_name}} {{ therapist.last_name }}
+                {{ therapist.first_name }} {% if therapist.middle_name %} {{therapist.middle_name}} {% endif %} {{ therapist.last_name }}
               </a>
             </td>
             <td>

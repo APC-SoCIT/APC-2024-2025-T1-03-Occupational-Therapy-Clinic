@@ -31,7 +31,7 @@
           <tr>
             <td>
               <a href="{% url 'assistant_detail' pk=assistant.id %}" class="text-dark text-decoration-none">
-                {{ assistant.first_name }} {{assistant.middle_name}} {{ assistant.last_name }}
+                {{ assistant.first_name }} {% if assistant.middle_name %} {{assistant.middle_name}} {% endif %} {{ assistant.last_name }}
               </a>
             </td>
             <td>
