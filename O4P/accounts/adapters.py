@@ -14,11 +14,11 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
         user = email_address.user
         
-        if user.groups.filter(name="Assistant").exists():  
-            user.is_active = False  
-        elif user.groups.filter(name="Therapist").exists():
-            user.is_active = False
+        if user.groups.filter(name="Administrator").exists():
+            user.is_active = True
+        elif user.groups.filter(name="Guardian").exists():
+            user.is_active = True
         else:
-            user.is_active = True  
+            user.is_active = False
 
         user.save()
