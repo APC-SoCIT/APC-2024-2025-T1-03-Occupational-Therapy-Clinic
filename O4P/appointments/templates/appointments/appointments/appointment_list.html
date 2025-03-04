@@ -3,52 +3,54 @@
 
 {% block content %}
 {% include "blobs.html" %}
-<div class="header-1">
-    <h1>Your Appointments</h1>
-</div>
-
-{% if appointments %}
-<div class="table-container">
-    <table class="custom-table">
-        <thead>
-            <tr>
-                <th>Patient/Therapist</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for appointment in appointments %}
-                <tr>
-                    <td>
-                        {% if user.groups.first.name == 'Therapist' %}
-                            {% if appointment.patient_id %}
-                                {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}   <!-- Show registered patient's username -->
-                            {% else %}
-                                {{ appointment.first_name }} {{ appointment.last_name }}  <!-- Show non-registered patient -->
-                            {% endif %}
-                        {% else %}
-                            {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- Show therapist's full name -->
-                        {% endif %}
-                    </td>
-                    <td>{{ appointment.date }}</td>
-                    <td>{{ appointment.start_time }}</td>
-                    <td>{{ appointment.status }}</td>
-                    <td>
-                        <a href="{% url 'appointment_detail' appointment.id %}" class="text-blue text-decoration-none">
-                            View Details
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="my-3">
-        <a href="{% url 'calendar_view' %}" class="btn">Back</a>
+<div class="container-fluid">
+    <div class="header-1">
+        <h1>Your Appointments</h1>
     </div>
-</div>
+
+    {% if appointments %}
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Patient/Therapist</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>
+                            {% if user.groups.first.name == 'Therapist' %}
+                                {% if appointment.patient_id %}
+                                    {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}   <!-- Show registered patient's username -->
+                                {% else %}
+                                    {{ appointment.first_name }} {{ appointment.last_name }}  <!-- Show non-registered patient -->
+                                {% endif %}
+                            {% else %}
+                                {{ appointment.therapist.first_name }} {{ appointment.therapist.last_name }}  <!-- Show therapist's full name -->
+                            {% endif %}
+                        </td>
+                        <td>{{ appointment.date }}</td>
+                        <td>{{ appointment.start_time }}</td>
+                        <td>{{ appointment.status }}</td>
+                        <td>
+                            <a href="{% url 'appointment_detail' appointment.id %}" class="text-blue text-decoration-none">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="my-3">
+            <a href="{% url 'calendar_view' %}" class="btn">Back</a>
+        </div>
+    </div>
+</div>    
 
 {% else %}
     <p>No appointments available.</p>
