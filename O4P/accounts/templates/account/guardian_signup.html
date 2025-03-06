@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load custom %}
+
+
+{% block content %}
+{% include "blobs.html" %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <div class="card-group text-start">
+                
+                <div class="col-md-4">
+                    <div class="card p-4 h-100">
+                        <div class="card-body">
+                            <h2>Sign Up</h2>
+                            <p class="text-white">Create your account</p>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+                                    <div class="col-sm-12">
+                                        <label class="form-label">Email</label>
+                                        {{ form.email|add_class:"form-control w-100" }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-12">
+                                        <label class="form-label">Password</label>
+                                        {{ form.password1|add_class:"form-control w-100" }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-12">
+                                        <label class="form-label">Confirm Password</label>
+                                        {{ form.password2|add_class:"form-control w-100" }}
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card-2 p-4">
+                        <div class="card-body">
+                            <h2>Personal Information</h2>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label">First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">Middle Name</label>
+                                    {{ form.middle_name }}
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-8">
+                                    <label class="form-label">Date of Birth</label>
+                                    {{ form.date_of_birth }}
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">Sex</label>
+                                    {{ form.sex }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-12">
+                                    <label class="form-label">Nationality</label>
+                                    {{ form.nationality }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-12">
+                                    <label class="form-label">Contact Number</label>
+                                    {{ form.contact_number }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label">Province</label>
+                                    {{ form.province }}
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label">Municipality</label>
+                                    {{ form.municipality }}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Register</button>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="consentModal" tabindex="-1" aria-labelledby="consentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-start">
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h5 class="modal-title" id="consentModalLabel">Data Privacy Notice</h5>
+                    <p class="text-secondary mt-2 mb-0">
+                        In compliance with the Data Privacy Act of 2012 (Republic Act No. 10173), by submitting any information in this system, you acknowledge and consent to the collection, storage, and processing of your data.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>By using this website, you agree to our terms and conditions. Do you agree?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="agreeBtn">Agree</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('id_province').addEventListener('change', function() {
+        const provinceCode = this.value;
+        const municipalitySelect = document.getElementById('id_municipality');
+    
+        municipalitySelect.innerHTML = '<option value="">---------</option>'; // Reset municipalities
+    
+        if (!provinceCode) return;
+    
+        fetch(`/get-municipalities/?province_code=${encodeURIComponent(provinceCode)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched municipalities:", data.municipalities);
+                data.municipalities.forEach(municipality => {
+                    const option = new Option(municipality.name, municipality.code);
+                    municipalitySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+</script>
+{% endblock %}

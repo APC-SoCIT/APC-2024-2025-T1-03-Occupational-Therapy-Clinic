@@ -1,6 +1,7 @@
 {% extends 'dashboard_navbar.html' %}
 
 {% block content %}
+{% include "blobs.html" %}
 <form method="POST"> {% csrf_token %}
     <p>Are you sure you want to delete "{{object.first_name}} {{object.middle_name}} {{object.last_name}}"?</p>
     <p>This action cannot be undone.</p>

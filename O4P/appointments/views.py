@@ -2,318 +2,656 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group  # Import Django's Group model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db import transaction
+from django.db.models import F
 import json
-from openai import PermissionDeniedError
-from .models import NonWorkingDay
-from .models import Appointment
-from .models import AppointmentRequest
-from .models import AppointmentSlot
-from .models import RecurringAppointment
+from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Appointment, RecurringAppointment, AppointmentRequest
+from therapists.models import AvailableSlot
+from accounts.models import TherapistInformation as Therapist
+from patients.models import PatientInformation as Patient
+from accounts.models import GuardianInformation as Guardian
 from .forms import AppointmentForm
 from .forms import RecurringAppointmentForm
 from .forms import AppointmentRequestForm
-from .utils import generate_recurring_appointments
-from datetime import datetime, timedelta
+from .utils import generate_recurring_appointments, send_sms_notification
+from datetime import datetime, timedelta, date
+import calendar
+import traceback
+from twilio.rest import Client  # Import Twilio for SMS
+from django.conf import settings  # Import settings for Twilio credentials
 
-# Check if the user is in the Therapist group
-def is_therapist(user):
-    return user.groups.filter(name="Therapist").exists()
-
-# Check if the user is in the Patient group
-def is_patient(user):
-    return user.groups.filter(name="Patient").exists()
 
 # Create Appointment (Therapists only)
 @login_required
-@user_passes_test(is_therapist)
 def create_appointment(request):
+    # Fetch only therapist ID, ensuring `province_id` is not included
+    therapist = get_object_or_404(
+        Therapist.objects.only("id").defer("province_id"),  # Exclude province_id
+        account_id=request.user.id
+    )
+    therapist_id = therapist.id  # Extract therapist ID directly
+
+    # Fetch patients and pre-load them to avoid cursor issues
+    patients = list(Patient.objects.values("id", "first_name", "last_name"))
+
+    form = AppointmentForm()
+
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, 'appointments/appointments/appointment_success.html')
-    else:
-        form = AppointmentForm()
-    return render(request, 'appointments/appointments/create_appointment.html', {'form': form})
+            # Assign therapist_id instead of therapist object
+            Appointment.objects.create(
+                therapist_id=therapist_id,
+                patient=form.cleaned_data["patient"], 
+                date=form.cleaned_data["date"],
+                start_time=form.cleaned_data["start_time"],
+                status="scheduled",
+            )
+            return redirect('appointment_list')
+
+    return render(request, 'appointments/appointments/create_appointment.html', {
+        'form': form,
+        'therapist_id': therapist_id,  
+        'patients': patients 
+    })
+
+
+
 
 def appointment_success(request):
     return render(request, 'appointments/appointments/appointment_success.html')
 
 # Update Appointment (Therapists only)
 @login_required
-@user_passes_test(is_therapist)
-def update_appointment(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk, therapist=request.user)
-    if request.method == 'POST':
-        form = AppointmentForm(request.POST, instance=appointment)
-        if form.is_valid():
-            form.save()
-            return redirect('appointment_list')
-    else:
-        form = AppointmentForm(instance=appointment)
-    return render(request, 'appointments/appointments/update_appointment.html', {'form': form, 'appointment': appointment})
+def update_appointment(request, appointment_id):
+    appointment = get_object_or_404(
+        Appointment.objects.select_related("therapist", "patient").values(
+            "id", "patient_id", "patient__account_id", "patient__first_name", "patient__last_name", "first_name", "last_name",
+            "therapist_id", "therapist__first_name", "date", "start_time", "status"
+        ), id=appointment_id
+    )
 
-# Delete Appointment (Therapists only)
-@login_required
-@user_passes_test(is_therapist)
-def delete_appointment(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk, therapist=request.user)
+    authorized = False 
+    user = request.user
+
+    # Check if user is a therapist
+    if user.groups.filter(name='Therapist').exists():
+        therapist = get_object_or_404(Therapist.objects.only("id"), account_id=user.id)
+        if appointment["therapist_id"] == therapist.id:
+            authorized = "therapist"
+
+    # Check if user is a guardian of the patient
+    elif user.groups.filter(name='Guardian').exists() and appointment["patient_id"]:
+        patient = get_object_or_404(Patient.objects.only("id", "account_id"), id=appointment["patient_id"])
+        if patient.account_id == user.id:
+            authorized = "guardian"
+
+        # Query the Guardian's Contact Number Dynamically
+    guardian_contact_number = "N/A"
+    if appointment["patient_id"]:
+        guardian = Guardian.objects.filter(account_id=appointment["patient__account_id"]).first()
+        if guardian:
+            guardian_contact_number = guardian.contact_number
+
     if request.method == 'POST':
+
+        new_date = request.POST.get("date")
+        new_time = request.POST.get("start_time")
+
+        if not new_date or not new_time:
+            messages.error(request, "Please select a valid date and time.")
+            return redirect(request.path)
+        
+        if authorized == "therapist":
+            # Update appointment using `update()` (because `appointment` is a dictionary)
+            Appointment.objects.filter(id=appointment_id).update(
+                date=new_date,
+                start_time=new_time
+            )
+
+            messages.success(request, "Appointment successfully updated!")
+            return redirect('appointment_list')
+
+
+        else:
+            # Guardians request reschedule (Therapist must approve)
+            therapist = get_object_or_404(Therapist, id=appointment["therapist_id"])
+
+            AppointmentRequest.objects.create(
+                first_name=appointment["patient__first_name"] if appointment["patient_id"] else appointment["first_name"],
+                last_name=appointment["patient__last_name"] if appointment["patient_id"] else appointment["last_name"],
+                contact_number=guardian_contact_number,
+                therapist=therapist,
+                requested_date=new_date,
+                requested_time=new_time,
+                original_date=appointment["date"], 
+                original_time=appointment["start_time"],
+                status="pending"
+            )
+
+            # Send SMS to Therapist for Reschedule Request
+            therapist_contact_number = getattr(therapist, 'contact_number', None)
+            if therapist_contact_number:
+                send_sms_notification(
+                    contact_number=therapist_contact_number,
+                    recipient_name=f"{therapist.first_name} {therapist.last_name}",
+                    requester_name=f"{appointment['patient__first_name']} {appointment['patient__last_name']}",
+                    requested_date=new_date,
+                    requested_time=new_time,
+                    status="reschedule_request",
+                    is_therapist=True
+                )
+
+            return redirect('appointment_list')
+
+    return render(request, 'appointments/appointments/update_appointment.html', {
+        'appointment': appointment,
+        'therapist_id': appointment["therapist_id"],
+        'authorized': authorized
+    })
+
+
+# Delete Appointment (Therapists and Guardians)
+@login_required
+def delete_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+
+    authorized = False 
+    user = request.user
+
+    # Check if user is a therapist
+    if user.groups.filter(name='Therapist').exists():
+        therapist = get_object_or_404(Therapist.objects.only("id"), account_id=user.id)
+        if appointment.therapist_id == therapist.id:
+            authorized = "therapist"
+
+    # Check if user is a guardian linked to the patient
+    elif user.groups.filter(name='Guardian').exists() and appointment.patient:
+        guardian = Guardian.objects.filter(account_id=user.id).first()
+        if guardian:
+            authorized = "guardian"
+
+    # Prevent unauthorized users from deleting, redirect them to the calendar with an error message
+    if not authorized:
+        messages.error(request, "You are not authorized to cancel this appointment.")
+        return redirect('calendar_view')
+
+    if request.method == 'POST':
+        cancellation_reason = request.POST.get("reason", "No reason provided")
+
+        # Fetch Guardian’s Contact Number
+        guardian_contact_number = guardian.contact_number if guardian else "N/A"
+
+        # Fetch Therapist’s Contact Number
+        therapist_contact_number = getattr(appointment.therapist, 'contact_number', None)
+
+        # Send SMS Notifications
+        if guardian_contact_number != "N/A":
+            send_sms_notification(
+                contact_number=guardian_contact_number,
+                recipient_name=f"{guardian.first_name} {guardian.last_name}",
+                requester_name=f"{appointment.therapist.first_name} {appointment.therapist.last_name}",
+                requested_date=appointment.date,
+                requested_time=appointment.start_time,
+                status="cancelled",
+                reason=cancellation_reason
+            )
+
+        if therapist_contact_number:
+            send_sms_notification(
+                contact_number=therapist_contact_number,
+                recipient_name=f"{appointment.therapist.first_name} {appointment.therapist.last_name}",
+                requester_name=f"{guardian.first_name} {guardian.last_name}",
+                requested_date=appointment.date,
+                requested_time=appointment.start_time,
+                status="cancelled",
+                reason=cancellation_reason
+            )
+
         appointment.delete()
         return redirect('appointment_list')
-    return render(request, 'appointments/appointments/delete_appointment.html', {'appointment': appointment})
+
+    return render(request, 'appointments/appointments/confirm_delete.html', {
+        'appointment': appointment,
+        'authorized': authorized
+    })
+
+
 
 @login_required
 def appointment_list(request):
     user = request.user
 
-    if user.groups.filter(name='Therapist').exists():
-        # Therapist: Show appointments where they are the therapist
-        appointments = Appointment.objects.filter(therapist=user)
-    elif user.groups.filter(name='Patient').exists():
-        # Patient: Show appointments where they are the patient
-        appointments = Appointment.objects.filter(patient=user)
+    # Assistants: See all appointments
+    if user.groups.filter(name='Assistant').exists():
+        appointments = Appointment.objects.select_related("patient").order_by("date", "start_time")
+
+    # Therapists: See only their appointments
+    elif user.groups.filter(name='Therapist').exists():
+        therapist = Therapist.objects.only("id").get(account_id=user)
+        appointments = Appointment.objects.select_related("patient").filter(therapist=therapist).order_by("date", "start_time")
+
+    # Guardians: See their patients' appointments
+    elif user.groups.filter(name="Guardian").exists():
+        guardian_patient_ids = list(Patient.objects.filter(account_id=user.id).values_list("id", flat=True))
+        appointments = Appointment.objects.select_related("patient").filter(patient_id__in=guardian_patient_ids)
+
+
     else:
         appointments = Appointment.objects.none()
 
+
     return render(request, 'appointments/appointments/appointment_list.html', {'appointments': appointments})
 
+
+
 @login_required
-def appointment_detail(request, pk):
-    # Fetch the appointment if the logged-in user has access to it
-    appointment = get_object_or_404(Appointment, pk=pk)
+def appointment_detail(request, appointment_id):
+    # Fetch only necessary fields to prevent errors
+    appointment = get_object_or_404(
+        Appointment.objects.select_related("therapist", "patient").values(
+            "id", "patient_id", "patient__first_name", "patient__last_name", "first_name", "last_name", 
+            "therapist_id", "therapist__first_name", 
+            "date", "start_time", "status"
+        ), id=appointment_id
+    )
 
-    # Ensure the user is authorized to view this appointment
-    if request.user != appointment.patient and request.user != appointment.therapist:
-        raise PermissionDeniedError
+    user = request.user
 
-    return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
+    # Allow therapists to view their assigned appointments
+    if user.groups.filter(name='Therapist').exists():
+        therapist = Therapist.objects.only("id").get(account_id=user)
+        if appointment["therapist_id"] == therapist.id:
+            return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
 
+    # Allow assistants to view appointments
+    elif user.groups.filter(name='Assistant').exists() and appointment["patient_id"]:
+        patient = Patient.objects.only("id").get(id=appointment["patient_id"])
+        if patient.account_id == user:
+            return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
+
+    # Allow guardians to view appointments of their patients
+    elif user.groups.filter(name='Guardian').exists() and appointment["patient_id"]:
+        patient = get_object_or_404(Patient.objects.only("id", "account_id"), id=appointment["patient_id"])
+        if patient.account_id == user:
+            return render(request, 'appointments/appointments/appointment_detail.html', {'appointment': appointment})
+
+    # Deny access if user is not related to the appointment
+    return render(request, '403.html', status=403)
+
+
+
+# Create Appointment Request (For Non-Registered Users)
 def create_appointment_request(request):
+    # Fetch therapists correctly
+    therapists = Therapist.objects.values("id", "first_name", "last_name")
+
     if request.method == 'POST':
-        therapist_id = request.POST.get('therapist')
-        requested_date = request.POST.get('requested_date')
-        requested_time = request.POST.get('requested_time')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        contact_number = request.POST.get('contact_number')
-        notes = request.POST.get('notes')
+        form = AppointmentRequestForm(request.POST)
 
-        therapist = get_object_or_404(User, id=therapist_id, groups__name="Therapist")
-        AppointmentRequest.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            contact_number=contact_number,
-            therapist=therapist,
-            requested_date=requested_date,
-            requested_time=requested_time,
-            notes=notes,
-        )
-        return redirect('request_success')
+        if form.is_valid():
+            therapist = form.cleaned_data['therapist'] 
 
-    therapists = User.objects.filter(groups__name="Therapist")
-    return render(request, 'appointments/requests/create_appointment_request.html', {'therapists': therapists})
+            requested_date = form.cleaned_data['requested_date']
+            requested_time = form.cleaned_data['requested_time']
+
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            contact_number = form.cleaned_data['contact_number']
+            notes = form.cleaned_data['notes']
+
+            # Check if the slot already has 3 requests
+            existing_requests = AppointmentRequest.objects.filter(
+                therapist=therapist,
+                requested_date=requested_date,
+                requested_time=requested_time,
+                status='pending'
+            ).count()
+
+            if existing_requests >= 3:
+                messages.error(request, "This time slot has reached its request limit. Please choose another time.")
+                return redirect('create_appointment_request')
+            
+            therapist_contact_number = getattr(therapist, 'contact_number', None)
+
+            # Save appointment request with the correct therapist instance
+            appointment_request = AppointmentRequest.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                contact_number=contact_number,
+                therapist=therapist,
+                requested_date=requested_date,
+                requested_time=requested_time,
+                notes=notes,
+                status='pending'
+            )
+
+            # Send SMS to Patient/Guardian
+            send_sms_notification(
+                contact_number=contact_number,
+                recipient_name=f"{first_name} {last_name}",
+                requested_date=requested_date,
+                requested_time=requested_time,
+                is_therapist=False,
+                requester_name=f"{therapist.first_name} {therapist.last_name}",
+                status="pending"
+            )
+
+             # Send SMS to Therapist
+            if therapist_contact_number:
+                send_sms_notification(
+                    contact_number=therapist_contact_number,
+                    recipient_name=f"{therapist.first_name} {therapist.last_name}", 
+                    requested_date=requested_date,
+                    requested_time=requested_time,
+                    is_therapist=True,
+                    requester_name=f"{first_name} {last_name}",
+                    status="pending"
+                )
+
+            messages.success(request, "Your appointment request has been submitted and is pending approval.")
+            return redirect('request_success')
+        else:
+            # Show error messages if the form is invalid
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+    else:
+        form = AppointmentRequestForm()
+
+    return render(request, 'appointments/requests/create_appointment_request.html', {
+        'form': form,
+        'therapists': therapists
+    })
 
 
-# View and Manage Appointment Requests (Therapist)
-login_required
+
+@login_required
 @user_passes_test(lambda user: user.groups.filter(name='Therapist').exists())
 def manage_appointment_requests(request):
-    # Fetch only pending appointment requests
-    requests = AppointmentRequest.objects.filter(status='pending', therapist=request.user)
+    therapist = Therapist.objects.only("id").get(account_id=request.user)
+
+
+    # Fetch only pending appointment requests for this therapist
+    requests = AppointmentRequest.objects.filter(status='pending', therapist=therapist)
+    
     return render(request, 'appointments/requests/appointment_requests.html', {'requests': requests})
+
+
+
 
 # Update Appointment Request Status
 @login_required
-@user_passes_test(lambda user: user.groups.filter(name='Therapist').exists())
 def update_request_status(request, request_id):
-    appointment_request = get_object_or_404(AppointmentRequest, id=request_id, therapist=request.user)
+    therapist = get_object_or_404(Therapist.objects.only("id"), account_id=request.user.id)
+    appointment_request = get_object_or_404(AppointmentRequest, id=request_id, therapist=therapist)
+
     if request.method == 'POST':
         new_status = request.POST.get('status')
-
-        # Update the AppointmentRequest status
         appointment_request.status = new_status
         appointment_request.save()
 
-        # If approved, create a new Appointment
+        # Extract required details for SMS
+        patient_name = f"{appointment_request.first_name} {appointment_request.last_name}"
+        therapist_name = f"{appointment_request.therapist.first_name} {appointment_request.therapist.last_name}"
+        patient_contact_number = appointment_request.contact_number
+        therapist_contact_number = getattr(appointment_request.therapist, 'contact_number', None)
+
         if new_status == 'approved':
-            # Try to find an existing patient User instance
-            patient_user = User.objects.filter(
+            existing_patient = Patient.objects.only("id").filter(
                 first_name=appointment_request.first_name,
-                last_name=appointment_request.last_name,
+                last_name=appointment_request.last_name
             ).first()
 
-            if not patient_user:
-                # Handle the case for non-account patients
-                patient_user = User.objects.create(
-                    username=f"{appointment_request.first_name.lower()}_{appointment_request.last_name.lower()}_{appointment_request.id}",
-                    first_name=appointment_request.first_name,
-                    last_name=appointment_request.last_name,
-                    is_active=False,  # Ensure this account cannot be used for login
-                )
-
-            # Create the appointment
-            Appointment.objects.create(
-                patient=patient_user,
+            # Ensure we delete the exact previous scheduled appointment
+            old_appointment_query = Appointment.objects.filter(
                 therapist=appointment_request.therapist,
+                patient=existing_patient if existing_patient else None,
+                date=appointment_request.original_date,  
+                start_time=appointment_request.original_time,  
+                status="scheduled"
+            )
+
+            old_appointment = old_appointment_query.first()
+
+            if old_appointment:
+                old_appointment.delete()
+            else:
+                print("No exact match for previous appointment found. Skipping deletion.")
+
+            # Create the new rescheduled appointment
+            Appointment.objects.create(
+                therapist=appointment_request.therapist,
+                patient=existing_patient if existing_patient else None,
+                first_name=appointment_request.first_name,
+                last_name=appointment_request.last_name,
                 date=appointment_request.requested_date,
                 start_time=appointment_request.requested_time,
                 status='scheduled',
             )
 
+            # Send approval SMS to Patient/Guardian
+            send_sms_notification(
+                contact_number=patient_contact_number,
+                recipient_name=patient_name,
+                requester_name=therapist_name,
+                requested_date=appointment_request.requested_date,
+                requested_time=appointment_request.requested_time,
+                status="approved"
+            )
+
+        elif new_status == 'declined':
+            # Send denial SMS to Patient/Guardian
+            send_sms_notification(
+                contact_number=patient_contact_number,
+                recipient_name=patient_name,
+                requester_name=therapist_name,
+                requested_date=appointment_request.requested_date,
+                requested_time=appointment_request.requested_time,
+                status="declined"
+            )
+
         return redirect('manage_appointment_requests')
+
+    return render(request, 'appointments/requests/update_request_status.html', {'appointment_request': appointment_request})
+
+
+
+
 
 def request_success(request):
     return render(request, 'appointments/requests/request_success.html')
 
 @login_required
-@user_passes_test(is_therapist)
 def create_recurring_appointment(request):
+    # Fetch only therapist ID, excluding `province_id` to avoid errors
+    therapist = get_object_or_404(
+        Therapist.objects.only("id").defer("province_id"),
+        account_id=request.user.id
+    )
+    therapist_id = therapist.id 
+
+    # Fetch patients and pre-load them to avoid cursor issues
+    patients = list(Patient.objects.values("id", "first_name", "last_name"))
+
+    form = RecurringAppointmentForm()
+
     if request.method == 'POST':
         form = RecurringAppointmentForm(request.POST)
         if form.is_valid():
-            recurring_appointment = form.save()
+            recurring_appointment = form.save(commit=False)
+            recurring_appointment.therapist_id = therapist_id 
+
+            # Validate that a patient was selected
+            patient_id = request.POST.get("patient")
+            if not patient_id:
+                messages.error(request, "Please select a patient.")
+                return redirect("create_recurring_appointment")
+
+            # Assign the selected patient
+            recurring_appointment.patient_id = patient_id
+
+            # Validate that at least one slot is available for the first occurrence
+            selected_day = recurring_appointment.start_date.strftime("%A").lower()
+            available_slot = AvailableSlot.objects.filter(
+                therapist_id=therapist_id,
+                day=selected_day,
+                start_time=recurring_appointment.start_time
+            ).exists()
+
+            if not available_slot:
+                messages.error(request, "The selected slot is not available for this therapist.")
+                return redirect("create_recurring_appointment")
+
+            recurring_appointment.save() 
+
             try:
-                generate_recurring_appointments(recurring_appointment)  # Generate appointments
+                generate_recurring_appointments(recurring_appointment)
                 messages.success(request, "Recurring appointments scheduled successfully!")
                 return redirect('calendar_view')
             except ValueError as e:
-                # Handle conflicts
-                messages.error(request, str(e))
-                recurring_appointment.delete()  # Clean up incomplete data
+                messages.error(request, f"Error: {str(e)}")
+                recurring_appointment.delete() 
+
         else:
             messages.error(request, "Invalid form submission.")
-    else:
-        form = RecurringAppointmentForm()
-    return render(request, 'appointments/recurring/create_recurring_appointment.html', {'form': form})
+
+    return render(request, 'appointments/recurring/create_recurring_appointment.html', {
+        'form': form,
+        'therapist_id': therapist_id,  
+        'patients': patients  
+    })
 
 
+
+
+
+# Function to convert weekday name (e.g., "monday") to actual date
+def get_next_date_from_weekday(weekday_name):
+    weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    today = datetime.today().date()
+    
+    if weekday_name.lower() not in weekdays:
+        return None  
+    
+    weekday_index = weekdays.index(weekday_name.lower())
+    days_ahead = (weekday_index - today.weekday()) % 7
+    return today + timedelta(days=days_ahead)
 
 @login_required
 def appointments_calendar_api(request):
-    start = request.GET.get('start')  # Start date in ISO format
-    end = request.GET.get('end')  # End date in ISO format
-
-    # Parse the start and end dates (if they exist)
-    start_date = datetime.fromisoformat(start).date() if start else None
-    end_date = datetime.fromisoformat(end).date() if end else None
-
-    # Query appointments within the date range
-    if start_date and end_date:
-        appointments = Appointment.objects.filter(date__range=(start_date, end_date))
-    else:
-        appointments = Appointment.objects.all()
-
-    # Get the logged-in user
+    start = request.GET.get("start")
+    end = request.GET.get("end")
+    therapist_id = request.GET.get("therapist_id")
     user = request.user
 
-        # Filter appointments based on user role
-    if user.groups.filter(name='Therapist').exists():
-        appointments = Appointment.objects.filter(
-            therapist=user,
-            date__range=(start_date, end_date) if start_date and end_date else None,
-        )
-    elif user.groups.filter(name='Patient').exists():
-        appointments = Appointment.objects.filter(
-            patient=user,
-            date__range=(start_date, end_date) if start_date and end_date else None,
-        )
-    else:
-        appointments = Appointment.objects.none()  # No appointments for other roles
+    if not start or not end:
+        return JsonResponse({"error": "Start and end dates are required"}, status=400)
 
-    # Format the events for FullCalendar
-    events = [
+    start_date = datetime.fromisoformat(start).date()
+    end_date = datetime.fromisoformat(end).date()
+
+    # Determine user role and filter accordingly
+    filter_criteria = {}
+
+    if user.groups.filter(name="Therapist").exists():
+        filter_criteria["therapist_id"] = therapist_id
+
+    elif user.groups.filter(name="Guardian").exists():
+        guardian_patient_ids = request.GET.get("guardian_patient_ids", "").split(",")
+        guardian_patient_ids = [int(pid) for pid in guardian_patient_ids if pid.isdigit()] 
+        if guardian_patient_ids:
+            filter_criteria["patient_id__in"] = guardian_patient_ids
+
+
+
+    # Fetch scheduled appointments based on role
+    appointments = Appointment.objects.filter(
+        **filter_criteria,
+        date__range=(start_date, end_date),
+        status="scheduled"
+    ).select_related("patient").values(
+        "id", "date", "start_time", "status",
+        "patient__first_name", "patient__last_name",
+        "first_name", "last_name"
+    ).order_by("date", "start_time")
+
+    # Format booked appointments for the calendar
+    booked_events = [
         {
-            "title": f"Session with {appt.patient.username}",
-            "start": datetime.combine(appt.date, appt.start_time).isoformat(),
-            "end": (datetime.combine(appt.date, appt.start_time) + timedelta(hours=1)).isoformat(),
-            "url": f"/appointment/{appt.id}"  # Optional: URL for event details
+            "title": f"📅 {appt['date']} | 🕒 {appt['start_time']} | 👤 {appt['patient__first_name'] or appt['first_name']} {appt['patient__last_name'] or appt['last_name']}",
+            "start": datetime.combine(appt["date"], appt["start_time"]).isoformat(),
+            "end": (datetime.combine(appt["date"], appt["start_time"]) + timedelta(hours=1)).isoformat(),
+            "color": "#808080",
+            "extendedProps": {
+                "status": "booked",
+                "patient_name": f"{appt['patient__first_name'] or appt['first_name']} {appt['patient__last_name'] or appt['last_name']}"
+            }
         }
         for appt in appointments
     ]
 
-    return JsonResponse(events, safe=False)
-
+    return JsonResponse(booked_events, safe=False)
     
+@login_required
 def calendar_view(request):
-    """Render the calendar interface."""
-    return render(request, 'appointments/calendar.html')
+    user = request.user
+    therapist_id = None
+    guardian_patient_ids = []
+
+    if user.groups.filter(name="Therapist").exists():
+        therapist = Therapist.objects.filter(account_id=user.id).values("id").first()
+        therapist_id = therapist["id"] if therapist else None 
+
+    elif user.groups.filter(name="Guardian").exists():
+        guardian_patient_ids = list(Patient.objects.filter(account_id=user.id).values_list("id", flat=True))
 
 
-def get_non_working_days(request):
-    therapist_id = request.GET.get('therapist_id')
-    non_working_days = NonWorkingDay.objects.filter(therapist_id=therapist_id).values_list('date', flat=True)
-    return JsonResponse({'non_working_days': list(non_working_days)})
+    return render(request, "appointments/calendar.html", {
+        "therapist_id": therapist_id,
+        "guardian_patient_ids": ",".join(map(str, guardian_patient_ids)),
+        "user_role": user.groups.first().name
+    })
 
-def get_available_slots(request):
-    # Extract date from the request
-    selected_date = request.GET.get('date')
 
-    if not selected_date:
-        return JsonResponse({"error": "Date is required."}, status=400)
+def get_available_slots(request, therapist_id):
+    requested_date = request.GET.get("date", None)
 
-    # Define working hours (example: 9 AM to 5 PM)
-    working_hours = [
-        (9, 0), (10, 0), (11, 0), (12, 0), (13, 0),
-        (14, 0), (15, 0), (16, 0), (17, 0)
-    ]
+    if not requested_date:
+        return JsonResponse({"error": "Date parameter is required"}, status=400)
 
-    # Check appointments for the selected date
-    appointments = Appointment.objects.filter(date__date=selected_date)
-    booked_slots = {appt.date.strftime("%H:%M") for appt in appointments}
+    try:
+        # Convert requested date to weekday name
+        day_name = datetime.strptime(requested_date, "%Y-%m-%d").strftime("%A").lower()
+        
+        # Fetch slots for the selected date and therapist's schedule
+        slots = AvailableSlot.objects.filter(therapist_id=therapist_id, day=day_name).order_by("start_time")
+        
+        if not slots.exists():
+            return JsonResponse({"available_slots": []})
 
-    # Generate available slots
-    available_slots = []
-    for hour, minute in working_hours:
-        slot_time = f"{hour:02}:{minute:02}"
-        if slot_time not in booked_slots:
-            available_slots.append(f"{hour:02}:{minute:02}")
+        slot_data = []
+        for slot in slots:
+            # Check how many appointments are booked for this slot
+            booked_count = Appointment.objects.filter(
+                therapist_id=therapist_id, date=requested_date, start_time=slot.start_time
+            ).count()
 
-    return JsonResponse({"slots": available_slots})
+            if booked_count < 3:  # Only return slots with fewer than 3 appointments
+                slot_data.append({
+                    "date": requested_date,
+                    "start_time": slot.start_time.strftime("%H:%M"),
+                    "end_time": slot.end_time.strftime("%H:%M")
+                })
 
-@login_required
-def patient_appointments(request):
-    # Ensure the user is in the 'Patient' group
-    if not request.user.groups.filter(name="Patient").exists():
-        return JsonResponse({"error": "Unauthorized"}, status=403)
-    
-    # Fetch appointments assigned to the logged-in patient
-    appointments = Appointment.objects.filter(patient=request.user)
-    
-    # Serialize data for FullCalendar
-    events = [
-        {
-            "title": f"Therapist: {appt.therapist.username}",
-            "start": f"{appt.date}T{appt.start_time}",
-            "end": f"{appt.date}T{appt.end_time}",
-            "status": appt.status,
-        }
-        for appt in appointments
-    ]
-    return JsonResponse(events, safe=False)
+        return JsonResponse({"available_slots": slot_data})
 
-@login_required
-def therapist_appointments(request):
-    # Ensure the user is in the 'Therapist' group
-    if not request.user.groups.filter(name="Therapist").exists():
-        return JsonResponse({"error": "Unauthorized"}, status=403)
-    
-    # Fetch appointments assigned to the logged-in therapist
-    appointments = Appointment.objects.filter(therapist=request.user)
-    
-    # Serialize data for FullCalendar
-    events = [
-        {
-            "title": f"Patient: {appt.patient.username}",
-            "start": f"{appt.date}T{appt.start_time}",
-            "end": f"{appt.date}T{appt.end_time}",
-            "status": appt.status,
-        }
-        for appt in appointments
-    ]
-    return JsonResponse(events, safe=False)
+    except Exception as e:
+        return JsonResponse({"error": "Internal server error", "details": str(e)}, status=500)

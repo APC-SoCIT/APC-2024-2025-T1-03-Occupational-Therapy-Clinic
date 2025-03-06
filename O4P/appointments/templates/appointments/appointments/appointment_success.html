@@ -3,6 +3,7 @@
 {% block title %}Appointment Created{% endblock %}
 
 {% block content %}
+{% include "blobs.html" %}
 <div class="container text-center">
     <h1>Appointment Made!</h1>
     <a href="{% url 'calendar_view' %}" class="btn btn-primary">Back to Dashboard</a>

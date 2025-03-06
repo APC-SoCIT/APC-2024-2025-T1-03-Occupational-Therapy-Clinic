@@ -1,4 +1,6 @@
 {% load static %}
+{% load i18n %}
+
 <html>
     <head>
         <meta charset="utf-8">
@@ -21,12 +23,42 @@
             <div>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <form id="logout-form" method="POST" action="{% url 'account_logout' %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="nav-link" style="border: none;">Logout</button>
-                            </form> 
-                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                My Account
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                {% url 'account_email' as email_url_ %}
+                                {% if email_url_ %}
+                                    <li><a class="dropdown-item" href="{{ email_url_ }}">{% trans "Change Email" %}</a></li>
+                                {% endif %}
+                                {% url 'account_change_password' as change_password_url_ %}
+                                {% if change_password_url_ %}
+                                    <li><a class="dropdown-item" href="{{ change_password_url_ }}">{% trans "Change Password" %}</a></li>
+                                {% endif %}
+                                {% url 'mfa_index' as mfa_url_ %}
+                                {% if mfa_url_ %}
+                                    <li><a class="dropdown-item" href="{{ mfa_url_ }}">{% trans "Two-Factor Authentication" %}</a></li>
+                                {% endif %}
+                                {% url 'usersessions_list' as usersessions_list_url_ %}
+                                {% if usersessions_list_url_ %}
+                                    <li><a class="dropdown-item" href="{{ usersessions_list_url_ }}">{% trans "Sessions" %}</a></li>
+                                {% endif %}
+                                {% if is_guardian %}
+                                    <li><a class="dropdown-item" href="{% url 'guardian_detail' pk=user.guardianinformation_set.first.id %}"> My Profile</a></li>
+                                {% elif is_therapist %}
+                                    <li><a class="dropdown-item" href="{% url 'therapist_detail' pk=user.therapistinformation_set.first.id %}"> My Profile</a></li>
+                                {% elif is_assistant %}
+                                    <li><a class="dropdown-item" href="{% url 'assistant_detail' pk=user.assistantinformation_set.first.id %}"> My Profile</a></li>
+                                {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+            
+                                    <li class="dropdown-item">
+                                        <form id="logout-form" method="POST" action="{% url 'account_logout' %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="nav-link" style="border: none;">Logout</button>
+                                        </form> 
+                                    </li>
                     </ul>
                 </div>
             </div>

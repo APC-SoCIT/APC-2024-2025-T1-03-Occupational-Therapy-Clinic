@@ -2,18 +2,24 @@ from django.urls import path, include
 
 from . import views
 from .views import TherapistSignupView, AssistantSignupView, GuardianSignupView
-from .views import RoleListView, GuardianListView, AssistantListView, TherapistListView
+from .views import GuardianListView, AssistantListView, TherapistListView
 from .views import AssistantDetailView, TherapistDetailView, GuardianDetailView
 from .views import GuardianUpdateView, GuardianDeleteView, AssistantUpdateView, AssistantDeleteView, TherapistUpdateView, TherapistDeleteView
+from .views import get_municipalities
+
 urlpatterns = [
     path('welcome/', views.WelcomeView.as_view(), name='welcome'),
     
-    path("auth/signup/", views.PatientSignupView.as_view(), name="patient_signup"),
+    
     path('auth/signup/therapist/', TherapistSignupView.as_view(), name='therapist_signup'),
     path('auth/signup/assistant/', AssistantSignupView.as_view(), name='assistant_signup'),
-    path('auth/signup/guardian/', GuardianSignupView.as_view(), name='guardian_signup'),
+    path('auth/signup/', GuardianSignupView.as_view(), name='guardian_signup'),
     
-    path('roles/', RoleListView.as_view(), name='role_list'),
+    path('roles/assistants/create/', views.AssistantInformationCreateView.as_view(), name="assistants.create"),
+    path('roles/therapists/create/', views.TherapistInformationCreateView.as_view(), name="therapists.create"),
+    
+    path('get-municipalities/', get_municipalities, name='get_municipalities'),
+     
     path('roles/guardian/list', GuardianListView.as_view(), name='guardian_list'),
     path('roles/assistant/list', AssistantListView.as_view(), name='assistant_list'),
     path('roles/therapist/list', TherapistListView.as_view(), name='therapist_list'),

@@ -2,6 +2,7 @@
 {% block title %}Appointment Details{% endblock %}
 
 {% block content %}
+{% include "blobs.html" %}
 <div class="header-1">
     <h1>Appointment Details</h1>
     <div>
@@ -11,6 +12,13 @@
                 Delete
             </button>
         {% endif %}
+
+        {% if user.groups.first.name == 'Guardian' %}
+            <a href="{% url 'update_appointment' appointment.id %}" class="btn btn-secondary">Reschedule</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Cancel
+            </button>
+        {% endif %}
     </div>
 </div>
 
@@ -18,6 +26,7 @@
     <div class="col-md-12">
         <div class="card mb-3">
             <div class="card-body">
+                <!-- Date -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Date:</h6>
@@ -27,21 +36,29 @@
                     </div>
                 </div>
                 <hr>
+
+                <!-- Patient and Therapist -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Patient:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.patient.username }}
+                        {% if appointment.patient_id %}
+                            {{ appointment.patient__first_name }} {{ appointment.patient__last_name }}  <!-- Registered user -->
+                        {% else %}
+                            {{ appointment.first_name }} {{ appointment.last_name }} <!-- Non-registered user -->
+                        {% endif %}
                     </div>
                     <div class="col-sm-3">
                         <h6 class="mb-0">Therapist:</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                        {{ appointment.therapist.username }}
+                        {{ appointment.therapist__first_name }} {{ appointment.therapist__last_name }}  <!-- Therapist full name -->
                     </div>
                 </div>
                 <hr>
+
+                <!-- Start Time and Status -->
                 <div class="row">
                     <div class="col-sm-3">
                         <h6 class="mb-0">Start Time:</h6>
@@ -50,48 +67,56 @@
                         {{ appointment.start_time }}
                     </div>
                     <div class="col-sm-3">
-                        <h6 class="mb-0">End Time:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ appointment.end_time }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
                         <h6 class="mb-0">Status:</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-3 text-secondary">
                         {{ appointment.status }}
                     </div>
                 </div>
+                <hr>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Cancellation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this appointment?</p>
+                <p>Are you sure you want to cancel this appointment?</p>
                 <p>This action cannot be undone.</p>
+                
+                <!-- Reason for Cancellation Input -->
+                <label for="reason">Reason for cancellation (required):</label>
+                <textarea name="reason" id="cancelReason" rows="3" class="form-control" required></textarea>
             </div>
             <div class="modal-footer">
-                <form method="POST" action="{% url 'delete_appointment' appointment.id %}">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+                <!-- Form to Submit Cancellation -->
+                <form id="deleteForm" method="POST" action="{% url 'delete_appointment' appointment.id %}">
                     {% csrf_token %}
-                    <input type="submit" class="btn btn-danger" value="Confirm">
+                    <input type="hidden" name="reason" id="reasonInput">
+                    <button type="submit" class="btn btn-danger">Confirm Cancel</button>
                 </form>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- JavaScript to Pass the Reason to the Form -->
+<script>
+    document.getElementById('deleteForm').addEventListener('submit', function(event) {
+        document.getElementById('reasonInput').value = document.getElementById('cancelReason').value;
+    });
+</script>
+
+<!-- Back Button -->
 <div class="my-3">
     <a href="{% url 'calendar_view' %}" class="btn btn-secondary">Back to Calendar</a>
 </div>

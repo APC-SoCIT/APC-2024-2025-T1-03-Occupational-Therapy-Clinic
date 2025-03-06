@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,10 +45,17 @@ INSTALLED_APPS = [
     'home',
     'core',
     'games',
+    'therapists',
+
 
     'allauth',
     'allauth.account',
-    'allauth.socialaccount'
+    'allauth.socialaccount',
+    'allauth.mfa',
+
+    'admincharts',
+    'simple_history',
+    
 ]
 
 SITE_ID = 1
@@ -61,7 +69,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'accounts.middleware.ProfileCompletionMiddleware',  
     'allauth.account.middleware.AccountMiddleware',
+    'accounts.middleware.AllUserRequire2FAMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
+
 ]
 
 ROOT_URLCONF = 'O4P.urls'
@@ -173,3 +185,19 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 LOGOUT_REDIRECT_URL = '/auth/login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
+
+MFA_ADAPTER = "allauth.mfa.adapter.DefaultMFAAdapter"
+
+MFA_SUPPORTED_TYPES = ["recovery_codes", "totp"]
+
+MFA_PASSKEY_LOGIN_ENABLED = True
+
+#SMS notifications via Twilio
+from dotenv import load_dotenv
+load_dotenv()
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")

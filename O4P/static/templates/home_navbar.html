@@ -5,23 +5,17 @@
       <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
       <link rel="stylesheet" type="text/css" href="{% static 'css/style_website.css' %}">
       <title>Therapro</title>
+      <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg">
-              <a class="navbar-brand" href="{% url 'home' %}">Logo</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
+              <a class="navbar-brand">
+                <img src="{% static 'images/logo.png' %}" alt="Clinic Logo" height="40">
+              </a>
               <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'services' %}">Services</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'contact_us' %}">Contact</a>
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'appointment' %}">Appointment</a>
@@ -38,6 +32,27 @@
           </nav>
             {% block content %}
             {% endblock %}
-        </div>         
+          <footer class="footer">
+            <div class="container">
+              <div class="row g-0">
+                  <!-- Left side: Location -->
+                  <div class="col-md-5 d-flex align-items-center justify-content-end text-end">
+                    <img src="{% static 'images/logo.png' %}" alt="Therapro Therapy Clinic Logo" height="100%">
+                  </div>
+                  <!-- Divider -->
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="divider"></div>
+                  </div>
+                  <!-- Right side: Contact Details -->
+                  <div class="col-md-5 d-flex align-items-center justify-content-left">
+                      <div class="contact">
+                        <div> <i class="bi bi-telephone-fill"></i><span>484-9343</span></div>
+                        <div><i class="bi bi-envelope-fill"></i><span>zoraidadejesus@yahoo.com</span></div>
+                        <div><i class="bi bi-geo-alt-fill"></i><span>288B Oseas St., Reveal Subdivision<br>Real 1, Bacoor, Cavite</span></div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </footer>       
     </body>
 </html>

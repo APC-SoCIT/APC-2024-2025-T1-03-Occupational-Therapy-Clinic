@@ -1,99 +1,167 @@
-{% extends 'form_navbar.html' %}
+{% extends "dashboard_navbar.html" %}
+{% load static %}
 
 {% block content %}
+{% include "blobs.html" %}
 <div class="container-fluid">
-    <div class="container">
-        <div class="header-1">
-            <h2>Edit</h2>
-            <div>
-                <a href="{% url 'patients.details' patient.id %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" form="pForm" class="btn btn-primary">Save</button>
-            </div>
+    <div class="header-1 my-2">
+        <h1>Edit {{ patient.first_name }} {{ patient.last_name }}</h1>
+        <div>
+            <button type="submit" form="iForm" class="btn2 btn-success">Save</button>
+            <a href="{% url 'patients.details' pk=patient.id %}" class="btn2 btn-danger">Cancel</a>
         </div>
+    </div>
 
-        <form id="pForm" method="POST"> 
-            {% csrf_token %} 
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <!-- Basic information -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h3 class="h6 mb-3 text-secondary">Basic Information</h3>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        <label class="form-label">First Name</label>
-                                        {{ form.first_name }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        <label class="form-label">Middle Name</label>
-                                        {{ form.middle_name }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        <label class="form-label">Last Name</label>
-                                        {{ form.last_name }}
-                                    </div>
-                                </div>
+    <form id="iForm" method="POST"> 
+        {% csrf_token %} 
+        <div class="row gutters-sm">
+            <div class="col-md-12">
+                <div class="edit-card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Edit Personal Information</h3>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name }}
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Diagnosis</label>
-                                        {{ form.condition }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Date of Birth</label>
-                                        {{ form.date_of_birth }}
-                                    </div>
-                                </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Middle Name</label>
+                                {{ form.middle_name }}
                             </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Contact Number</label>
-                                        {{ form.contact_number }}
-                                    </div>
-                                </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-8">
+                                <label class="form-label">Date of Birth</label>
+                                {{ form.date_of_birth }}
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Sex</label>
+                                {{ form.sex }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Nationality</label>
+                                {{ form.nationality }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Religion</label>
+                                {{ form.religion }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <label class="form-label">Contact Number</label>
+                                {{ form.contact_number }}
                             </div>
                         </div>
                     </div>
-
-                    <!-- Address -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h3 class="h6 mb-4 text-secondary">Address</h3>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">City</label>
-                                        {{ form.city }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Province</label>
-                                        {{ form.province }}
-                                    </div>
-                                </div>
+                </div>
+                <div class="edit-card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Edit Address</h3>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Province</label>
+                                {{ form.province }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Municipality</label>
+                                {{ form.municipality }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3 text-secondary">Edit Medical Information</h3>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-sm-8">
+                                <label class="form-label">Diagnosis</label>
+                                {{ form.diagnosis }}
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">Referring Doctor</label>
+                                {{ form.referring_doctor }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Mother's Name</label>
+                                {{ form.mother_name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Mother's Contact Number</label>
+                                {{ form.mother_number }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Father's Name</label>
+                                {{ form.father_name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Father's Contact Number</label>
+                                {{ form.father_number }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <label class="form-label">School</label>
+                                {{ form.school }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <label class="form-label">Relationship to Guardian</label>
+                                {{ form.relationship_to_guardian }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <label class="form-label">Initial Evaluation</label>
+                                {{ form.initial_evaluation }}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </form>
-
-        {% if form.errors %}
+        </div>
+    </form>
+    {% if form.errors %}
         <div class="alert alert-danger my-5">
             {{ form.errors.as_text }}
         </div>
-        {% endif %}
-    </div>
+    {% endif %}
 </div>
+
+<script>
+    document.getElementById('id_province').addEventListener('change', function() {
+        console.log("HELLO THERE");
+        const provinceCode = this.value;
+        const municipalitySelect = document.getElementById('id_municipality');
+    
+        municipalitySelect.innerHTML = '<option value="">---------</option>'; 
+    
+        if (!provinceCode) return;
+    
+        fetch(`/get-municipalities/?province_code=${encodeURIComponent(provinceCode)}`)
+            .then(response => response.json())
+            .then(data => {
+                data.municipalities.forEach(municipality => {
+                    const option = new Option(municipality.name, municipality.code);
+                    municipalitySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
 {% endblock %}

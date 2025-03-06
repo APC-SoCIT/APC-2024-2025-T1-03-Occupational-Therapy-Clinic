@@ -1,84 +1,165 @@
-{% extends "home_navbar.html" %}
+{% extends "web_calendar_base.html" %}
+{% load static %}
 
-{% block content %}
-<div class="container-fluid">
-    <div class="container">
-        <div class="header-1">
-            <h2 class="my-3">Create Appointment Request</h2>
-            <div>
-                <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" form="appointmentRequestForm" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
+{% block customCSS %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+<link rel="stylesheet" href="{% static 'appointments/css/calendar.css' %}">
+{% endblock %}
 
-        <form id="appointmentRequestForm" method="POST">
-            {% csrf_token %}
+{% block title %}Request an Appointment{% endblock %}
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h3 class="h6 mb-3 text-secondary">Appointment Request Details</h3>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="first_name" class="form-label">First Name</label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="last_name" class="form-label">Last Name</label>
-                                        <input type="text" name="last_name" id="last_name" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="contact_number" class="form-label">Contact Number</label>
-                                        <input type="text" name="contact_number" id="contact_number" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="therapist" class="form-label">Select Therapist</label>
-                                        <select name="therapist" id="therapist" class="form-select" required>
-                                            {% for therapist in therapists %}
-                                            <option value="{{ therapist.id }}">{{ therapist.username }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="requested_date" class="form-label">Requested Date</label>
-                                        <input type="date" name="requested_date" id="requested_date" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="requested_time" class="form-label">Requested Time</label>
-                                        <input type="time" name="requested_time" id="requested_time" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label for="notes" class="form-label">Additional Notes</label>
-                                        <textarea name="notes" id="notes" class="form-control" rows="4"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{% block body %}
+{% include "blobs.html" %}
+<div>
+    <div class="container p-5">
+        <div class="row">
+            <!-- Left: Calendar -->
+            <div class="col-md-8">
+                
+                <div id="calendar"></div>
                 
             </div>
-        </form>
+    
+            <!-- Right: Therapist Selection & Available Slots -->
+            <div class="col-md-4 right-column">
+                <div class="card p-3">
+                    <h3 class="text-center">Appointment Request Details</h3>
+    
+                    <!-- User Information -->
+                    <form id="appointmentRequestForm" method="POST" action="{% url 'create_appointment_request' %}">
+                        {% csrf_token %}
+                        
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" name="first_name" id="first_name" class="form-control" required>
+                        </div>
+                    
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" name="last_name" id="last_name" class="form-control" required>
+                        </div>
+                    
+                        <!-- Contact Number -->
+                        <div class="mb-3">
+                            <label for="contact_number" class="form-label">Contact Number</label>
+                            <input type="text" name="contact_number" id="contact_number" class="form-control" required>
+                        </div>
+                    
+                        <!-- Therapist Selection -->
+                        <div class="mb-3">
+                            <label for="therapist" class="form-label">Select Therapist</label>
+                            <select id="therapist" name="therapist" class="form-select" required>
+                                <option value="">-- Select a Therapist --</option>
+                                {% for therapist in therapists %}
+                                <option value="{{ therapist.id }}">{{ therapist.first_name }} {{ therapist.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <!-- Available Slots -->
+                        <div id="available-slots" class="slot-grid">
+                            <p class="text-muted text-center">Select a therapist to see available slots.</p>
+                        </div>
+                    
+                        <!-- Requested Date (Hidden Field) -->
+                        <input type="hidden" name="requested_date" id="selected_date">
+                        
+                        <!-- Requested Time (Hidden Field) -->
+                        <input type="hidden" name="requested_time" id="selected_time">
+                    
+                        <!-- Additional Notes -->
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100 my-3" id="request-appointment-btn" disabled>
+                            Request Appointment
+                        </button>
+                    </form>
+                </div>
+            </div>    
+        </div>
     </div>
 </div>
+
+<!-- FullCalendar JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script type="module">
+    import { fetchAvailableSlots } from "{% static 'appointments/js/calendar.js' %}";
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const therapistField = document.getElementById("therapist");
+        const slotContainer = document.getElementById("available-slots");
+        const calendarEl = document.getElementById("calendar");
+        const requestButton = document.getElementById("request-appointment-btn");
+        const selectedTherapistField = document.getElementById("selected_therapist");
+        const selectedDateField = document.getElementById("selected_date");
+        const selectedTimeField = document.getElementById("selected_time");
+
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',
+            selectable: true,
+            dateClick: function(info) {
+                const therapistId = therapistField.value;
+                if (!therapistId) {
+                    alert("Please select a therapist first.");
+                    return;
+                }
+
+                console.log("Fetching available slots for:", therapistId, "on", info.dateStr);
+                fetchAvailableSlots(therapistId, info.dateStr, slotContainer);
+            }
+        });
+
+        therapistField.addEventListener("change", function () {
+            if (!therapistField.value) return;
+            slotContainer.innerHTML = "<p class='text-muted text-center'>Select a date</p>";
+            fetchAvailableSlots(therapistField.value, slotContainer);
+        });
+
+    // Handle clicking an available slot
+    slotContainer.addEventListener("click", function (event) {
+        if (event.target.classList.contains("slot-btn")) {
+
+            event.preventDefault();  // Prevents any default form submission behavior
+
+            let selectedSlot = event.target.dataset;
+
+            console.log("Selected Slot:", selectedSlot.date, selectedSlot.start_time);
+
+            // Remove highlight from previously selected slot
+            document.querySelectorAll(".slot-btn").forEach(btn => btn.classList.remove("selected-slot"));
+
+            // Highlight the selected slot
+            event.target.classList.add("selected-slot");
+
+            // Set hidden fields
+            selectedDateField.value = selectedSlot.date;
+            selectedTimeField.value = selectedSlot.start_time;
+
+            // Enable the submit button
+            requestButton.disabled = false;
+        }
+    });
+
+    // Ensure form does NOT auto-submit when clicking a slot
+    document.getElementById("appointmentRequestForm").addEventListener("submit", function (event) {
+        if (!selectedDateField.value || !selectedTimeField.value) {
+            event.preventDefault();
+            alert("Please select a date and time before submitting.");
+            }
+        });
+        calendar.render();
+    });
+</script>
+
 {% endblock %}

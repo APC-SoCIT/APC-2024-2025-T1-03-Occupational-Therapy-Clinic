@@ -2,76 +2,85 @@
 {% load static %}
 
 {% block content %}
-<div class="header-1 my-2">
-    <h1>{{ guardian.first_name }} {{ guardian.last_name }}</h1>
-    <div>
-        {% if is_therapist or is_administrator%}
-            <a href="{% url 'guardian_edit' pk=guardian.id %}" class="btn btn-secondary">Edit</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Delete
-            </button>
-        {% endif %}
+{% include "blobs.html" %}
+<div class="container-fluid">
+    <div class="header-1 my-2">
+        <h1>{{ guardian.first_name }} {{ guardian.last_name }}</h1>
+        <div>
+            {% if is_therapist %}
+                <a href="{% url 'guardian_edit' pk=guardian.id %}" class="btn2 btn-success">Edit</a>
+                <button type="button" class="btn2 btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            {% endif %}
+        </div>
     </div>
-</div>
-<div class="row gutters-sm">
-    <div class="col-md-12">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">First Name:</h6>
+    <div class="row gutters-sm">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Personal Information</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">First Name</h6>
+                            <div class="info-box">{{ guardian.first_name }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Middle Name</h6>
+                            <div class="info-box">{% if guardian.middle_name %} {{ guardian.middle_name }} {% endif %}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Last Name</h6>
+                            <div class="info-box">{{ guardian.last_name }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ guardian.first_name }}
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h6 class="mb-2">Date of Birth</h6>
+                            <div class="info-box">{{ guardian.date_of_birth }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-2">Sex</h6>
+                            <div class="info-box">{{ guardian.sex }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Middle Name:</h6>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">Nationality</h6>
+                            <div class="info-box">{{ guardian.nationality }}</div>
+                        </div>
                     </div>
-                    <div class="col-sm-2 text-secondary">
-                        {% if guardian.middle_name %}{{ guardian.middle_name }} {% endif %}
-                    </div>
-                    <div class="col-sm-2">
-                        <h6 class="mb-0">Last Name:</h6>
-                    </div>
-                    <div class="col-sm-2 text-secondary">
-                        {{ guardian.last_name }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Assigned Patients:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ guardian.assigned_patients }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Date of Birth:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ guardian.date_of_birth }}
-                    </div>
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Contact Number:</h6>
-                    </div>
-                    <div class="col-sm-3 text-secondary">
-                        {{ guardian.contact_number }}
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h6 class="mb-0">Address:</h6>
-                    </div>
-                    <div class="col-sm-9 text-secondary">
-                        {{ guardian.city }} , {{ guardian.province }}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="mb-2">Contact Number</h6>
+                            <div class="info-box">{{ guardian.contact_number }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="h6 mb-3 text-secondary">Address</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Province</h6>
+                            <div class="info-box">{{ guardian.province }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-2">Municipality</h6>
+                            <div class="info-box">{{ guardian.municipality }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>     
+    </div>
+    <div class="my-2">
+        <a href="{% if is_guardian %}{% url 'welcome' %}{% else %}{% url 'guardian_list' %}{% endif %}" class="btn">
+            Back
+        </a>
     </div>
 </div>
 
@@ -107,20 +116,13 @@
                     {% endif %}
                     
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-danger" value="Confirm">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn2 btn-success" value="Confirm">
+                        <button type="button" class="btn2 btn-danger" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
-
-<div class="my-3">
-    <a href=" {% url 'guardian_list' %}" 
-    class="btn btn-secondary">
-    Back
-    </a>
 </div>
 
 {% endblock %}
